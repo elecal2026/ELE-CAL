@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(npx tsc:*)",
+      "Bash(find C:Usersy9_a1Projects他事業所河島さん電気工事店ツールapps2-2 -type d -name *admin* -o -type d -name *manage* -o -type d -name *settings* -o -type d -name *管理*)",
+      "Bash(npx next:*)"
+    ]
+  }
+}

@@ -1,0 +1,477 @@
+/* ==========================================
+   Electrician Tools — 共通スタイル（ライトテーマ）
+   ========================================== */
+
+/* リセット・基本設定 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-page: #f0f4f8;
+  --bg-white: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f5f8ff;
+  --bg-secondary: #f8fafc;
+  --accent: #1d6fcf;
+  --accent-dark: #155faa;
+  --accent-light: #e8f1fb;
+  --accent-text: #1d6fcf;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e0;
+  --success: #276749;
+  --success-bg: #f0fff4;
+  --success-border: #c6f6d5;
+  --warning: #b7791f;
+  --warning-bg: #fffff0;
+  --warning-border: #fefcbf;
+  --danger: #c53030;
+  --danger-bg: #fff5f5;
+  --danger-border: #fed7d7;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --font-size-base: 16px;
+}
+
+html {
+  font-size: var(--font-size-base);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP',
+    'BIZ UDPGothic', 'Yu Gothic', sans-serif;
+  line-height: 1.65;
+  min-height: 100vh;
+  padding-bottom: 2.5rem;
+}
+
+/* ==========================================
+   ヘッダー
+   ========================================== */
+.app-header {
+  background: var(--bg-white);
+  border-bottom: 3px solid var(--accent);
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.app-header .back-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.25rem 0.4rem;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+  font-weight: 600;
+}
+
+.app-header .back-link:hover {
+  background: var(--accent-light);
+}
+
+.app-header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.app-header .header-icon {
+  font-size: 1.3rem;
+}
+
+/* ==========================================
+   メインコンテンツ
+   ========================================== */
+.main-content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+}
+
+/* ==========================================
+   カード
+   ========================================== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-light);
+}
+
+/* ==========================================
+   フォーム要素
+   ========================================== */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.form-control {
+  width: 100%;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 1rem;
+  padding: 0.65rem 0.85rem;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29, 111, 207, 0.15);
+}
+
+select.form-control {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23718096' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+select.form-control option {
+  background: var(--bg-white);
+  color: var(--text-primary);
+}
+
+/* ==========================================
+   結果表示
+   ========================================== */
+.result-box {
+  background: linear-gradient(135deg, #f0f6ff 0%, #e8f1fb 100%);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-top: 0.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.result-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.result-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.01em;
+}
+
+.result-unit {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-left: 0.3rem;
+  font-weight: 500;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.result-row:last-child {
+  border-bottom: none;
+}
+
+.result-row .label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.result-row .value {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* 状態バッジ */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-ok {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.badge-warn {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning-border);
+}
+
+.badge-ng {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+/* ==========================================
+   テーブル
+   ========================================== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table th {
+  background: var(--bg-secondary);
+  color: var(--accent);
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--accent);
+}
+
+.data-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.data-table tr:hover td {
+  background: var(--accent-light);
+}
+
+.data-table tr.highlight td {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  font-weight: 700;
+  border-left: 3px solid var(--accent);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* ==========================================
+   プレースホルダー
+   ========================================== */
+.msg-placeholder {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* ==========================================
+   免責事項
+   ========================================== */
+.disclaimer {
+  margin-top: 1.5rem;
+  padding: 0.875rem 1rem;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.disclaimer strong {
+  color: var(--warning);
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+}
+
+/* ==========================================
+   フッター
+   ========================================== */
+.app-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+}
+
+/* ==========================================
+   ユーティリティ
+   ========================================== */
+.mt-1 {
+  margin-top: 0.5rem;
+}
+
+.mt-2 {
+  margin-top: 1rem;
+}
+
+.mt-3 {
+  margin-top: 1.5rem;
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-sm {
+  font-size: 0.85rem;
+}
+
+.fw-bold {
+  font-weight: 700;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.gap-1 {
+  gap: 0.5rem;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+/* ==========================================
+   レスポンシブ
+   ========================================== */
+@media (min-width: 480px) {
+  .app-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .main-content {
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .main-content {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* ==========================================
+   Chips（ボタングループ）UI
+   ========================================== */
+.chips-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.chip-label {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chip-label input[type="radio"],
+.chip-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.chip-text {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 24px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.chip-label input[type="radio"]:checked+.chip-text,
+.chip-label input[type="checkbox"]:checked+.chip-text {
+  background: var(--accent);
+  color: var(--bg-white);
+  border-color: var(--accent);
+  box-shadow: 0 2px 6px rgba(29, 111, 207, 0.25);
+}
+
+.chip-label input[type="radio"]:focus-visible+.chip-text,
+.chip-label input[type="checkbox"]:focus-visible+.chip-text {
+  box-shadow: 0 0 0 3px rgba(29, 111, 207, 0.3);
+}
+
+.chip-label:hover .chip-text {
+  border-color: var(--accent);
+}
+
+.chip-label input[type="radio"]:checked:hover+.chip-text,
+.chip-label input[type="checkbox"]:checked:hover+.chip-text {
+  background: var(--accent-dark);
+}
