@@ -127,7 +127,7 @@ const CHANGELOG: ChangeEntry[] = [
     date: '2026-04-13',
     title: 'アカウント移行実施',
     description:
-      'GitHubアカウントの移行を実施。',
+      'GitHubアカウントの移行を実施。Clerk・Neon・Vercelの環境変数を事業用アカウントに切り替え、デプロイ確認完了。',
   },
   // ── 新しい日付のエントリはここに追加 ──
 ]
