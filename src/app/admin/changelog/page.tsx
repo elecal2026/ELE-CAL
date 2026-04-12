@@ -122,6 +122,13 @@ const CHANGELOG: ChangeEntry[] = [
       '定数データ（MOTOR_TABLE / WELDER_TABLE / R/X DATA）をconstants.tsに分離',
     ],
   },
+  // ── 2026-04-13 ──
+  {
+    date: '2026-04-13',
+    title: 'アカウント移行実施',
+    description:
+      'GitHubアカウントの移行を実施。',
+  },
   // ── 新しい日付のエントリはここに追加 ──
 ]
 
