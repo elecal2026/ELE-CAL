@@ -22,6 +22,8 @@
   font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', sans-serif;
   color: var(--navy);
   background: #fff;
+  position: relative;
+  overflow: hidden;
 }
 
 /* ── TOP BAR ── */
@@ -30,6 +32,8 @@
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .logo {
@@ -95,11 +99,15 @@
 
 /* ── HERO ── */
 .hero {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  align-items: center;
-  gap: 16px;
   flex-shrink: 0;
+  position: relative;
+  padding: 80px 0 100px;
+}
+
+.heroCopy {
+  position: relative;
+  z-index: 1;
+  max-width: 50%;
 }
 
 .heroCopy h1 {
@@ -117,14 +125,16 @@
 }
 
 .heroImage {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  position: absolute;
+  right: -40px;
+  top: -100px;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .heroImage img {
-  width: 100%;
-  max-width: 380px;
+  width: 684px;
+  max-width: none;
   height: auto;
   object-fit: contain;
   mix-blend-mode: multiply;
@@ -143,8 +153,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
-  flex: 1;
-  min-height: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .card {
@@ -264,6 +274,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .bannerInner {
