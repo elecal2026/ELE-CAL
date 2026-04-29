@@ -138,6 +138,7 @@ export default function LoadEntryRow({
             <option value="CV">CV</option>
             <option value="CVT">CVT</option>
             <option value="IV">IV</option>
+            <option value="VVF">VVF</option>
           </select>
         </div>
 

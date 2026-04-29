@@ -12,10 +12,6 @@ export default function Home() {
       <div className={styles.hero}>
         <div className={styles.heroCopy}>
           <h1>ようこそ、ELE-CALへ</h1>
-          <p>
-            電気工事の計算・参照を、スピーディに正確に。<br />
-            現場の頼れるパートナーとして、業務をサポートします。
-          </p>
         </div>
         <div className={styles.heroImage}>
           <Image
@@ -44,16 +40,6 @@ export default function Home() {
               height={200}
             />
           </div>
-          <div className={styles.cardBottom}>
-            <div className={styles.cardDesc}>
-              電線の種類やサイズ別の<br />許容電流を確認できます。
-            </div>
-            <div className={`${styles.arrowBtn} ${styles.red}`}>
-              <svg viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
         </Link>
 
         {/* 02 電圧降下計算 */}
@@ -69,16 +55,6 @@ export default function Home() {
               width={240}
               height={200}
             />
-          </div>
-          <div className={styles.cardBottom}>
-            <div className={styles.cardDesc}>
-              電線の長さや電流から<br />電圧降下を計算します。
-            </div>
-            <div className={`${styles.arrowBtn} ${styles.navy}`}>
-              <svg viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
           </div>
         </Link>
 
@@ -96,16 +72,6 @@ export default function Home() {
               height={200}
             />
           </div>
-          <div className={styles.cardBottom}>
-            <div className={styles.cardDesc}>
-              占有率ルールに基づき<br />配管サイズを計算します。
-            </div>
-            <div className={`${styles.arrowBtn} ${styles.yellow}`}>
-              <svg viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
         </Link>
 
         {/* 04 ブレーカー選定 */}
@@ -121,16 +87,6 @@ export default function Home() {
               width={240}
               height={200}
             />
-          </div>
-          <div className={styles.cardBottom}>
-            <div className={styles.cardDesc}>
-              負荷電流からブレーカーの<br />定格を算出します。
-            </div>
-            <div className={`${styles.arrowBtn} ${styles.red}`}>
-              <svg viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
           </div>
         </Link>
       </div>

@@ -1,5 +1,5 @@
 export type LoadType = 'general' | 'motor' | 'welder'
-export type WireType = 'CV' | 'CVT' | 'IV'
+export type WireType = 'CV' | 'CVT' | 'IV' | 'VVF'
 export type StartMethod = 'direct' | 'starDelta'
 export type System = 'single2' | 'single3' | 'three'
 

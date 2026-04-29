@@ -108,5 +108,10 @@ export function getAvailableWireSizes(wireType: string): string[] {
     return ALL_SIZES.filter(s => s.includes('mm²'))
   }
 
+  if (wireType === 'VVF') {
+    // VVFは1.6mm〜2.6mmのみ
+    return ALL_SIZES.filter(s => ['1.6mm', '2.0mm', '2.6mm'].includes(s))
+  }
+
   return ALL_SIZES
 }
