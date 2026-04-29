@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { useState, useMemo, useCallback, useEffect } from 'react'
+import SiteHeader from '@/components/SiteHeader'
 
 // ==========================================
 // 定数
@@ -583,11 +583,7 @@ export default function VoltageDropV2Page() {
 
   return (
     <>
-      <header className="app-header">
-        <Link className="back-link" href="/" aria-label="ホームへ戻る">←</Link>
-        <span className="header-icon">🔌</span>
-        <h1>電圧降下計算</h1>
-      </header>
+      <SiteHeader mode="sub" title="電圧降下計算" />
 
       {/* 設定バー */}
       <div className="vd2-settings-bar">

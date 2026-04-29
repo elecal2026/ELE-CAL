@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { useState, useMemo } from 'react'
+import SiteHeader from '@/components/SiteHeader'
 
 // ==========================================
 // 許容電流データ（電技解釈・JCS 0168 参考値）
@@ -85,11 +85,7 @@ export default function AllowableCurrentPage() {
 
   return (
     <>
-      <header className="app-header">
-        <Link className="back-link" href="/" aria-label="ホームへ戻る">←</Link>
-        <span className="header-icon">📋</span>
-        <h1>許容電流表</h1>
-      </header>
+      <SiteHeader mode="sub" title="許容電流表" />
 
       <main className="main-content">
         <section className="card">

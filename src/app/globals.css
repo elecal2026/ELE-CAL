@@ -13,36 +13,46 @@
 }
 
 :root {
+  /* === 新テーマ（TOPページ・デザイン案 common.css 準拠） === */
+  --red: #C8281E;
+  --navy: #1C2B4A;
+  --yellow: #E8A020;
+  --gray-bg: #F4F4F4;
+  --sub: #666;
+  --green: #22A06B;
+  --orange: #E8A020;
+
+  /* === 旧テーマ変数（互換のため残す。値は新テーマに統一） === */
   --bg-page: #F8F6F6;
   --bg-white: #ffffff;
   --bg-card: #ffffff;
-  --bg-card-hover: #fdf5f5;
-  --bg-secondary: #F8F6F6;
-  --accent: #CF4647;
-  --accent-dark: #b53a3b;
-  --accent-light: #fdeaea;
-  --accent-text: #CF4647;
-  --accent-yellow: #F5D061;
-  --dark: #2A363B;
-  --text-primary: #2A363B;
+  --bg-card-hover: #FDECEA;
+  --bg-secondary: #F4F4F4;
+  --accent: #C8281E;
+  --accent-dark: #A02016;
+  --accent-light: #FDECEA;
+  --accent-text: #C8281E;
+  --accent-yellow: #E8A020;
+  --dark: #1C2B4A;
+  --text-primary: #1C2B4A;
   --text-secondary: #4a5560;
-  --text-muted: #6b7a83;
-  --border: #e2e0e0;
+  --text-muted: #666;
+  --border: #E0E0E0;
   --border-strong: #c8c5c5;
-  --success: #276749;
-  --success-bg: #f0fff4;
+  --success: #22A06B;
+  --success-bg: #E6F4EE;
   --success-border: #c6f6d5;
-  --warning: #b7791f;
-  --warning-bg: #fffff0;
+  --warning: #E8A020;
+  --warning-bg: #FFF8E1;
   --warning-border: #fefcbf;
-  --danger: #CF4647;
-  --danger-bg: #fff5f5;
+  --danger: #C8281E;
+  --danger-bg: #FDECEA;
   --danger-border: #fed7d7;
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow-sm: 0 1px 3px rgba(42, 54, 59, 0.08), 0 1px 2px rgba(42, 54, 59, 0.04);
-  --shadow: 0 4px 12px rgba(42, 54, 59, 0.08), 0 2px 4px rgba(42, 54, 59, 0.04);
-  --shadow-hover: 0 8px 20px rgba(42, 54, 59, 0.10), 0 4px 8px rgba(42, 54, 59, 0.06);
+  --shadow-sm: 0 1px 3px rgba(28, 43, 74, 0.08), 0 1px 2px rgba(28, 43, 74, 0.04);
+  --shadow: 0 4px 12px rgba(28, 43, 74, 0.08), 0 2px 4px rgba(28, 43, 74, 0.04);
+  --shadow-hover: 0 8px 20px rgba(28, 43, 74, 0.10), 0 4px 8px rgba(28, 43, 74, 0.06);
   --font-size-base: 16px;
 }
 
@@ -54,7 +64,7 @@ html {
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
-  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP',
+  font-family: var(--font-noto-sans-jp), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
     'BIZ UDPGothic', 'Yu Gothic', sans-serif;
   line-height: 1.65;
   min-height: 100vh;
@@ -66,7 +76,7 @@ body {
    ========================================== */
 .app-header {
   background: var(--bg-white);
-  border-bottom: 3px solid #2A363B;
+  border-bottom: 3px solid var(--navy);
   padding: 0.85rem 1.25rem;
   display: flex;
   align-items: center;

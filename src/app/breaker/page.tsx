@@ -1,9 +1,9 @@
 'use client'
 
-import Link from 'next/link'
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import type { System, LoadEntry } from './types'
 
+import SiteHeader from '@/components/SiteHeader'
 import LoadEntryRow from './LoadEntryRow'
 import ResultPanel from './ResultPanel'
 import { validateBreakerInputs } from './validation'
@@ -115,11 +115,7 @@ export default function BreakerPage() {
 
   return (
     <>
-      <header className="app-header">
-        <Link className="back-link" href="/" aria-label="ホームへ戻る">←</Link>
-        <span className="header-icon">⚡</span>
-        <h1>ブレーカー選定</h1>
-      </header>
+      <SiteHeader mode="sub" title="ブレーカー選定" />
 
       {/* ========== 設定バー ========== */}
       <div className="breaker-settings-bar vd2-settings-bar" style={{ flexWrap: 'nowrap', overflowX: 'auto' }}>

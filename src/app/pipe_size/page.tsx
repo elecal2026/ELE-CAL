@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useMemo, useCallback, useEffect } from 'react'
+import SiteHeader from '@/components/SiteHeader'
 
 // ==========================================
 // 電線断面積テーブル（仕上り断面積 mm²）
@@ -379,11 +380,7 @@ export default function PipeSizePage() {
 
   return (
     <>
-      <header className="app-header">
-        <Link className="back-link" href="/" aria-label="ホームへ戻る">←</Link>
-        <span className="header-icon">🔧</span>
-        <h1>配管サイズ計算</h1>
-      </header>
+      <SiteHeader mode="sub" title="配管サイズ計算" />
 
       <main className="main-content">
         <section className="card">

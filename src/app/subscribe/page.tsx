@@ -19,12 +19,21 @@ export default function SubscribePage() {
         alert('決済システムは現在準備中です。')
         return
       }
+      if (res.status === 401) {
+        alert('ログインが必要です。サインインしてからお試しください。')
+        window.location.href = '/sign-in'
+        return
+      }
       const data = await res.json()
       if (data.url) {
         window.location.href = data.url
+        return
       }
-    } catch {
-      alert('エラーが発生しました。もう一度お試しください。')
+      console.error('Checkout failed', { status: res.status, data })
+      alert(`エラーが発生しました（${res.status}）: ${data.error ?? '詳細不明'}`)
+    } catch (e) {
+      console.error('Checkout exception', e)
+      alert('通信エラーが発生しました。ネットワークをご確認ください。')
     } finally {
       setLoading(false)
     }
@@ -56,7 +65,7 @@ export default function SubscribePage() {
           </ul>
 
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#1d6fcf' }}>¥---</span>
+            <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#1d6fcf' }}>¥500</span>
             <span style={{ fontSize: '0.9rem', color: '#718096' }}> / 月（税込）</span>
             <p style={{ fontSize: '0.82rem', color: '#718096', marginTop: '0.25rem' }}>14日間の無料トライアル付き</p>
           </div>

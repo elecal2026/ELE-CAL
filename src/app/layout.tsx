@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Barlow } from 'next/font/google'
+import { Barlow, Noto_Sans_JP } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { jaJP } from '@clerk/localizations'
 import './globals.css'
@@ -8,6 +8,13 @@ const barlow = Barlow({
   subsets: ['latin'],
   weight: ['700', '900'],
   variable: '--font-barlow',
+  display: 'swap',
+})
+
+const notoSansJP = Noto_Sans_JP({
+  subsets: ['latin'],
+  weight: ['400', '500', '700', '900'],
+  variable: '--font-noto-sans-jp',
   display: 'swap',
 })
 
@@ -27,7 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider localization={jaJP}>
-      <html lang="ja" className={barlow.variable}>
+      <html lang="ja" className={`${barlow.variable} ${notoSansJP.variable}`}>
         <body>{children}</body>
       </html>
     </ClerkProvider>
