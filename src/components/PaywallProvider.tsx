@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 
 interface PaywallContextValue {
   /** プロプラン契約中（trial / active）かどうか */
@@ -35,11 +35,6 @@ export function PaywallProvider({
   isSignedIn: boolean
 }) {
   const [isOpen, setIsOpen] = useState(false)
-
-  // デバッグ用ログ（原因切り分け後に削除予定）
-  useEffect(() => {
-    console.log('[PaywallProvider]', { isPaid, isSignedIn })
-  }, [isPaid, isSignedIn])
 
   const openPaywall = useCallback(() => setIsOpen(true), [])
   const closePaywall = useCallback(() => setIsOpen(false), [])
