@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import SiteHeader from '@/components/SiteHeader'
+import { usePaywall } from '@/components/PaywallProvider'
 
 // ==========================================
 // 許容電流データ（電技解釈・JCS 0168 参考値）
@@ -60,7 +61,10 @@ function formatSize(sizeKey: string): string {
 }
 
 export default function AllowableCurrentPage() {
+  const { isPaid, openPaywall } = usePaywall()
+
   const [wire, setWire] = useState('IV')
+  // 契約者は別チップへの変更でこの setter が使われる。未契約者は activeCondition の自動フォールバックのみ
   const [condition, setCondition] = useState('')
   const [size, setSize] = useState('')
 
@@ -111,18 +115,37 @@ export default function AllowableCurrentPage() {
           <div className="form-group">
             <label className="form-label">敷設条件</label>
             <div className="chips-group">
-              {conditions.map((c) => (
-                <label className="chip-label" key={c}>
-                  <input
-                    type="radio"
-                    name="condition"
-                    value={c}
-                    checked={activeCondition === c}
-                    onChange={() => setCondition(c)}
-                  />
-                  <span className="chip-text">{c}</span>
-                </label>
-              ))}
+              {conditions.map((c) => {
+                const isActive = activeCondition === c
+                const showLock = !isActive && !isPaid
+                return (
+                  <label className="chip-label" key={c}>
+                    <input
+                      type="radio"
+                      name="condition"
+                      value={c}
+                      checked={isActive}
+                      onChange={() => {
+                        // 契約者のみ通常のラジオ動作で値を更新
+                        if (isPaid) setCondition(c)
+                      }}
+                      onClick={(e) => {
+                        // 未契約者は別チップへの変更を抑止し、課金導線を開く
+                        if (!isPaid && !isActive) {
+                          e.preventDefault()
+                          openPaywall()
+                        }
+                      }}
+                    />
+                    <span className="chip-text">
+                      {showLock && (
+                        <span aria-hidden="true" style={{ marginRight: '0.25em' }}>🔒</span>
+                      )}
+                      {c}
+                    </span>
+                  </label>
+                )
+              })}
             </div>
           </div>
           {wire === 'VVF' && activeCondition === '埋込配線' && (

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import SiteHeader from '@/components/SiteHeader'
+import { usePaywall } from '@/components/PaywallProvider'
 
 // ==========================================
 // 定数
@@ -177,6 +178,7 @@ function SectionCard({
   onDelete?: () => void
   onUpdateParent?: (parentId: string) => void
 }) {
+  const { isPaid, requirePaid } = usePaywall()
   const res = getSecResult(method, data, baseVoltage)
   const hasData = !!(data.wireSize && data.current)
 
@@ -262,7 +264,11 @@ function SectionCard({
           <div className="validation-warning" style={{ marginTop: '4px' }}>未入力の区間があります</div>
         )}
         <button type="button" className="vd2-btn-add-row"
-          onClick={() => onUpdate('sections', [...data.sections, null])}>
+          onClick={() => {
+            if (!requirePaid()) return
+            onUpdate('sections', [...data.sections, null])
+          }}>
+          {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
           + 区間を追加
         </button>
         <div className="vd2-subtotal">
@@ -439,6 +445,8 @@ const ROUGH_CAPACITY: Record<number, number> = {
 }
 
 export default function VoltageDropV2Page() {
+  const { isPaid, requirePaid } = usePaywall()
+
   // 設定
   const [method, setMethod] = useState('1phase3wire')
   const [supplyType, setSupplyType] = useState('transformer')
@@ -485,6 +493,7 @@ export default function VoltageDropV2Page() {
   }, [])
 
   const addBranch = useCallback(() => {
+    if (!requirePaid()) return
     const n = nextId
     const lb = NM[n - 1] || String(n)
     const pid = branches.length > 0 ? branches[branches.length - 1].id : 'trunk'
@@ -493,7 +502,7 @@ export default function VoltageDropV2Page() {
       wireSize: null, current: null, sections: [null],
     }])
     setNextId(prev => prev + 1)
-  }, [nextId, branches])
+  }, [nextId, branches, requirePaid])
 
   const deleteBranch = useCallback((id: string) => {
     setBranches(prev => {
@@ -665,6 +674,7 @@ export default function VoltageDropV2Page() {
           ))}
 
           <button type="button" className="vd2-btn-add-branch" onClick={addBranch}>
+            {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
             <span style={{ fontSize: '18px' }}>+</span> 分岐を追加
           </button>
         </div>

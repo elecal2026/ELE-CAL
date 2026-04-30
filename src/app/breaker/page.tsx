@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react'
 import type { System, LoadEntry } from './types'
 
 import SiteHeader from '@/components/SiteHeader'
+import { usePaywall } from '@/components/PaywallProvider'
 import LoadEntryRow from './LoadEntryRow'
 import ResultPanel from './ResultPanel'
 import { validateBreakerInputs } from './validation'
@@ -61,6 +62,8 @@ function ChipGroup<T extends string>({
 }
 
 export default function BreakerPage() {
+  const { isPaid, requirePaid } = usePaywall()
+
   // 基本設定
   const [system, setSystem] = useState<System>('three')
   const [voltage, setVoltage] = useState('200')
@@ -81,8 +84,9 @@ export default function BreakerPage() {
   const [loads, setLoads] = useState<LoadEntry[]>([createLoad()])
 
   const addLoad = useCallback(() => {
+    if (!requirePaid()) return
     setLoads(prev => [...prev, createLoad()])
-  }, [])
+  }, [requirePaid])
 
   const removeLoad = useCallback((id: string) => {
     setLoads(prev => prev.length > 1 ? prev.filter(l => l.id !== id) : prev)
@@ -207,6 +211,7 @@ export default function BreakerPage() {
               </div>
 
               <button className="add-load-btn" onClick={addLoad}>
+                {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
                 + 負荷を追加
               </button>
             </section>

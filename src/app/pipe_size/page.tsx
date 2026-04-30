@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import SiteHeader from '@/components/SiteHeader'
+import { usePaywall } from '@/components/PaywallProvider'
 
 // ==========================================
 // 電線断面積テーブル（仕上り断面積 mm²）
@@ -279,6 +280,7 @@ function WireRowItem({
 // メインページ
 // ==========================================
 export default function PipeSizePage() {
+  const { isPaid, requirePaid } = usePaywall()
   const [rows, setRows] = useState<WireRow[]>(() => [makeInitialRow(0)])
   const [nextId, setNextId] = useState(1)
   const [checkedPipes, setCheckedPipes] = useState<Record<string, boolean>>(() =>
@@ -287,9 +289,10 @@ export default function PipeSizePage() {
 
   // 行の追加
   const addRow = useCallback(() => {
+    if (!requirePaid()) return
     setRows((prev) => [...prev, makeInitialRow(nextId)])
     setNextId((prev) => prev + 1)
-  }, [nextId])
+  }, [nextId, requirePaid])
 
   // 行の更新
   const updateRow = useCallback((id: number, updated: WireRow) => {
@@ -399,7 +402,10 @@ export default function PipeSizePage() {
             ))}
           </div>
 
-          <button className="btn-add" onClick={addRow}>＋ 電線を追加</button>
+          <button className="btn-add" onClick={addRow}>
+            {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
+            ＋ 電線を追加
+          </button>
 
           <div className="form-group">
             <label className="form-label">配管種別（複数選択可）</label>
