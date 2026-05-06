@@ -5,7 +5,6 @@ import { getSubscription, upsertSubscription } from '@/lib/db'
 import { isDbConfigured } from '@/lib/db'
 
 export async function POST() {
-  // Stripe未設定チェック
   if (!isStripeConfigured() || !isDbConfigured()) {
     return NextResponse.json(
       { error: 'Payment system is not configured yet' },
@@ -13,7 +12,6 @@ export async function POST() {
     )
   }
 
-  // 認証チェック
   const { userId } = await auth()
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -23,18 +21,24 @@ export async function POST() {
   const priceId = process.env.STRIPE_PRICE_ID!
 
   try {
-    // 既存のサブスク情報を確認
-    let subscription = await getSubscription(userId)
+    const subscription = await getSubscription(userId)
+
+    // すでに有効な契約がある場合は新規Checkoutを作らずアカウント画面に誘導
+    if (subscription && (subscription.status === 'trialing' || subscription.status === 'active')) {
+      return NextResponse.json(
+        { error: 'すでにご契約中です', redirectTo: '/account' },
+        { status: 409 }
+      )
+    }
+
     let customerId = subscription?.stripe_customer_id
 
-    // Stripe Customerがなければ作成
     if (!customerId) {
       const customer = await stripe.customers.create({
         metadata: { clerk_user_id: userId },
       })
       customerId = customer.id
 
-      // DB に Clerk ↔ Stripe の紐付けを保存
       await upsertSubscription({
         clerkUserId: userId,
         stripeCustomerId: customerId,
@@ -42,14 +46,21 @@ export async function POST() {
       })
     }
 
-    // Checkout Session作成
+    // 過去にサブスクを持っていたユーザー（DBにstripe_subscription_idが残っている）
+    // にはトライアルを付与せず、即課金する
+    const hasUsedTrial = !!subscription?.stripe_subscription_id
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
-      subscription_data: {
-        trial_period_days: 14,
-      },
+      ...(hasUsedTrial
+        ? {}
+        : {
+            subscription_data: {
+              trial_period_days: 14,
+            },
+          }),
       success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/subscribe`,
     })
