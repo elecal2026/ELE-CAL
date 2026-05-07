@@ -154,10 +154,8 @@
 
 /* ── Q&A BANNER ── */
 .qaBannerArea {
-  display: flex;
-  justify-content: flex-end;
-  position: relative;
-  z-index: 2;
+  display: inline-block;
+  margin-top: 16px;
 }
 
 .qaBannerImg {
