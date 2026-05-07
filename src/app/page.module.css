@@ -152,6 +152,25 @@
   mix-blend-mode: multiply;
 }
 
+/* ── Q&A BANNER ── */
+.qaBannerArea {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 2;
+}
+
+.qaBannerImg {
+  width: 380px;
+  height: auto;
+  display: block;
+  transition: opacity 0.2s;
+}
+
+.qaBannerImg:hover {
+  opacity: 0.85;
+}
+
 /* ── FOOTER BANNER ── */
 .footerBanner {
   flex-shrink: 0;

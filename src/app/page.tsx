@@ -8,6 +8,19 @@ export default function Home() {
     <div className={styles.page}>
       <SiteHeader mode="top" />
 
+      {/* Q&A BANNER */}
+      <div className={styles.qaBannerArea}>
+        <Link href="/questions">
+          <Image
+            src="/image/Question_Box.png"
+            alt="質問BOX"
+            width={1774}
+            height={887}
+            className={styles.qaBannerImg}
+          />
+        </Link>
+      </div>
+
       {/* HERO */}
       <div className={styles.hero}>
         <div className={styles.heroCopy}>
