@@ -1,17 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useUser } from '@clerk/nextjs'
 
 export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean }) {
   const [stripeReady, setStripeReady] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(false)
-  const [testLoading, setTestLoading] = useState(false)
-  const { user } = useUser()
-
-  // 自分のClerk userIDと一致する場合のみテストボタンを表示
-  const testUserId = process.env.NEXT_PUBLIC_TEST_USER_CLERK_ID
-  const isTestUser = !!testUserId && user?.id === testUserId
 
   useEffect(() => {
     setStripeReady(!!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
@@ -51,35 +44,6 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
       alert('通信エラーが発生しました。ネットワークをご確認ください。')
     } finally {
       setLoading(false)
-    }
-  }
-
-  // テスト課金ハンドラ（自分のみ）
-  const handleTestCheckout = async () => {
-    setTestLoading(true)
-    try {
-      const res = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ testMode: true }),
-      })
-      const data = await res.json().catch(() => ({}))
-      if (res.status === 403) {
-        alert('テスト課金は自分のアカウントのみ利用可能です。')
-        return
-      }
-      if (!res.ok) {
-        alert(`エラー（${res.status}）: ${data.error ?? '詳細不明'}`)
-        return
-      }
-      if (data.url) {
-        window.location.href = data.url
-      }
-    } catch (e) {
-      console.error('Test checkout exception', e)
-      alert('通信エラーが発生しました。')
-    } finally {
-      setTestLoading(false)
     }
   }
 
@@ -171,32 +135,6 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
             </div>
           )}
 
-          {/* テスト課金ボタン：自分のアカウントのみ表示 */}
-          {isTestUser && (
-            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed #e2e8f0' }}>
-              <button
-                onClick={handleTestCheckout}
-                disabled={testLoading}
-                style={{
-                  width: '100%',
-                  padding: '0.7rem',
-                  background: testLoading ? '#fcd34d' : '#f59e0b',
-                  color: '#1a202c',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '0.88rem',
-                  fontWeight: 700,
-                  cursor: testLoading ? 'not-allowed' : 'pointer',
-                  transition: 'background 0.2s',
-                }}
-              >
-                {testLoading ? '処理中...' : '🧪 テスト課金（¥300・即時）'}
-              </button>
-              <p style={{ textAlign: 'center', fontSize: '0.72rem', color: '#a0aec0', marginTop: '0.4rem' }}>
-                動作確認用・管理者のみ表示
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>
