@@ -152,14 +152,22 @@
   mix-blend-mode: multiply;
 }
 
-/* ── Q&A BANNER ── */
+/* ── Q&A BANNERS ── */
 .qaBannerArea {
-  display: inline-block;
+  display: flex;
+  gap: 10px;
   margin-top: 16px;
+  max-width: 480px;
+}
+
+.qaBannerLink {
+  flex: 1;
+  display: block;
+  min-width: 0;
 }
 
 .qaBannerImg {
-  width: 380px;
+  width: 100%;
   height: auto;
   display: block;
   transition: opacity 0.2s;
@@ -252,6 +260,10 @@
 
   .heroCopy h1 {
     font-size: 28px;
+  }
+
+  .qaBannerArea {
+    flex-direction: column;
   }
 }
 

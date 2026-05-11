@@ -262,7 +262,8 @@ export default function PrivacyPolicyPage() {
         <Section title="第20条（問い合わせ窓口および個人情報取扱事業者の表示）">
           <p>本ポリシー、本サービスにおける個人情報の取扱い、開示等の請求、苦情、相談その他の問い合わせは、以下の窓口までお願いいたします。</p>
           <p style={{ marginTop: '0.5rem' }}>
-            <a href="https://ele-cal.com/" style={{ color: 'var(--accent)' }}>https://ele-cal.com/</a> の質問ＢＯＸからお願いします。
+            メールアドレス：<a href="mailto:elecal2026@gmail.com" style={{ color: 'var(--accent)' }}>elecal2026@gmail.com</a><br />
+            または <a href="/feedback" style={{ color: 'var(--accent)' }}>お問い合わせフォーム（/feedback）</a> よりお願いします。
           </p>
           <p style={{ marginTop: '1rem' }}>
             個人情報取扱事業者の名称および代表者は以下のとおりです。なお、その他の情報については、請求があった場合には遅滞なく開示いたします。開示をご希望される場合は、前項のお問い合わせ窓口よりご連絡をお願いいたします。

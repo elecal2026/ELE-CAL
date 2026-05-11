@@ -58,7 +58,7 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
       <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxWidth: '420px', width: '100%', overflow: 'hidden' }}>
         <div style={{ background: 'linear-gradient(135deg, #1d6fcf, #4fa3f5)', padding: '2rem 1.5rem', textAlign: 'center', color: '#fff' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⚡</div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.25rem' }}>Electrician Tools</h1>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.25rem' }}>ELE-CAL</h1>
           <p style={{ fontSize: '0.85rem', opacity: 0.85 }}>電気工事 計算・参照ツール</p>
         </div>
 

@@ -12,16 +12,27 @@ export default function Home() {
       <div className={styles.hero}>
         <div className={styles.heroCopy}>
           <h1>ようこそ、ELE-CALへ</h1>
-          {/* Q&A BANNER */}
-          <Link href="/questions" className={styles.qaBannerArea}>
-            <Image
-              src="/image/Question_Box.png"
-              alt="質問BOX"
-              width={1774}
-              height={887}
-              className={styles.qaBannerImg}
-            />
-          </Link>
+          {/* Q&A BANNERS */}
+          <div className={styles.qaBannerArea}>
+            <Link href="/questions" className={styles.qaBannerLink}>
+              <Image
+                src="/image/banner-faq.png"
+                alt="よくある質問"
+                width={1200}
+                height={600}
+                className={styles.qaBannerImg}
+              />
+            </Link>
+            <Link href="/feedback" className={styles.qaBannerLink}>
+              <Image
+                src="/image/banner-feedback.png"
+                alt="要望・フィードバック"
+                width={1200}
+                height={600}
+                className={styles.qaBannerImg}
+              />
+            </Link>
+          </div>
         </div>
         <div className={styles.heroImage}>
           <Image
@@ -101,43 +112,8 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* FEEDBACK LINK */}
-      <div style={{ textAlign: 'center', padding: '1.5rem 1rem 0' }}>
-        <Link
-          href="/feedback"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.7rem 1.4rem',
-            background: '#fff',
-            color: '#1d6fcf',
-            border: '1px solid #1d6fcf',
-            borderRadius: '999px',
-            fontSize: '0.9rem',
-            fontWeight: 700,
-            textDecoration: 'none',
-          }}
-        >
-          💬 ご要望・バグ報告はこちら
-        </Link>
-      </div>
-
       {/* FOOTER BANNER */}
       <div className={styles.footerBanner}>
-        <div className={styles.bannerInner}>
-          <div className={styles.bannerIcon}>
-            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14 2L3 7v8c0 6.2 4.7 12 11 13.9C21.3 27 26 21.2 26 15V7L14 2z" stroke="#1C2B4A" strokeWidth="1.8" fill="none" strokeLinejoin="round" />
-              <polyline points="9,14 12.5,17.5 19,10" stroke="#1C2B4A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            </svg>
-          </div>
-          <div className={styles.bannerText}>
-            <strong>信頼できる計算を、すべての現場に。</strong>
-            <span>最新の規格・基準に基づいた計算で、確かな安全と効率を支えます。</span>
-          </div>
-        </div>
-
         <nav className={styles.legalRow} aria-label="法務情報">
           <Link href="/legal/tokushoho">特定商取引法</Link>
           <Link href="/legal/privacy">プライバシーポリシー</Link>
