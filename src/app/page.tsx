@@ -91,6 +91,28 @@ export default function Home() {
         </Link>
       </div>
 
+      {/* FEEDBACK LINK */}
+      <div style={{ textAlign: 'center', padding: '1.5rem 1rem 0' }}>
+        <Link
+          href="/feedback"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.7rem 1.4rem',
+            background: '#fff',
+            color: '#1d6fcf',
+            border: '1px solid #1d6fcf',
+            borderRadius: '999px',
+            fontSize: '0.9rem',
+            fontWeight: 700,
+            textDecoration: 'none',
+          }}
+        >
+          💬 ご要望・バグ報告はこちら
+        </Link>
+      </div>
+
       {/* FOOTER BANNER */}
       <div className={styles.footerBanner}>
         <div className={styles.bannerInner}>

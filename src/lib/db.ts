@@ -84,3 +84,107 @@ export async function updateSubscriptionByCustomerId(data: {
     WHERE stripe_customer_id = ${data.stripeCustomerId}
   `
 }
+
+// ============================================================
+// 要望投稿フォーム（feedback_requests / feedback_replies）
+// ============================================================
+
+export type FeedbackCategory = 'feature' | 'bug' | 'improvement'
+
+export interface FeedbackRequestRow {
+  id: number
+  clerk_user_id: string
+  category: FeedbackCategory
+  body: string
+  image_url: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface FeedbackReplyRow {
+  id: number
+  request_id: number
+  clerk_user_id: string
+  body: string
+  created_at: string
+}
+
+/** 要望一覧を取得（管理者なら全件、ユーザーなら自分の投稿のみ） */
+export async function listFeedbackRequests(opts: {
+  clerkUserId?: string
+  limit?: number
+}): Promise<FeedbackRequestRow[]> {
+  const query = sql()
+  const limit = opts.limit ?? 100
+  if (opts.clerkUserId) {
+    const rows = await query`
+      SELECT * FROM feedback_requests
+      WHERE clerk_user_id = ${opts.clerkUserId}
+      ORDER BY created_at DESC
+      LIMIT ${limit}
+    `
+    return rows as FeedbackRequestRow[]
+  }
+  const rows = await query`
+    SELECT * FROM feedback_requests
+    ORDER BY created_at DESC
+    LIMIT ${limit}
+  `
+  return rows as FeedbackRequestRow[]
+}
+
+/** 指定ID群に紐づく返信を一括取得（N+1回避） */
+export async function listRepliesByRequestIds(
+  requestIds: number[]
+): Promise<FeedbackReplyRow[]> {
+  if (requestIds.length === 0) return []
+  const query = sql()
+  const rows = await query`
+    SELECT * FROM feedback_replies
+    WHERE request_id = ANY(${requestIds}::bigint[])
+    ORDER BY created_at ASC
+  `
+  return rows as FeedbackReplyRow[]
+}
+
+/** 要望投稿 */
+export async function insertFeedbackRequest(data: {
+  clerkUserId: string
+  category: FeedbackCategory
+  body: string
+  imageUrl: string | null
+}): Promise<FeedbackRequestRow> {
+  const query = sql()
+  const rows = await query`
+    INSERT INTO feedback_requests (clerk_user_id, category, body, image_url)
+    VALUES (${data.clerkUserId}, ${data.category}, ${data.body}, ${data.imageUrl})
+    RETURNING *
+  `
+  return rows[0] as FeedbackRequestRow
+}
+
+/** 管理者返信 */
+export async function insertFeedbackReply(data: {
+  requestId: number
+  clerkUserId: string
+  body: string
+}): Promise<FeedbackReplyRow> {
+  const query = sql()
+  const rows = await query`
+    INSERT INTO feedback_replies (request_id, clerk_user_id, body)
+    VALUES (${data.requestId}, ${data.clerkUserId}, ${data.body})
+    RETURNING *
+  `
+  return rows[0] as FeedbackReplyRow
+}
+
+/** 要望1件取得 */
+export async function getFeedbackRequest(
+  id: number
+): Promise<FeedbackRequestRow | null> {
+  const query = sql()
+  const rows = await query`
+    SELECT * FROM feedback_requests WHERE id = ${id} LIMIT 1
+  `
+  return (rows[0] as FeedbackRequestRow) ?? null
+}
