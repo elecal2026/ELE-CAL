@@ -12,6 +12,16 @@ export default function Home() {
       <div className={styles.hero}>
         <div className={styles.heroCopy}>
           <h1>ようこそ、ELE-CALへ</h1>
+          {/* Q&A BANNER */}
+          <Link href="/questions" className={styles.qaBannerArea}>
+            <Image
+              src="/image/Question_Box.png"
+              alt="質問BOX"
+              width={1774}
+              height={887}
+              className={styles.qaBannerImg}
+            />
+          </Link>
         </div>
         <div className={styles.heroImage}>
           <Image

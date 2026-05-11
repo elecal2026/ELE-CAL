@@ -152,6 +152,23 @@
   mix-blend-mode: multiply;
 }
 
+/* ── Q&A BANNER ── */
+.qaBannerArea {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+.qaBannerImg {
+  width: 380px;
+  height: auto;
+  display: block;
+  transition: opacity 0.2s;
+}
+
+.qaBannerImg:hover {
+  opacity: 0.85;
+}
+
 /* ── FOOTER BANNER ── */
 .footerBanner {
   flex-shrink: 0;
