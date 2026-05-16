@@ -284,7 +284,7 @@ export default function PipeSizePage() {
   const [rows, setRows] = useState<WireRow[]>(() => [makeInitialRow(0)])
   const [nextId, setNextId] = useState(1)
   const [checkedPipes, setCheckedPipes] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(PIPE_NAMES.map((name) => [name, true]))
+    Object.fromEntries(PIPE_NAMES.map((name) => [name, false]))
   )
 
   // 行の追加

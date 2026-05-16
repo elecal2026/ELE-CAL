@@ -525,8 +525,8 @@ select.form-control option {
 .qty-control button { background: #f0f4f8; border: none; width: 36px; height: 100%; font-size: 1.2rem; font-weight: 700; cursor: pointer; color: #4a5568; flex-shrink: 0; }
 .qty-control button:hover { background: #e2e8f0; }
 .qty-control input { border: none; outline: none; width: 48px; text-align: center; font-size: 1rem; font-weight: 700; color: #2A363B; background: #fff; height: 100%; }
-.btn-add { width: 100%; background: var(--accent-light); border: 1.5px dashed var(--accent); color: var(--accent); border-radius: var(--radius-sm); padding: 0.7rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; }
-.btn-add:hover { background: #f5d0d0; }
+.btn-add { width: 100%; background: #fff0f0; border: 2px solid var(--accent); color: var(--accent); border-radius: var(--radius-sm); padding: 0.7rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; transition: background 0.15s; }
+.btn-add:hover { background: rgba(207, 70, 71, 0.12); }
 .total-area-box { display: flex; justify-content: space-between; align-items: center; background: #fdf5f5; border: 1.5px solid var(--accent); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
 .total-area-box .label { color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; }
 .total-area-box .value { color: var(--accent); font-size: 1.5rem; font-weight: 800; }
@@ -831,6 +831,14 @@ select.form-control option {
   margin-right: 4px;
 }
 
+/* 設定バー内のchipは選択時のみ青 */
+.vd2-settings-bar .chip-label input[type="radio"]:checked + .chip-text {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
 /* チップボタン（設定バー & セクション共通） */
 .vd2-chip-group {
   display: flex;
@@ -1083,17 +1091,16 @@ select.form-control option {
   margin-top: 8px;
   padding: 6px 14px;
   font-size: 12px;
-  font-weight: 500;
-  background: #fff;
-  border: 1px dashed #e0e3e8;
-  color: #636b78;
+  font-weight: 600;
+  background: #eff6ff;
+  border: 2px solid #2563eb;
+  color: #2563eb;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.15s;
 }
 .vd2-btn-add-row:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  background: rgba(37, 99, 235, 0.12);
 }
 .vd2-btn-add-branch {
   display: flex;
@@ -1103,19 +1110,17 @@ select.form-control option {
   width: 100%;
   padding: 14px;
   font-size: 14px;
-  font-weight: 500;
-  background: #fff;
-  border: 2px dashed #e0e3e8;
-  color: #636b78;
+  font-weight: 600;
+  background: #eff6ff;
+  border: 2px solid #2563eb;
+  color: #2563eb;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: 16px;
 }
 .vd2-btn-add-branch:hover {
-  border-color: #d97706;
-  color: #d97706;
-  background: rgba(217, 119, 6, 0.08);
+  background: #dbeafe;
 }
 
 /* 小計行 */
@@ -1358,19 +1363,17 @@ select.form-control option {
   width: 100%;
   padding: 12px;
   font-size: 14px;
-  font-weight: 500;
-  background: #fff;
-  border: 2px dashed #e0e3e8;
-  color: #636b78;
+  font-weight: 600;
+  background: #eff6ff;
+  border: 2px solid #2563eb;
+  color: #2563eb;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
   margin-top: 12px;
 }
 .add-load-btn:hover {
-  border-color: #2563eb;
-  color: #2563eb;
-  background: rgba(37, 99, 235, 0.04);
+  background: rgba(37, 99, 235, 0.12);
 }
 
 /* 負荷リスト */

@@ -33,15 +33,11 @@ export default function Home() {
               />
             </Link>
           </div>
-        </div>
-        <div className={styles.heroImage}>
-          <Image
-            src="/image/hero.png"
-            alt="電気設備イラスト"
-            width={760}
-            height={600}
-            priority
-          />
+          {/* BOOKMARK + DISCLAIMER */}
+          <div className={styles.bookmarkSection}>
+            <p className={styles.bookmarkText}>🔖 次回もすぐ開けるよう、ブックマーク登録をおすすめします。</p>
+            <p className={styles.disclaimerEmphasis}>⚠️ <strong>本ツールの計算結果は参考値です。</strong> 実務では最新の規格・基準を必ずご確認ください。</p>
+          </div>
         </div>
       </div>
 
@@ -120,9 +116,6 @@ export default function Home() {
           <Link href="/legal/terms">利用規約</Link>
         </nav>
 
-        <p className={styles.disclaimer}>
-          本ツールの計算結果は参考値です。実務では最新の規格・基準をご確認ください。
-        </p>
       </div>
     </div>
   );
