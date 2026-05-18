@@ -45,13 +45,12 @@ export default function Home() {
       <div className={styles.cardsGrid}>
         {/* 01 許容電流表 */}
         <Link className={styles.card} href="/allowable_current">
-          <div className={`${styles.cardHead} ${styles.red}`}>
-            <span className={styles.cardNum}>01</span>
+          <div className={`${styles.cardHead} ${styles.navy}`}>
             <span className={styles.cardTitle}>許容電流表</span>
           </div>
           <div className={styles.cardIcon}>
             <Image
-              src="/image/許容電流表_調整済み.png"
+              src="/image/allowable_current.png"
               alt="許容電流表"
               width={240}
               height={200}
@@ -59,31 +58,44 @@ export default function Home() {
           </div>
         </Link>
 
-        {/* 02 電圧降下計算 */}
-        <Link className={styles.card} href="/voltage_drop_v2">
-          <div className={`${styles.cardHead} ${styles.navy}`}>
-            <span className={styles.cardNum}>02</span>
-            <span className={styles.cardTitle}>電圧降下計算</span>
+        {/* 02 ブレーカー選定 */}
+        <Link className={styles.card} href="/breaker">
+          <div className={`${styles.cardHead} ${styles.red}`}>
+            <span className={styles.cardTitle}>ブレーカー選定</span>
           </div>
           <div className={styles.cardIcon}>
             <Image
-              src="/image/電圧降下計算_調整済み.png"
-              alt="電圧降下計算"
+              src="/image/breaker.png"
+              alt="ブレーカー選定"
               width={240}
               height={200}
             />
           </div>
         </Link>
 
-        {/* 03 配管サイズ計算 */}
+        {/* 03 集合住宅幹線設計 */}
+        <Link className={styles.card} href="/apartment_main">
+          <div className={`${styles.cardHead} ${styles.red}`}>
+            <span className={styles.cardTitle}>集合住宅幹線設計</span>
+          </div>
+          <div className={styles.cardIcon}>
+            <Image
+              src="/image/apartment_main.png"
+              alt="集合住宅幹線設計"
+              width={240}
+              height={200}
+            />
+          </div>
+        </Link>
+
+        {/* 04 配管サイズ計算 */}
         <Link className={styles.card} href="/pipe_size">
           <div className={`${styles.cardHead} ${styles.yellow}`}>
-            <span className={styles.cardNum}>03</span>
             <span className={styles.cardTitle}>配管サイズ計算</span>
           </div>
           <div className={styles.cardIcon}>
             <Image
-              src="/image/配管サイズ計算_調整済み.png"
+              src="/image/pipe_size.png"
               alt="配管サイズ計算"
               width={240}
               height={200}
@@ -91,16 +103,15 @@ export default function Home() {
           </div>
         </Link>
 
-        {/* 04 ブレーカー選定 */}
-        <Link className={styles.card} href="/breaker">
-          <div className={`${styles.cardHead} ${styles.red}`}>
-            <span className={styles.cardNum}>04</span>
-            <span className={styles.cardTitle}>ブレーカー選定</span>
+        {/* 05 電圧降下計算 */}
+        <Link className={styles.card} href="/voltage_drop_v2">
+          <div className={`${styles.cardHead} ${styles.navy}`}>
+            <span className={styles.cardTitle}>電圧降下計算</span>
           </div>
           <div className={styles.cardIcon}>
             <Image
-              src="/image/ブレーカー選定_調整済み.png"
-              alt="ブレーカー選定"
+              src="/image/voltage_drop.png"
+              alt="電圧降下計算"
               width={240}
               height={200}
             />
