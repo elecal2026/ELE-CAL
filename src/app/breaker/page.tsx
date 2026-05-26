@@ -18,7 +18,7 @@ function createLoad(): LoadEntry {
     powerKw: '',
     startMethod: 'direct',
     usageRate: '50',
-    wiring: { wireType: '', wireSize: '', wireLength: '' },
+    wiring: { wireType: '', wireSize: '', wireLength: '0' },
   }
 }
 

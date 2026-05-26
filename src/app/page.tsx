@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import SiteHeader from '@/components/SiteHeader';
+import FeedbackThanksToast from '@/components/FeedbackThanksToast';
 import styles from './page.module.css';
 
 export default function Home() {
   return (
     <div className={styles.page}>
+      <FeedbackThanksToast />
       <SiteHeader mode="top" />
 
       {/* HERO */}
@@ -33,10 +35,9 @@ export default function Home() {
               />
             </Link>
           </div>
-          {/* BOOKMARK + DISCLAIMER */}
+          {/* DISCLAIMER */}
           <div className={styles.bookmarkSection}>
-            <p className={styles.bookmarkText}>🔖 次回もすぐ開けるよう、ブックマーク登録をおすすめします。</p>
-            <p className={styles.disclaimerEmphasis}>⚠️ <strong>本ツールの計算結果は参考値です。</strong> 実務では最新の規格・基準を必ずご確認ください。</p>
+            <p className={styles.disclaimerEmphasis}>⚠️ 本ツールは、「内線規程 第14版 JEAC8001-2022」を参考資料の一つとして計算しております。計算結果は目安としてご利用いただき、最終的なご判断は、実際の条件をご確認のうえお客様にてお願いいたします。</p>
           </div>
         </div>
       </div>

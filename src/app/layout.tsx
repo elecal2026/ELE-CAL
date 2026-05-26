@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Barlow, Noto_Sans_JP } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
@@ -48,6 +48,13 @@ export const metadata: Metadata = {
     icon: '/ELE-CAL.png',
     apple: '/ELE-CAL.png',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
 }
 
 export default async function RootLayout({
