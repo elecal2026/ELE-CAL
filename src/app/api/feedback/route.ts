@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     const user = userId ? await currentUser() : null
     const fromEmail = user?.emailAddresses?.[0]?.emailAddress ?? '(匿名)'
     const fromName = user?.fullName || user?.firstName || ''
-    void notifyAdmins({
+    await notifyAdmins({
       subject: `[ELE-CAL] 新しい${CATEGORY_LABEL[inserted.category]}が届きました`,
       text: [
         `投稿者: ${fromName} <${fromEmail}>`,
