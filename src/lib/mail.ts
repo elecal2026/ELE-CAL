@@ -40,13 +40,15 @@ export async function notifyAdmins(opts: {
     console.warn('[mail] ADMIN_EMAILS 未設定。通知スキップ')
     return
   }
+  console.log('[mail] 送信開始 to:', admins.join(','))
   try {
-    await getTransporter().sendMail({
+    const result = await getTransporter().sendMail({
       from: process.env.GMAIL_USER,
       to: admins.join(','),
       subject: opts.subject,
       text: opts.text,
     })
+    console.log('[mail] 送信完了 messageId:', result.messageId, 'response:', result.response)
   } catch (err) {
     console.error('[mail] 通知送信失敗:', err)
   }
