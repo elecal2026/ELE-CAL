@@ -44,3 +44,25 @@ export async function notifyAdmins(opts: {
     console.error('[mail] 通知送信失敗:', err)
   }
 }
+
+/** ユーザー1名にメール送信。失敗してもエラーは throw せずログのみ */
+export async function sendToUser(opts: {
+  to: string
+  subject: string
+  text: string
+}): Promise<void> {
+  if (!isMailConfigured()) {
+    console.warn('[mail] GMAIL_USER / GMAIL_APP_PASSWORD 未設定。通知スキップ')
+    return
+  }
+  try {
+    await getTransporter().sendMail({
+      from: `ELE-CAL <${process.env.GMAIL_USER}>`,
+      to: opts.to,
+      subject: opts.subject,
+      text: opts.text,
+    })
+  } catch (err) {
+    console.error('[mail] ユーザー通知送信失敗:', err)
+  }
+}

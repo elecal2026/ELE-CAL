@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getStripe, isStripeConfigured } from '@/lib/stripe'
 import { updateSubscriptionByCustomerId, isDbConfigured } from '@/lib/db'
+import { sendToUser } from '@/lib/mail'
 
 export async function POST(request: NextRequest) {
   if (!isStripeConfigured() || !isDbConfigured()) {
@@ -45,6 +46,44 @@ export async function POST(request: NextRequest) {
             ? new Date(subAny.current_period_end * 1000)
             : new Date(),
         })
+
+        if (event.type === 'customer.subscription.created') {
+          const customer = await stripe.customers.retrieve(subscription.customer as string)
+          const email = !customer.deleted && (customer as Stripe.Customer).email
+          if (email) {
+            const isTrial = subscription.status === 'trialing'
+            await sendToUser({
+              to: email,
+              subject: isTrial
+                ? '【ELE-CAL】トライアル期間が開始しました'
+                : '【ELE-CAL】プロプランのご登録ありがとうございます',
+              text: isTrial
+                ? `ELE-CAL プロプランのトライアルが開始しました。
+
+トライアル期間中は、電圧降下計算・ブレーカー選定などの全機能をお試しいただけます。
+
+▼ アプリを開く
+https://ele-cal.com
+
+トライアル終了後は自動的に月額500円（税込）のプロプランに移行します。
+解約はいつでもアカウントページから行えます。
+https://ele-cal.com/account
+
+ELE-CAL サポートチーム`
+                : `ELE-CAL プロプランにご登録いただきありがとうございます。
+
+電圧降下計算・ブレーカー選定などの全機能がご利用いただけます。
+
+▼ アプリを開く
+https://ele-cal.com
+
+解約はいつでもアカウントページから行えます。
+https://ele-cal.com/account
+
+ELE-CAL サポートチーム`,
+            })
+          }
+        }
         break
       }
 
