@@ -1,8 +1,9 @@
-import { notFound } from 'next/navigation'
-import { isCurrentUserAdmin } from '@/lib/admin'
+import { notFound, redirect } from 'next/navigation'
+import { currentUser } from '@clerk/nextjs/server'
+import { getAdminEmails } from '@/lib/admin'
 
 // 管理者メアド（ADMIN_EMAILS）でログインしている時のみ /admin 配下を表示。
-// それ以外は存在を隠すため 404 を返す。
+// 未ログイン → /sign-in にリダイレクト。非管理者 → 404（存在を隠す）。
 export const dynamic = 'force-dynamic'
 
 export default async function AdminLayout({
@@ -10,7 +11,16 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const allowed = await isCurrentUserAdmin()
-  if (!allowed) notFound()
+  const admins = getAdminEmails()
+  if (admins.length === 0) notFound()
+
+  const user = await currentUser()
+  if (!user) redirect('/sign-in?redirect_url=/admin/feedback')
+
+  const isAdmin = user.emailAddresses.some((e) =>
+    admins.includes(e.emailAddress.toLowerCase())
+  )
+  if (!isAdmin) notFound()
+
   return <>{children}</>
 }
