@@ -1,12 +1,5 @@
 import nodemailer from 'nodemailer'
-
-/** ADMIN_EMAILS 環境変数からカンマ区切りで管理者メアド配列を返す */
-export function getAdminEmails(): string[] {
-  return (process.env.ADMIN_EMAILS ?? '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
-}
+import { getAdminEmails } from './admin'
 
 function isMailConfigured(): boolean {
   return !!process.env.GMAIL_USER && !!process.env.GMAIL_APP_PASSWORD

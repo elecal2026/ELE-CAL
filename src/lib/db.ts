@@ -91,12 +91,16 @@ export async function updateSubscriptionByCustomerId(data: {
 
 export type FeedbackCategory = 'feature' | 'bug' | 'improvement'
 
+/** 対応状況: open=新着（未対応） / done=完了済 */
+export type FeedbackStatus = 'open' | 'done'
+
 export interface FeedbackRequestRow {
   id: number
   clerk_user_id: string
   category: FeedbackCategory
   body: string
   image_url: string | null
+  status: FeedbackStatus
   created_at: string
   updated_at: string
 }
@@ -185,6 +189,21 @@ export async function getFeedbackRequest(
   const query = sql()
   const rows = await query`
     SELECT * FROM feedback_requests WHERE id = ${id} LIMIT 1
+  `
+  return (rows[0] as FeedbackRequestRow) ?? null
+}
+
+/** 対応状況を更新（管理者用） */
+export async function updateFeedbackStatus(
+  id: number,
+  status: FeedbackStatus
+): Promise<FeedbackRequestRow | null> {
+  const query = sql()
+  const rows = await query`
+    UPDATE feedback_requests
+    SET status = ${status}, updated_at = NOW()
+    WHERE id = ${id}
+    RETURNING *
   `
   return (rows[0] as FeedbackRequestRow) ?? null
 }

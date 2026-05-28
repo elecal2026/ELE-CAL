@@ -38,6 +38,34 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {/* 問い合わせ管理（最重要・最上部） */}
+      <div style={{ maxWidth: '700px', margin: '0 auto', padding: '1rem 1rem 0' }}>
+        <Link
+          href="/admin/feedback"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.7rem',
+            padding: '1rem 1.2rem',
+            background: 'var(--accent)',
+            color: '#fff',
+            borderRadius: '12px',
+            textDecoration: 'none',
+            fontWeight: 700,
+            fontSize: '1rem',
+          }}
+        >
+          <span style={{ fontSize: '1.4rem' }} aria-hidden>📨</span>
+          <span style={{ flex: 1 }}>
+            問い合わせ管理
+            <span style={{ display: 'block', fontSize: '0.78rem', fontWeight: 500, opacity: 0.85, marginTop: '0.15rem' }}>
+              要望・バグ報告の確認と対応状況の管理
+            </span>
+          </span>
+          <span aria-hidden>→</span>
+        </Link>
+      </div>
+
       {/* 各ツール詳細情報 / 変更修正履歴 */}
       <div style={{ maxWidth: '700px', margin: '0 auto', padding: '1rem 1rem 0', display: 'flex', flexDirection: 'row', gap: '0.6rem' }}>
         <Link
