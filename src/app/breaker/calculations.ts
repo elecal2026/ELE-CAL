@@ -78,18 +78,15 @@ export function selectBreakerRating(current: number): number | null {
 export function selectMotorBreaker(
   kw: number,
   startMethod: StartMethod
-): { breaker: number; motorBreaker: number } | null {
+): { breaker: number } | null {
   const row = lookupMotorSingle(kw)
   if (!row) return null
 
   const breaker = startMethod === 'starDelta' && row.breakerStarDelta
     ? row.breakerStarDelta
     : row.breakerDirect
-  const motorBreaker = startMethod === 'starDelta' && row.motorBreakerStarDelta
-    ? row.motorBreakerStarDelta
-    : row.motorBreakerDirect
 
-  return { breaker, motorBreaker }
+  return { breaker }
 }
 
 /**

@@ -27,8 +27,6 @@ export interface MotorTableRow {
   insulator: { minWire: string; maxLength: number }
   breakerDirect: number
   breakerStarDelta: number | null
-  motorBreakerDirect: number
-  motorBreakerStarDelta: number | null
   groundWire: string
 }
 

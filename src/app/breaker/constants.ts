@@ -12,7 +12,11 @@ export const WIRE_SIZES = [
 
 // ========================================
 // 3705-1表: 200V三相誘導電動機1台の場合
-// (内線規程 p.706-707 より)
+// (内線規程 JEAC8001-2022 3705-1表＋分岐回路表 / PDF p796-797 より)
+// breakerDirect/breakerStarDelta/groundWire は分岐回路表(p797)準拠。
+// 0.2/0.4kW は同表に記載がなく、最小定格15A・接地線1.6mm を準用。
+// ※旧版コードは breaker 値・接地線にズレがあり 2026-05-27 照合レポートで正本準拠に全面修正。
+//   削除した motorBreakerDirect/motorBreakerStarDelta(出典不明・未使用)の旧値は照合レポートに記録。
 // ========================================
 export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
   {
@@ -20,8 +24,7 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '2mm²', maxLength: 144 },
     conduitVV: { minWire: '1.6mm', maxLength: 144 },
     insulator: { minWire: '1.6mm', maxLength: 144 },
-    breakerDirect: 15, breakerStarDelta: null,
-    motorBreakerDirect: 5, motorBreakerStarDelta: null,
+    breakerDirect: 15, breakerStarDelta: null, // 分岐回路表に記載なし→15A準用
     groundWire: '1.6mm',
   },
   {
@@ -29,8 +32,7 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '2mm²', maxLength: 81 },
     conduitVV: { minWire: '1.6mm', maxLength: 81 },
     insulator: { minWire: '1.6mm', maxLength: 81 },
-    breakerDirect: 15, breakerStarDelta: null,
-    motorBreakerDirect: 5, motorBreakerStarDelta: null,
+    breakerDirect: 15, breakerStarDelta: null, // 分岐回路表に記載なし→15A準用
     groundWire: '1.6mm',
   },
   {
@@ -39,7 +41,6 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     conduitVV: { minWire: '1.6mm', maxLength: 56 },
     insulator: { minWire: '1.6mm', maxLength: 56 },
     breakerDirect: 15, breakerStarDelta: null,
-    motorBreakerDirect: 10, motorBreakerStarDelta: null,
     groundWire: '1.6mm',
   },
   {
@@ -47,8 +48,7 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '2mm²', maxLength: 32 },
     conduitVV: { minWire: '1.6mm', maxLength: 32 },
     insulator: { minWire: '1.6mm', maxLength: 56 },
-    breakerDirect: 15, breakerStarDelta: null,
-    motorBreakerDirect: 10, motorBreakerStarDelta: 15,
+    breakerDirect: 20, breakerStarDelta: null,
     groundWire: '1.6mm',
   },
   {
@@ -56,27 +56,24 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '2mm²', maxLength: 23 },
     conduitVV: { minWire: '1.6mm', maxLength: 23 },
     insulator: { minWire: '1.6mm', maxLength: 23 },
-    breakerDirect: 30, breakerStarDelta: 15,
-    motorBreakerDirect: 15, motorBreakerStarDelta: 20,
-    groundWire: '2.0mm',
+    breakerDirect: 30, breakerStarDelta: null,
+    groundWire: '1.6mm',
   },
   {
     kw: 3.7, fullLoadCurrent: 16.8,
     cv: { minWire: '2mm²', maxLength: 15 },
     conduitVV: { minWire: '2.0mm', maxLength: 15 },
     insulator: { minWire: '2.0mm', maxLength: 15 },
-    breakerDirect: 40, breakerStarDelta: 30,
-    motorBreakerDirect: 30, motorBreakerStarDelta: 30,
-    groundWire: '5.5mm²',
+    breakerDirect: 40, breakerStarDelta: null,
+    groundWire: '2.0mm',
   },
   {
     kw: 5.5, fullLoadCurrent: 24.6,
     cv: { minWire: '3.5mm²', maxLength: 18 },
     conduitVV: { minWire: '5.5mm²', maxLength: 18 },
     insulator: { minWire: '2.0mm', maxLength: 18 },
-    breakerDirect: 75, breakerStarDelta: 60,
-    motorBreakerDirect: 30, motorBreakerStarDelta: 40,
-    groundWire: '8mm²',
+    breakerDirect: 50, breakerStarDelta: 30,
+    groundWire: '2.0mm',
   },
   {
     kw: 7.5, fullLoadCurrent: 34,
@@ -84,8 +81,7 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     conduitVV: { minWire: '5.5mm²', maxLength: 14 },
     insulator: { minWire: '8mm²', maxLength: 14 },
     breakerDirect: 75, breakerStarDelta: 60,
-    motorBreakerDirect: 60, motorBreakerStarDelta: 60,
-    groundWire: '8mm²',
+    groundWire: '5.5mm²',
   },
   {
     kw: 11, fullLoadCurrent: 48,
@@ -93,7 +89,6 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     conduitVV: { minWire: '8mm²', maxLength: 14 },
     insulator: { minWire: '8mm²', maxLength: 14 },
     breakerDirect: 100, breakerStarDelta: 75,
-    motorBreakerDirect: 60, motorBreakerStarDelta: 60,
     groundWire: '8mm²',
   },
   {
@@ -102,16 +97,14 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     conduitVV: { minWire: '14mm²', maxLength: 22 },
     insulator: { minWire: '14mm²', maxLength: 22 },
     breakerDirect: 125, breakerStarDelta: 100,
-    motorBreakerDirect: 100, motorBreakerStarDelta: 100,
-    groundWire: '14mm²',
+    groundWire: '8mm²',
   },
   {
     kw: 18.5, fullLoadCurrent: 79,
     cv: { minWire: '22mm²', maxLength: 36 },
     conduitVV: { minWire: '22mm²', maxLength: 38 },
     insulator: { minWire: '22mm²', maxLength: 38 },
-    breakerDirect: 150, breakerStarDelta: 100,
-    motorBreakerDirect: 100, motorBreakerStarDelta: 100,
+    breakerDirect: 125, breakerStarDelta: 125,
     groundWire: '14mm²',
   },
   {
@@ -119,27 +112,24 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '22mm²', maxLength: 31 },
     conduitVV: { minWire: '22mm²', maxLength: 38 },
     insulator: { minWire: '22mm²', maxLength: 38 },
-    breakerDirect: 175, breakerStarDelta: 150,
-    motorBreakerDirect: 150, motorBreakerStarDelta: 150,
-    groundWire: '22mm²',
+    breakerDirect: 150, breakerStarDelta: 125,
+    groundWire: '14mm²',
   },
   {
     kw: 30, fullLoadCurrent: 124,
     cv: { minWire: '38mm²', maxLength: 40 },
     conduitVV: { minWire: '38mm²', maxLength: 60 },
     insulator: { minWire: '38mm²', maxLength: 60 },
-    breakerDirect: 225, breakerStarDelta: 200,
-    motorBreakerDirect: 200, motorBreakerStarDelta: 200,
-    groundWire: '22mm²',
+    breakerDirect: 175, breakerStarDelta: 150,
+    groundWire: '14mm²',
   },
   {
     kw: 37, fullLoadCurrent: 152,
     cv: { minWire: '60mm²', maxLength: 51 },
     conduitVV: { minWire: '60mm²', maxLength: 100 },
     insulator: { minWire: '60mm²', maxLength: 100 },
-    breakerDirect: 300, breakerStarDelta: 250,
-    motorBreakerDirect: 200, motorBreakerStarDelta: 200,
-    groundWire: '22mm²',
+    breakerDirect: 200, breakerStarDelta: 175,
+    groundWire: '14mm²',
   },
 ]
 
