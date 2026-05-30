@@ -42,11 +42,37 @@ const notoSansJP = Noto_Sans_JP({
 })
 
 export const metadata: Metadata = {
-  title: 'ELE-CAL | 電気工事 計算・参照ツール',
-  description: '電気工事 計算・参照ツール',
+  metadataBase: new URL('https://ele-cal.com'),
+  title: {
+    default: 'ELE-CAL | 電気工事士・電気工事店向け計算ツール',
+    template: '%s | ELE-CAL',
+  },
+  description:
+    'ELE-CALは、電気工事士・電気工事店向けに、許容電流表・電圧降下計算・配管サイズ計算・ブレーカー選定・集合住宅幹線設計をブラウザで確認できる電気工事計算・参照ツールです。内線規程 第14版 JEAC8001-2022などを参考資料の一つとして、現場確認・見積・設計検討の目安作りを支援します。',
+  applicationName: 'ELE-CAL',
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: '/ELE-CAL.png',
     apple: '/ELE-CAL.png',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'ELE-CAL',
+    url: 'https://ele-cal.com',
+    title: 'ELE-CAL | 電気工事士・電気工事店向け計算ツール',
+    description:
+      '許容電流表・電圧降下計算・配管サイズ計算・ブレーカー選定・集合住宅幹線設計をブラウザで確認できる電気工事計算ツールです。',
+    images: ['/ELE-CAL.png'],
+    locale: 'ja_JP',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'ELE-CAL | 電気工事士・電気工事店向け計算ツール',
+    description:
+      '許容電流・電圧降下・配管サイズ・ブレーカー・集合住宅幹線設計をブラウザで確認できる電気工事計算ツール。',
+    images: ['/ELE-CAL.png'],
   },
 }
 
