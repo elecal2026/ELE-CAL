@@ -248,31 +248,76 @@
   line-height: 1.6;
 }
 
-/* ── レスポンシブ ── */
+/* ==========================================
+   レスポンシブ
+   ブレークポイント基準: 540 / 425 / 320px（+タブレット900px）
+   ========================================== */
+
+/* ── タブレット: 5列→3列 ── */
 @media (max-width: 900px) {
   .page {
-    padding: 16px 16px 16px;
-  }
-
-  .hero {
-    grid-template-columns: 1fr;
+    padding: 16px 16px;
   }
 
   .cardsGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .heroCopy h1 {
     font-size: 28px;
   }
+}
+
+/* ── スマホ（大）540px以下: 2列 ── */
+@media (max-width: 540px) {
+  .cardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .card {
+    padding: 12px 12px 10px;
+  }
+
+  .cardTitle {
+    font-size: 18px;
+  }
+
+  .cardIcon img {
+    max-height: 120px;
+  }
 
   .qaBannerArea {
-    flex-direction: column;
+    max-width: 100%;
   }
 }
 
-@media (max-width: 480px) {
+/* ── スマホ（中）425px以下: タイトル微調整 ── */
+@media (max-width: 425px) {
+  .heroCopy h1 {
+    font-size: 24px;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+}
+
+/* ── スマホ（小）320px帯: さらに詰める ── */
+@media (max-width: 360px) {
   .cardsGrid {
-    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .card {
+    padding: 10px 10px 8px;
+  }
+
+  .cardTitle {
+    font-size: 15px;
+  }
+
+  .cardIcon img {
+    max-height: 96px;
   }
 }

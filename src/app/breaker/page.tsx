@@ -38,7 +38,7 @@ function ChipGroup<T extends string>({
   disabledValues?: T[]
 }) {
   return (
-    <div className="chips-group" style={{ flexWrap: 'nowrap' }}>
+    <div className="chips-group">
       {options.map((opt) => {
         const isDisabled = disabledValues.includes(opt.value)
         return (
@@ -122,7 +122,7 @@ export default function BreakerPage() {
       <SiteHeader mode="sub" title="ブレーカー選定" />
 
       {/* ========== 設定バー ========== */}
-      <div className="breaker-settings-bar vd2-settings-bar" style={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
+      <div className="breaker-settings-bar vd2-settings-bar">
         <div className="breaker-setting-group vd2-setting-group">
           <span className="breaker-setting-label vd2-setting-label">配電方式</span>
           <ChipGroup

@@ -54,6 +54,15 @@
   --shadow: 0 4px 12px rgba(28, 43, 74, 0.08), 0 2px 4px rgba(28, 43, 74, 0.04);
   --shadow-hover: 0 8px 20px rgba(28, 43, 74, 0.10), 0 4px 8px rgba(28, 43, 74, 0.06);
   --font-size-base: 16px;
+
+  /* === セグメント選択UIのアクセント色（テーマ統一用） ===
+     旧デザインの青(var(--seg-active))を一元管理。値を切り替えるだけで
+     設定バー・チップ・テーブル等の選択色が一括で変わる。
+     赤統一   → var(--red)   #C8281E
+     ネイビー → var(--navy)  #1C2B4A */
+  --seg-active: var(--navy);
+  /* 半透明の薄塗り・影用（--seg-active と色相を合わせる） */
+  --seg-active-rgb: 28, 43, 74; /* #1C2B4A。赤に戻すなら 200, 40, 30 */
 }
 
 html {
@@ -465,6 +474,7 @@ select.form-control option {
   font-weight: 600;
   transition: all 0.2s ease;
   user-select: none;
+  white-space: nowrap;
 }
 
 .chip-label input[type="radio"]:checked+.chip-text,
@@ -499,12 +509,12 @@ select.form-control option {
 /* ==========================================
    voltage_drop 固有スタイル
    ========================================== */
-.formula-box { background: #F8F6F6; border: 1.5px solid #e2e0e0; border-left: 4px solid #2A363B; border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-secondary); }
-.formula-box .formula { font-family: 'Courier New', monospace; color: #CF4647; font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+.formula-box { background: #F8F6F6; border: 1.5px solid #e2e0e0; border-left: 4px solid var(--navy); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-secondary); }
+.formula-box .formula { font-family: 'Courier New', monospace; color: var(--accent); font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
 .rxz-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
 .rxz-badge { flex: 1; min-width: 80px; background: #fdeaea; border: 1.5px solid #f5b3b3; border-radius: var(--radius-sm); padding: 0.45rem 0.6rem; text-align: center; }
 .rxz-badge .rxz-label { font-size: 0.7rem; color: #6b7a83; display: block; }
-.rxz-badge .rxz-val { font-size: 1rem; font-weight: 700; color: #CF4647; }
+.rxz-badge .rxz-val { font-size: 1rem; font-weight: 700; color: var(--accent); }
 .vd-display { font-size: 2.8rem; font-weight: 800; color: var(--accent); }
 .rate-display { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
 .allowance-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 0.75rem; }
@@ -524,7 +534,7 @@ select.form-control option {
 .qty-control { display: flex; align-items: center; gap: 0; border: 1.5px solid #cbd5e0; border-radius: var(--radius-sm); overflow: hidden; height: 44px; }
 .qty-control button { background: #f0f4f8; border: none; width: 36px; height: 100%; font-size: 1.2rem; font-weight: 700; cursor: pointer; color: #4a5568; flex-shrink: 0; }
 .qty-control button:hover { background: #e2e8f0; }
-.qty-control input { border: none; outline: none; width: 48px; text-align: center; font-size: 1rem; font-weight: 700; color: #2A363B; background: #fff; height: 100%; }
+.qty-control input { border: none; outline: none; width: 48px; text-align: center; font-size: 1rem; font-weight: 700; color: var(--navy); background: #fff; height: 100%; }
 .btn-add { width: 100%; background: #fff0f0; border: 2px solid var(--accent); color: var(--accent); border-radius: var(--radius-sm); padding: 0.7rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; transition: background 0.15s; }
 .btn-add:hover { background: rgba(207, 70, 71, 0.12); }
 .total-area-box { display: flex; justify-content: space-between; align-items: center; background: #fdf5f5; border: 1.5px solid var(--accent); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
@@ -532,8 +542,8 @@ select.form-control option {
 .total-area-box .value { color: var(--accent); font-size: 1.5rem; font-weight: 800; }
 .pipe-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
 .pipe-table th { background: #f0f4f8; color: #4a5568; padding: 0.55rem 0.7rem; text-align: left; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; border-bottom: 2px solid #e2e8f0; }
-.pipe-table td { padding: 0.6rem 0.7rem; border-bottom: 1px solid #e2e8f0; vertical-align: middle; color: #2A363B; }
-.pipe-table td.size-val { font-weight: 800; color: #CF4647; text-align: center; font-size: 1rem; }
+.pipe-table td { padding: 0.6rem 0.7rem; border-bottom: 1px solid #e2e8f0; vertical-align: middle; color: var(--navy); }
+.pipe-table td.size-val { font-weight: 800; color: var(--accent); text-align: center; font-size: 1rem; }
 .pipe-table td.no-size { color: #a0aec0; text-align: center; font-size: 0.8rem; }
 .pipe-table td.pipe-name { color: #4a5568; font-size: 0.82rem; }
 .corr-note { font-size: 0.75rem; color: #718096; background: #fffff0; border: 1px solid #fefcbf; border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; margin-top: 0.5rem; display: none; }
@@ -621,26 +631,26 @@ select.form-control option {
 .result-breaker { font-size: 3.2rem; font-weight: 800; color: var(--accent); line-height: 1.1; }
 .result-breaker-unit { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); }
 .result-sub { margin-top: 0.75rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-.result-badge { background: #e8f1fb; border: 1.5px solid #b3d0f5; border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; text-align: center; min-width: 100px; }
+.result-badge { background: var(--accent-light); border: 1.5px solid #f5b3b3; border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; text-align: center; min-width: 100px; }
 .result-badge .rb-label { font-size: 0.7rem; color: #718096; display: block; margin-bottom: 0.15rem; }
-.result-badge .rb-val { font-size: 1.1rem; font-weight: 700; color: #CF4647; }
-.pole-recommend { margin-top: 1rem; background: #f0f7ff; border: 1.5px solid #b3d0f5; border-radius: var(--radius-sm); padding: 0.75rem 1rem; text-align: center; }
+.result-badge .rb-val { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+.pole-recommend { margin-top: 1rem; background: var(--accent-light); border: 1.5px solid #f5b3b3; border-radius: var(--radius-sm); padding: 0.75rem 1rem; text-align: center; }
 .pole-recommend .pole-title { font-size: 0.78rem; color: #718096; margin-bottom: 0.3rem; }
-.pole-recommend .pole-value { font-size: 1.4rem; font-weight: 800; color: #CF4647; }
+.pole-recommend .pole-value { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
 .pole-recommend .pole-desc { font-size: 0.78rem; color: #4a5568; margin-top: 0.2rem; }
 .tip-box { background: #fffbeb; border: 1.5px solid #f6e05e; border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-top: 1rem; font-size: 0.82rem; color: #744210; line-height: 1.6; }
 .tip-box strong { color: #975a16; }
 .breaker-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 0.5rem; }
 .breaker-table th { background: #f0f4f8; color: #4a5568; padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; }
 .breaker-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid #e2e8f0; text-align: center; color: var(--text-primary); }
-.breaker-table tr.highlight td { background: #fdeaea; font-weight: 700; color: #CF4647; }
+.breaker-table tr.highlight td { background: #fdeaea; font-weight: 700; color: var(--accent); }
 
 /* ==========================================
    トップページ固有スタイル
    ========================================== */
 .top-header {
-  background: #2A363B;
-  border-bottom: 4px solid #CF4647;
+  background: var(--navy);
+  border-bottom: 4px solid var(--accent);
   padding: 2rem 1.25rem 1.75rem;
   text-align: center;
   position: relative;
@@ -696,7 +706,7 @@ select.form-control option {
 }
 
 .menu-card:hover {
-  border-color: #CF4647;
+  border-color: var(--accent);
   box-shadow: 0 6px 20px rgba(207, 70, 71, 0.18);
   transform: translateY(-3px);
 }
@@ -720,7 +730,7 @@ select.form-control option {
 .menu-card .card-name {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #2A363B;
+  color: var(--navy);
   text-align: center;
   line-height: 1.35;
 }
@@ -833,10 +843,10 @@ select.form-control option {
 
 /* 設定バー内のchipは選択時のみ青 */
 .vd2-settings-bar .chip-label input[type="radio"]:checked + .chip-text {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: var(--seg-active);
+  border-color: var(--seg-active);
   color: #fff;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 2px 6px rgba(var(--seg-active-rgb),0.3);
 }
 
 /* チップボタン（設定バー & セクション共通） */
@@ -847,7 +857,7 @@ select.form-control option {
   align-items: center;
 }
 .vd2-chip {
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
   padding: 5px 14px;
   border: 1px solid #e0e3e8;
@@ -860,29 +870,29 @@ select.form-control option {
   user-select: none;
 }
 .vd2-chip:hover {
-  border-color: #2563eb;
-  color: #2563eb;
-  background: rgba(37, 99, 235, 0.08);
+  border-color: var(--seg-active);
+  color: var(--seg-active);
+  background: rgba(var(--seg-active-rgb),0.08);
 }
 .vd2-chip.active {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: var(--seg-active);
+  border-color: var(--seg-active);
   color: #fff;
   font-weight: 600;
 }
 .vd2-chip-custom {
   width: 72px;
   padding: 4px 8px;
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
   background: #fff;
   color: #1a1f2b;
-  border: 1px solid rgba(37, 99, 235, 0.35);
+  border: 1px solid rgba(var(--seg-active-rgb),0.35);
   border-radius: 12px;
   outline: none;
 }
 .vd2-chip-custom:focus {
-  border-color: #2563eb;
+  border-color: var(--seg-active);
 }
 
 /* 2カラムレイアウト */
@@ -962,8 +972,8 @@ select.form-control option {
   font-weight: 500;
   padding: 2px 8px;
   border-radius: 10px;
-  background: rgba(37, 99, 235, 0.08);
-  color: #2563eb;
+  background: rgba(var(--seg-active-rgb),0.08);
+  color: var(--seg-active);
 }
 .vd2-badge.branch {
   background: rgba(217, 119, 6, 0.08);
@@ -1021,7 +1031,7 @@ select.form-control option {
   border-bottom: 1px solid #eceef1;
 }
 .vd2-row-num {
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
   color: #9ba3af;
   text-align: center;
@@ -1029,7 +1039,7 @@ select.form-control option {
 .vd2-distance-input {
   width: 100%;
   padding: 7px 12px;
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 14px;
   background: #fff;
   color: #1a1f2b;
@@ -1039,14 +1049,14 @@ select.form-control option {
   transition: border-color 0.15s;
 }
 .vd2-distance-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+  border-color: var(--seg-active);
+  box-shadow: 0 0 0 3px rgba(var(--seg-active-rgb),0.08);
 }
 .vd2-distance-input::placeholder {
   color: #9ba3af;
 }
 .vd2-drop-display {
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
   color: #d97706;
   white-space: nowrap;
@@ -1092,15 +1102,15 @@ select.form-control option {
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 600;
-  background: #eff6ff;
-  border: 2px solid #2563eb;
-  color: #2563eb;
+  background: var(--accent-light);
+  border: 2px solid var(--seg-active);
+  color: var(--seg-active);
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.15s;
 }
 .vd2-btn-add-row:hover {
-  background: rgba(37, 99, 235, 0.12);
+  background: rgba(var(--seg-active-rgb),0.12);
 }
 .vd2-btn-add-branch {
   display: flex;
@@ -1111,16 +1121,16 @@ select.form-control option {
   padding: 14px;
   font-size: 14px;
   font-weight: 600;
-  background: #eff6ff;
-  border: 2px solid #2563eb;
-  color: #2563eb;
+  background: var(--accent-light);
+  border: 2px solid var(--seg-active);
+  color: var(--seg-active);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: 16px;
 }
 .vd2-btn-add-branch:hover {
-  background: #dbeafe;
+  background: rgba(var(--seg-active-rgb), 0.15);
 }
 
 /* 小計行 */
@@ -1132,7 +1142,7 @@ select.form-control option {
   padding: 10px 0 2px;
   margin-top: 4px;
   border-top: 1px solid #e0e3e8;
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
 }
 .vd2-subtotal-label {
@@ -1146,7 +1156,7 @@ select.form-control option {
   font-weight: 600;
 }
 .vd2-subtotal-pct {
-  color: #2563eb;
+  color: var(--seg-active);
 }
 .vd2-subtotal-dist {
   color: #636b78;
@@ -1183,7 +1193,7 @@ select.form-control option {
   gap: 8px;
   align-items: center;
   padding: 6px 0;
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
 }
 .vd2-tree-node .name {
@@ -1200,12 +1210,12 @@ select.form-control option {
   text-align: right;
 }
 .vd2-tree-node .pct {
-  color: #2563eb;
+  color: var(--seg-active);
   text-align: right;
 }
 .vd2-tree-connector {
   color: #9ba3af;
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   display: inline-block;
   width: 20px;
   text-align: center;
@@ -1226,20 +1236,20 @@ select.form-control option {
 }
 .vd2-path-route {
   font-size: 13px;
-  color: #2563eb;
+  color: var(--seg-active);
   font-weight: 500;
   margin-bottom: 10px;
 }
 .vd2-totals {
   display: flex;
   gap: 20px;
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 15px;
   font-weight: 600;
 }
 .vd2-totals .t-dist { color: #636b78; }
 .vd2-totals .t-volt { color: #d97706; }
-.vd2-totals .t-pct  { color: #2563eb; }
+.vd2-totals .t-pct  { color: var(--seg-active); }
 
 /* 基準判定テーブル */
 .vd2-std-table {
@@ -1262,7 +1272,7 @@ select.form-control option {
 .vd2-std-table td {
   padding: 8px 10px;
   text-align: center;
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
   font-size: 12px;
   color: #9ba3af;
   border-bottom: 1px solid #eceef1;
@@ -1273,12 +1283,12 @@ select.form-control option {
   font-size: 12px;
 }
 .vd2-std-table tr.active-row td {
-  background: rgba(37, 99, 235, 0.06);
+  background: rgba(var(--seg-active-rgb),0.06);
   color: #1a1f2b;
   font-weight: 600;
 }
 .vd2-std-table tr.active-row td:first-child {
-  color: #2563eb;
+  color: var(--seg-active);
   font-weight: 700;
 }
 .vd2-std-table tr.greyed td {
@@ -1350,8 +1360,8 @@ select.form-control option {
   padding: 2px 10px;
   font-size: 12px;
   font-weight: 600;
-  background: rgba(37, 99, 235, 0.08);
-  color: #2563eb;
+  background: rgba(var(--seg-active-rgb),0.08);
+  color: var(--seg-active);
   border-radius: 10px;
 }
 
@@ -1364,16 +1374,16 @@ select.form-control option {
   padding: 12px;
   font-size: 14px;
   font-weight: 600;
-  background: #eff6ff;
-  border: 2px solid #2563eb;
-  color: #2563eb;
+  background: var(--accent-light);
+  border: 2px solid var(--seg-active);
+  color: var(--seg-active);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
   margin-top: 12px;
 }
 .add-load-btn:hover {
-  background: rgba(37, 99, 235, 0.12);
+  background: rgba(var(--seg-active-rgb),0.12);
 }
 
 /* 負荷リスト */
@@ -1406,7 +1416,7 @@ select.form-control option {
   height: 24px;
   font-size: 12px;
   font-weight: 700;
-  background: #2563eb;
+  background: var(--seg-active);
   color: #fff;
   border-radius: 50%;
   flex-shrink: 0;
@@ -1481,8 +1491,8 @@ select.form-control option {
   transition: border-color 0.15s;
 }
 .form-control-sm:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  border-color: var(--seg-active);
+  box-shadow: 0 0 0 2px rgba(var(--seg-active-rgb),0.1);
 }
 
 /* 配線オーバーライド */
@@ -1504,7 +1514,7 @@ select.form-control option {
   transition: color 0.15s;
 }
 .load-wiring-toggle:hover {
-  color: #2563eb;
+  color: var(--seg-active);
 }
 .load-wiring-override {
   margin-top: 8px;
@@ -1532,10 +1542,10 @@ select.form-control option {
 .ref-value {
   font-weight: 600;
   color: #1a1f2b;
-  font-family: monospace;
+  font-family: var(--font-barlow), sans-serif;
 }
 .ref-value.highlight-value {
-  color: #2563eb;
+  color: var(--seg-active);
   font-size: 15px;
 }
 .ref-divider {
@@ -1658,7 +1668,7 @@ select.form-control option {
 .paywall-btn-primary {
   display: inline-block;
   padding: 0.75rem 1rem;
-  background: #1d6fcf;
+  background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -1669,7 +1679,7 @@ select.form-control option {
   transition: background 0.2s;
 }
 .paywall-btn-primary:hover {
-  background: #1a5fb0;
+  background: var(--accent-dark);
 }
 .paywall-btn-secondary {
   padding: 0.65rem 1rem;
