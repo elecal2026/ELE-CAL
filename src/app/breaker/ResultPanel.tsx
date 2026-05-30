@@ -38,7 +38,7 @@ export default function ResultPanel({
           <div key={w.id} className="validation-error" style={{ marginBottom: '8px' }}>{w.message}</div>
         ))}
         <div className="result-panel-empty">
-          <p style={{ color: '#c53030', fontWeight: 600 }}>入力にエラーがあります</p>
+          <p style={{ color: 'var(--danger)', fontWeight: 600 }}>入力にエラーがあります</p>
           <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>左パネルのエラー表示を確認し、修正してください。</p>
           {validationIssues.filter(v => v.level === 'error').map((v) => (
             <div key={`${v.id}-${v.target}`} className="validation-error" style={{ textAlign: 'left', marginTop: '6px' }}>{v.message}</div>
@@ -122,7 +122,7 @@ export default function ResultPanel({
               breakerRating={result.selectedBreaker}
             />
           ))}
-          <div style={{ fontSize: '0.78rem', color: '#718096', marginTop: '0.75rem', lineHeight: 1.6 }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.75rem', lineHeight: 1.6 }}>
             ※ 許容電流: 安全の不等式 I ≦ I<sub>n</sub> ≦ I<sub>z</sub> の判定<br />
             ※ 電圧降下: インピーダンス法 ΔV = K×I×L×Z×0.001（力率反映）<br />
             ※ 判定基準: 2%以下=良好 / 2〜4%=注意 / 4%超=超過
@@ -146,11 +146,11 @@ export default function ResultPanel({
                 const isSelected = rating === result.selectedBreaker
                 let judge: React.ReactNode
                 if (rating < result.marginCurrent) {
-                  judge = <span style={{ color: '#e53e3e', fontWeight: 700 }}>✕ 不足</span>
+                  judge = <span style={{ color: 'var(--danger)', fontWeight: 700 }}>✕ 不足</span>
                 } else if (isSelected) {
-                  judge = <span style={{ color: '#1d6fcf', fontWeight: 700 }}>◎ 選定</span>
+                  judge = <span style={{ color: 'var(--seg-active)', fontWeight: 700 }}>◎ 選定</span>
                 } else {
-                  judge = <span style={{ color: '#718096' }}>○ 適合</span>
+                  judge = <span style={{ color: 'var(--text-muted)' }}>○ 適合</span>
                 }
                 return (
                   <tr key={rating} className={isSelected ? 'highlight' : ''}>
@@ -167,7 +167,7 @@ export default function ResultPanel({
       {/* 計算過程 */}
       <section className="card vd2-result-card">
         <p className="card-title">計算過程</p>
-        <div style={{ fontSize: '0.85rem', lineHeight: 1.9, color: '#4a5568' }}>
+        <div style={{ fontSize: '0.85rem', lineHeight: 1.9, color: 'var(--text-secondary)' }}>
           配電方式: {result.systemInfo.name}<br />
           定格電圧: V = {voltage} V<br />
           合計消費電力: P = {result.totalKw.toFixed(2)} kW = {(result.totalKw * 1000).toFixed(0)} W<br />
@@ -311,13 +311,13 @@ function WireVerificationRow({
     <div style={{
       padding: '12px',
       marginBottom: '8px',
-      background: '#f8fafc',
-      border: '1px solid #e0e3e8',
+      background: 'var(--bg-secondary)',
+      border: '1px solid var(--border)',
       borderRadius: '8px',
     }}>
-      <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '8px', color: '#2d3748' }}>
+      <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '8px', color: 'var(--text-primary)' }}>
         {v.loadName}
-        <span style={{ fontWeight: 400, fontSize: '0.8rem', color: '#718096', marginLeft: '8px' }}>
+        <span style={{ fontWeight: 400, fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '8px' }}>
           {v.wireType} {v.wireSize}{v.wireLength > 0 ? ` / ${v.wireLength}m` : ''}
         </span>
       </div>
@@ -325,10 +325,10 @@ function WireVerificationRow({
       {/* 許容電流 */}
       {v.allowableCurrent !== null && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#4a5568', minWidth: '80px' }}>許容電流:</span>
+          <span style={{ color: 'var(--text-secondary)', minWidth: '80px' }}>許容電流:</span>
           <span style={{ fontWeight: 600 }}>{v.allowableCurrent} A</span>
           {breakerRating !== null && (
-            <span style={{ fontSize: '0.8rem', color: '#718096' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               （ブレーカー {breakerRating}A {v.isAllowableOk ? '≦' : '>'} {v.allowableCurrent}A）
             </span>
           )}
@@ -343,9 +343,9 @@ function WireVerificationRow({
       {/* 電圧降下 */}
       {v.voltageDrop !== null && v.voltageDropRate !== null && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4px', fontSize: '0.85rem' }}>
-          <span style={{ color: '#4a5568', minWidth: '80px' }}>電圧降下:</span>
+          <span style={{ color: 'var(--text-secondary)', minWidth: '80px' }}>電圧降下:</span>
           <span style={{ fontWeight: 600 }}>{v.voltageDrop.toFixed(2)} V</span>
-          <span style={{ fontSize: '0.8rem', color: '#718096' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             （{v.voltageDropRate.toFixed(2)}%）
           </span>
           {v.vdJudge && (
@@ -361,8 +361,8 @@ function WireVerificationRow({
         <div style={{
           display: 'flex', alignItems: 'center', gap: '0.5rem',
           marginTop: '6px', padding: '6px 10px',
-          background: '#fff5f5', border: '1px solid #feb2b2', borderRadius: '6px',
-          fontSize: '0.83rem', color: '#c53030',
+          background: 'var(--accent-bg)', border: '1px solid var(--accent-border)', borderRadius: '6px',
+          fontSize: '0.83rem', color: 'var(--danger)',
         }}>
           💡 推奨: <strong>{v.wireType} {v.recommendedSize}</strong> 以上
         </div>

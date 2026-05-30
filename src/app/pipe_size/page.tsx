@@ -450,7 +450,7 @@ export default function PipeSizePage() {
               <span className="label">総断面積（補正後）</span>
               <span>
                 <span className="value">{reprTotal.toFixed(1)}</span>
-                <span style={{ color: '#718096', fontSize: '0.85rem' }}> mm²</span>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}> mm²</span>
               </span>
             </div>
 
@@ -470,7 +470,7 @@ export default function PipeSizePage() {
                     {pipeResults.map(({ pipeName, totalArea, size32, size48 }) => (
                       <tr key={pipeName}>
                         <td className="pipe-name">{pipeName}</td>
-                        <td style={{ textAlign: 'center', fontSize: '0.82rem', color: '#4a5568' }}>{totalArea.toFixed(1)}</td>
+                        <td style={{ textAlign: 'center', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{totalArea.toFixed(1)}</td>
                         {size32 !== null
                           ? <td className="size-val">{size32}</td>
                           : <td className="no-size">対応なし</td>

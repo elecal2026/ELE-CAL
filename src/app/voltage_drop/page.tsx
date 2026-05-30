@@ -296,7 +296,7 @@ export default function VoltageDropPage() {
         {hasResult && (
           <section className="card mt-2">
             <p className="card-title">計算過程</p>
-            <div style={{ fontSize: '0.85rem', lineHeight: 1.9, color: '#4a5568' }}>
+            <div style={{ fontSize: '0.85rem', lineHeight: 1.9, color: 'var(--text-secondary)' }}>
               {result.steps.map((step, i) => (
                 <div key={i}>{step}</div>
               ))}

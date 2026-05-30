@@ -95,10 +95,10 @@ export default function InputPanel({
       <div style={{
         padding: '0.75rem 0.9rem',
         marginBottom: '1rem',
-        background: '#fff5f5',
-        border: '1.5px solid #feb2b2',
+        background: 'var(--accent-bg)',
+        border: '1.5px solid var(--accent-border)',
         borderRadius: '8px',
-        color: '#9b2c2c',
+        color: 'var(--accent-dark)',
         fontSize: '0.84rem',
         fontWeight: 700,
         lineHeight: 1.6,
@@ -109,7 +109,7 @@ export default function InputPanel({
       <div className="form-group">
         <label className="form-label" htmlFor="apartment-units">
           戸数
-          <span style={{ marginLeft: '0.5rem', color: '#718096', fontSize: '0.78rem', fontWeight: 500 }}>
+          <span style={{ marginLeft: '0.5rem', color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 500 }}>
             {HOUSING_TYPE_LABELS[input.housingType]}は1〜{maxUnits}戸
           </span>
         </label>

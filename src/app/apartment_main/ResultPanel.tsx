@@ -34,7 +34,7 @@ export default function ResultPanel({
     return (
       <div>
         <div className="result-panel-empty">
-          <p style={{ color: '#c53030', fontWeight: 700 }}>入力にエラーがあります</p>
+          <p style={{ color: 'var(--danger)', fontWeight: 700 }}>入力にエラーがあります</p>
           <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>内線規程の対応範囲内で入力してください。</p>
         </div>
         {errors.map(issue => (
@@ -69,7 +69,7 @@ export default function ResultPanel({
         <p className="card-title">幹線設計結果</p>
 
         <div className="result-main">
-          <div style={{ fontSize: '0.82rem', color: '#718096', fontWeight: 700, marginBottom: '0.2rem' }}>
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.2rem' }}>
             想定最大負荷
           </div>
           <span className="result-breaker">{row.maxLoadKva.toFixed(1)}</span>

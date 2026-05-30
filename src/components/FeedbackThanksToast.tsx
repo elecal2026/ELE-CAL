@@ -37,7 +37,7 @@ function ToastInner() {
         transform: `translateX(-50%) translateY(${visible ? '0' : '-16px'})`,
         opacity: visible ? 1 : 0,
         transition: 'opacity 0.35s ease, transform 0.35s ease',
-        background: '#16a34a',
+        background: 'var(--success)',
         color: '#fff',
         padding: '12px 20px',
         borderRadius: '999px',

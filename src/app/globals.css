@@ -13,41 +13,52 @@
 }
 
 :root {
-  /* === 新テーマ（TOPページ・デザイン案 common.css 準拠） === */
+  /* === ブランドカラー（紺ベース＋赤アクセント） === */
   --red: #C8281E;
   --navy: #1C2B4A;
   --yellow: #E8A020;
   --gray-bg: #F4F4F4;
-  --sub: #666;
+  --sub: var(--text-muted);
   --green: #22A06B;
   --orange: #E8A020;
 
-  /* === 旧テーマ変数（互換のため残す。値は新テーマに統一） === */
-  --bg-page: #F8F6F6;
+  /* === 背景 === */
+  --bg-page: #F4F5F7;
   --bg-white: #ffffff;
   --bg-card: #ffffff;
   --bg-card-hover: #FDECEA;
-  --bg-secondary: #F4F4F4;
+  --bg-secondary: #F2F4F7;
+
+  /* === アクセント（赤）：結果の主役数値・ロゴ・エラー === */
   --accent: #C8281E;
   --accent-dark: #A02016;
   --accent-light: #FDECEA;
+  --accent-border: #F0B6B2; /* 薄赤ボーダー */
+  --accent-bg: #FDF3F2;     /* 極薄赤背景 */
   --accent-text: #C8281E;
   --accent-yellow: #E8A020;
   --dark: #1C2B4A;
+
+  /* === テキスト階調（紺基調） === */
   --text-primary: #1C2B4A;
-  --text-secondary: #4a5560;
-  --text-muted: #666;
-  --border: #E0E0E0;
-  --border-strong: #c8c5c5;
-  --success: #22A06B;
+  --text-secondary: #45506A;
+  --text-muted: #636B78;
+  --text-faint: #9BA3AF;
+
+  /* === ボーダー（青みグレーで紺と調和） === */
+  --border: #DEE2E9;
+  --border-strong: #C2C8D4;
+
+  /* === 状態色 === */
+  --success: #16A34A;
   --success-bg: #E6F4EE;
-  --success-border: #c6f6d5;
-  --warning: #E8A020;
+  --success-border: #C6F6D5;
+  --warning: #D97706;          /* 警告・電圧降下の値（オレンジ） */
   --warning-bg: #FFF8E1;
-  --warning-border: #fefcbf;
+  --warning-border: #FCE7B5;
   --danger: #C8281E;
   --danger-bg: #FDECEA;
-  --danger-border: #fed7d7;
+  --danger-border: #F0B6B2;
   --radius: 12px;
   --radius-sm: 8px;
   --shadow-sm: 0 1px 3px rgba(28, 43, 74, 0.08), 0 1px 2px rgba(28, 43, 74, 0.04);
@@ -97,7 +108,7 @@ body {
 }
 
 .app-header .back-link {
-  color: var(--accent);
+  color: var(--seg-active);
   text-decoration: none;
   font-size: 1.4rem;
   line-height: 1;
@@ -108,7 +119,7 @@ body {
 }
 
 .app-header .back-link:hover {
-  background: var(--accent-light);
+  background: rgba(var(--seg-active-rgb), 0.08);
 }
 
 .app-header h1 {
@@ -148,10 +159,10 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--accent);
+  color: var(--seg-active);
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--accent-light);
+  border-bottom: 2px solid rgba(var(--seg-active-rgb), 0.18);
 }
 
 /* ==========================================
@@ -185,8 +196,8 @@ body {
 
 .form-control:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(207, 70, 71, 0.15);
+  border-color: var(--seg-active);
+  box-shadow: 0 0 0 3px rgba(var(--seg-active-rgb), 0.15);
 }
 
 select.form-control {
@@ -206,8 +217,8 @@ select.form-control option {
    結果表示
    ========================================== */
 .result-box {
-  background: linear-gradient(135deg, #fdf5f5 0%, #fdeaea 100%);
-  border: 2px solid var(--accent);
+  background: rgba(var(--seg-active-rgb), 0.05);
+  border: 2px solid var(--seg-active);
   border-radius: var(--radius);
   padding: 1.25rem;
   margin-top: 0.25rem;
@@ -297,13 +308,13 @@ select.form-control option {
 
 .data-table th {
   background: var(--bg-secondary);
-  color: var(--accent);
+  color: var(--seg-active);
   padding: 0.65rem 0.75rem;
   text-align: left;
   font-weight: 700;
   font-size: 0.8rem;
   letter-spacing: 0.04em;
-  border-bottom: 2px solid var(--accent);
+  border-bottom: 2px solid var(--seg-active);
 }
 
 .data-table td {
@@ -313,14 +324,14 @@ select.form-control option {
 }
 
 .data-table tr:hover td {
-  background: var(--accent-light);
+  background: rgba(var(--seg-active-rgb), 0.06);
 }
 
 .data-table tr.highlight td {
-  background: var(--accent-light);
-  color: var(--accent-dark);
+  background: rgba(var(--seg-active-rgb), 0.1);
+  color: var(--seg-active);
   font-weight: 700;
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--seg-active);
 }
 
 .table-wrapper {
@@ -479,24 +490,24 @@ select.form-control option {
 
 .chip-label input[type="radio"]:checked+.chip-text,
 .chip-label input[type="checkbox"]:checked+.chip-text {
-  background: var(--accent);
+  background: var(--seg-active);
   color: var(--bg-white);
-  border-color: var(--accent);
-  box-shadow: 0 2px 6px rgba(207, 70, 71, 0.25);
+  border-color: var(--seg-active);
+  box-shadow: 0 2px 6px rgba(var(--seg-active-rgb), 0.25);
 }
 
 .chip-label input[type="radio"]:focus-visible+.chip-text,
 .chip-label input[type="checkbox"]:focus-visible+.chip-text {
-  box-shadow: 0 0 0 3px rgba(207, 70, 71, 0.3);
+  box-shadow: 0 0 0 3px rgba(var(--seg-active-rgb), 0.3);
 }
 
 .chip-label:hover .chip-text {
-  border-color: var(--accent);
+  border-color: var(--seg-active);
 }
 
 .chip-label input[type="radio"]:checked:hover+.chip-text,
 .chip-label input[type="checkbox"]:checked:hover+.chip-text {
-  background: var(--accent-dark);
+  background: var(--seg-active);
 }
 /* ==========================================
    allowable_current 固有スタイル
@@ -509,44 +520,44 @@ select.form-control option {
 /* ==========================================
    voltage_drop 固有スタイル
    ========================================== */
-.formula-box { background: #F8F6F6; border: 1.5px solid #e2e0e0; border-left: 4px solid var(--navy); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-secondary); }
-.formula-box .formula { font-family: 'Courier New', monospace; color: var(--accent); font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+.formula-box { background: var(--bg-page); border: 1.5px solid var(--border); border-left: 4px solid var(--navy); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-secondary); }
+.formula-box .formula { font-family: 'Courier New', monospace; color: var(--seg-active); font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
 .rxz-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
-.rxz-badge { flex: 1; min-width: 80px; background: #fdeaea; border: 1.5px solid #f5b3b3; border-radius: var(--radius-sm); padding: 0.45rem 0.6rem; text-align: center; }
-.rxz-badge .rxz-label { font-size: 0.7rem; color: #6b7a83; display: block; }
-.rxz-badge .rxz-val { font-size: 1rem; font-weight: 700; color: var(--accent); }
+.rxz-badge { flex: 1; min-width: 80px; background: rgba(var(--seg-active-rgb), 0.06); border: 1.5px solid rgba(var(--seg-active-rgb), 0.2); border-radius: var(--radius-sm); padding: 0.45rem 0.6rem; text-align: center; }
+.rxz-badge .rxz-label { font-size: 0.7rem; color: var(--text-muted); display: block; }
+.rxz-badge .rxz-val { font-size: 1rem; font-weight: 700; color: var(--seg-active); }
 .vd-display { font-size: 2.8rem; font-weight: 800; color: var(--accent); }
 .rate-display { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
 .allowance-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 0.75rem; }
-.allowance-table th { background: #f0f4f8; color: #4a5568; padding: 0.45rem 0.6rem; text-align: left; font-weight: 700; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; }
-.allowance-table td { padding: 0.55rem 0.6rem; border-bottom: 1px solid #e2e8f0; color: var(--text-primary); }
-#calc-detail { background: #f8fafc; }
+.allowance-table th { background: var(--bg-secondary); color: var(--text-secondary); padding: 0.45rem 0.6rem; text-align: left; font-weight: 700; font-size: 0.75rem; border-bottom: 2px solid var(--border); }
+.allowance-table td { padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border); color: var(--text-primary); }
+#calc-detail { background: var(--bg-secondary); }
 
 /* ==========================================
    pipe_size 固有スタイル
    ========================================== */
-.wire-row { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.75rem; position: relative; }
+.wire-row { background: var(--bg-secondary); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.75rem; position: relative; }
 .wire-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 .wire-row-bottom { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
 .wire-row-bottom .form-group { margin-bottom: 0; flex: 1; }
-.btn-remove { background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; border-radius: var(--radius-sm); padding: 0.45rem 0.7rem; font-size: 0.85rem; cursor: pointer; font-weight: 700; align-self: flex-end; white-space: nowrap; }
-.btn-remove:hover { background: #fed7d7; }
-.qty-control { display: flex; align-items: center; gap: 0; border: 1.5px solid #cbd5e0; border-radius: var(--radius-sm); overflow: hidden; height: 44px; }
-.qty-control button { background: #f0f4f8; border: none; width: 36px; height: 100%; font-size: 1.2rem; font-weight: 700; cursor: pointer; color: #4a5568; flex-shrink: 0; }
-.qty-control button:hover { background: #e2e8f0; }
+.btn-remove { background: var(--accent-bg); border: 1px solid var(--danger-border); color: var(--danger); border-radius: var(--radius-sm); padding: 0.45rem 0.7rem; font-size: 0.85rem; cursor: pointer; font-weight: 700; align-self: flex-end; white-space: nowrap; }
+.btn-remove:hover { background: var(--danger-border); }
+.qty-control { display: flex; align-items: center; gap: 0; border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; height: 44px; }
+.qty-control button { background: var(--bg-secondary); border: none; width: 36px; height: 100%; font-size: 1.2rem; font-weight: 700; cursor: pointer; color: var(--text-secondary); flex-shrink: 0; }
+.qty-control button:hover { background: var(--border); }
 .qty-control input { border: none; outline: none; width: 48px; text-align: center; font-size: 1rem; font-weight: 700; color: var(--navy); background: #fff; height: 100%; }
-.btn-add { width: 100%; background: #fff0f0; border: 2px solid var(--accent); color: var(--accent); border-radius: var(--radius-sm); padding: 0.7rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; transition: background 0.15s; }
-.btn-add:hover { background: rgba(207, 70, 71, 0.12); }
-.total-area-box { display: flex; justify-content: space-between; align-items: center; background: #fdf5f5; border: 1.5px solid var(--accent); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
+.btn-add { width: 100%; background: rgba(var(--seg-active-rgb), 0.08); border: 2px solid var(--seg-active); color: var(--seg-active); border-radius: var(--radius-sm); padding: 0.7rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; transition: background 0.15s; }
+.btn-add:hover { background: rgba(var(--seg-active-rgb), 0.12); }
+.total-area-box { display: flex; justify-content: space-between; align-items: center; background: rgba(var(--seg-active-rgb), 0.08); border: 1.5px solid var(--seg-active); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
 .total-area-box .label { color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; }
-.total-area-box .value { color: var(--accent); font-size: 1.5rem; font-weight: 800; }
+.total-area-box .value { color: var(--seg-active); font-size: 1.5rem; font-weight: 800; }
 .pipe-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-.pipe-table th { background: #f0f4f8; color: #4a5568; padding: 0.55rem 0.7rem; text-align: left; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; border-bottom: 2px solid #e2e8f0; }
-.pipe-table td { padding: 0.6rem 0.7rem; border-bottom: 1px solid #e2e8f0; vertical-align: middle; color: var(--navy); }
+.pipe-table th { background: var(--bg-secondary); color: var(--text-secondary); padding: 0.55rem 0.7rem; text-align: left; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; border-bottom: 2px solid var(--border); }
+.pipe-table td { padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--navy); }
 .pipe-table td.size-val { font-weight: 800; color: var(--accent); text-align: center; font-size: 1rem; }
-.pipe-table td.no-size { color: #a0aec0; text-align: center; font-size: 0.8rem; }
-.pipe-table td.pipe-name { color: #4a5568; font-size: 0.82rem; }
-.corr-note { font-size: 0.75rem; color: #718096; background: #fffff0; border: 1px solid #fefcbf; border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; margin-top: 0.5rem; display: none; }
+.pipe-table td.no-size { color: var(--text-faint); text-align: center; font-size: 0.8rem; }
+.pipe-table td.pipe-name { color: var(--text-secondary); font-size: 0.82rem; }
+.corr-note { font-size: 0.75rem; color: var(--text-muted); background: var(--warning-bg); border: 1px solid #fefcbf; border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; margin-top: 0.5rem; display: none; }
 
 /* ==========================================
    breaker 固有スタイル（フルワイドレイアウト対応）
@@ -556,7 +567,7 @@ select.form-control option {
 .breaker-settings-bar {
   padding: 16px 32px;
   background: #fff;
-  border-bottom: 1px solid #e0e3e8;
+  border-bottom: 1px solid var(--border);
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -567,17 +578,17 @@ select.form-control option {
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
-  background: #f5f6f8;
-  border: 1px solid #eceef1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
   border-radius: 10px;
 }
 .breaker-setting-label {
   font-size: 12px;
   font-weight: 600;
-  color: #636b78;
+  color: var(--text-muted);
   white-space: nowrap;
   padding-right: 4px;
-  border-right: 1px solid #e0e3e8;
+  border-right: 1px solid var(--border);
   margin-right: 4px;
 }
 
@@ -601,8 +612,8 @@ select.form-control option {
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  border-left: 1px solid #e0e3e8;
-  background: #f5f6f8;
+  border-left: 1px solid var(--border);
+  background: var(--bg-secondary);
 }
 
 @media (max-width: 768px) {
@@ -622,7 +633,7 @@ select.form-control option {
     position: static;
     height: auto;
     border-left: none;
-    border-top: 1px solid #e0e3e8;
+    border-top: 1px solid var(--border);
   }
 }
 
@@ -631,19 +642,19 @@ select.form-control option {
 .result-breaker { font-size: 3.2rem; font-weight: 800; color: var(--accent); line-height: 1.1; }
 .result-breaker-unit { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); }
 .result-sub { margin-top: 0.75rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-.result-badge { background: var(--accent-light); border: 1.5px solid #f5b3b3; border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; text-align: center; min-width: 100px; }
-.result-badge .rb-label { font-size: 0.7rem; color: #718096; display: block; margin-bottom: 0.15rem; }
-.result-badge .rb-val { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
-.pole-recommend { margin-top: 1rem; background: var(--accent-light); border: 1.5px solid #f5b3b3; border-radius: var(--radius-sm); padding: 0.75rem 1rem; text-align: center; }
-.pole-recommend .pole-title { font-size: 0.78rem; color: #718096; margin-bottom: 0.3rem; }
-.pole-recommend .pole-value { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
-.pole-recommend .pole-desc { font-size: 0.78rem; color: #4a5568; margin-top: 0.2rem; }
-.tip-box { background: #fffbeb; border: 1.5px solid #f6e05e; border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-top: 1rem; font-size: 0.82rem; color: #744210; line-height: 1.6; }
+.result-badge { background: rgba(var(--seg-active-rgb), 0.08); border: 1.5px solid rgba(var(--seg-active-rgb), 0.25); border-radius: var(--radius-sm); padding: 0.5rem 0.75rem; text-align: center; min-width: 100px; }
+.result-badge .rb-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 0.15rem; }
+.result-badge .rb-val { font-size: 1.1rem; font-weight: 700; color: var(--seg-active); }
+.pole-recommend { margin-top: 1rem; background: rgba(var(--seg-active-rgb), 0.08); border: 1.5px solid rgba(var(--seg-active-rgb), 0.25); border-radius: var(--radius-sm); padding: 0.75rem 1rem; text-align: center; }
+.pole-recommend .pole-title { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+.pole-recommend .pole-value { font-size: 1.4rem; font-weight: 800; color: var(--seg-active); }
+.pole-recommend .pole-desc { font-size: 0.78rem; color: var(--text-secondary); margin-top: 0.2rem; }
+.tip-box { background: var(--warning-bg); border: 1.5px solid var(--warning-border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-top: 1rem; font-size: 0.82rem; color: #744210; line-height: 1.6; }
 .tip-box strong { color: #975a16; }
 .breaker-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 0.5rem; }
-.breaker-table th { background: #f0f4f8; color: #4a5568; padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; }
-.breaker-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid #e2e8f0; text-align: center; color: var(--text-primary); }
-.breaker-table tr.highlight td { background: #fdeaea; font-weight: 700; color: var(--accent); }
+.breaker-table th { background: var(--bg-secondary); color: var(--text-secondary); padding: 0.45rem 0.6rem; text-align: center; font-weight: 700; font-size: 0.75rem; border-bottom: 2px solid var(--border); }
+.breaker-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); text-align: center; color: var(--text-primary); }
+.breaker-table tr.highlight td { background: rgba(var(--seg-active-rgb), 0.08); font-weight: 700; color: var(--seg-active); }
 
 /* ==========================================
    トップページ固有スタイル
@@ -666,7 +677,7 @@ select.form-control option {
 .top-header h1 {
   font-size: 1.6rem;
   font-weight: 800;
-  color: #F8F6F6;
+  color: var(--bg-page);
   letter-spacing: 0.06em;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
@@ -690,7 +701,7 @@ select.form-control option {
 
 .menu-card {
   background: #ffffff;
-  border: 1.5px solid #e2e0e0;
+  border: 1.5px solid var(--border);
   border-radius: 14px;
   padding: 1.5rem 0.875rem 1.25rem;
   text-decoration: none;
@@ -737,7 +748,7 @@ select.form-control option {
 
 .menu-card .card-sub {
   font-size: 0.72rem;
-  color: #6b7a83;
+  color: var(--text-muted);
   text-align: center;
 }
 
@@ -745,9 +756,9 @@ select.form-control option {
 .top-footer {
   text-align: center;
   padding: 1.5rem 1rem;
-  color: #6b7a83;
+  color: var(--text-muted);
   font-size: 0.78rem;
-  border-top: 1px solid #e2e0e0;
+  border-top: 1px solid var(--border);
   margin-top: 1rem;
 }
 
@@ -763,7 +774,7 @@ select.form-control option {
   background: rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  color: #a0aec0;
+  color: var(--text-faint);
   font-size: 0.72rem;
   padding: 0.35rem 0.75rem;
   text-decoration: none;
@@ -778,7 +789,7 @@ select.form-control option {
 .admin-btn:hover {
   opacity: 1;
   background: rgba(0, 0, 0, 0.1);
-  color: #4a5568;
+  color: var(--text-secondary);
 }
 
 /* 管理ツールボタン（ヘッダー左上） */
@@ -816,7 +827,7 @@ select.form-control option {
 .vd2-settings-bar {
   padding: 16px 32px;
   background: #fff;
-  border-bottom: 1px solid #e0e3e8;
+  border-bottom: 1px solid var(--border);
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -827,17 +838,17 @@ select.form-control option {
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
-  background: #f5f6f8;
-  border: 1px solid #eceef1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
   border-radius: 10px;
 }
 .vd2-setting-label {
   font-size: 12px;
   font-weight: 600;
-  color: #636b78;
+  color: var(--text-muted);
   white-space: nowrap;
   padding-right: 4px;
-  border-right: 1px solid #e0e3e8;
+  border-right: 1px solid var(--border);
   margin-right: 4px;
 }
 
@@ -860,10 +871,10 @@ select.form-control option {
   font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
   padding: 5px 14px;
-  border: 1px solid #e0e3e8;
+  border: 1px solid var(--border);
   border-radius: 20px;
   background: #fff;
-  color: #636b78;
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
@@ -886,7 +897,7 @@ select.form-control option {
   font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
   background: #fff;
-  color: #1a1f2b;
+  color: var(--text-primary);
   border: 1px solid rgba(var(--seg-active-rgb),0.35);
   border-radius: 12px;
   outline: none;
@@ -915,8 +926,8 @@ select.form-control option {
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  border-left: 1px solid #e0e3e8;
-  background: #f5f6f8;
+  border-left: 1px solid var(--border);
+  background: var(--bg-secondary);
 }
 
 @media (max-width: 768px) {
@@ -936,14 +947,14 @@ select.form-control option {
     position: static;
     height: auto;
     border-left: none;
-    border-top: 1px solid #e0e3e8;
+    border-top: 1px solid var(--border);
   }
 }
 
 /* セクションカード */
 .vd2-section-card {
   background: #fff;
-  border: 1px solid #e0e3e8;
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 16px;
@@ -977,21 +988,21 @@ select.form-control option {
 }
 .vd2-badge.branch {
   background: rgba(217, 119, 6, 0.08);
-  color: #d97706;
+  color: var(--warning);
 }
 .vd2-btn-delete-section {
   font-size: 12px;
   padding: 4px 12px;
   background: transparent;
-  border: 1px solid #e0e3e8;
-  color: #636b78;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.15s;
 }
 .vd2-btn-delete-section:hover {
   border-color: rgba(220, 38, 38, 0.3);
-  color: #dc2626;
+  color: var(--danger);
   background: rgba(220, 38, 38, 0.06);
 }
 
@@ -1002,7 +1013,7 @@ select.form-control option {
 .vd2-param-label {
   font-size: 12px;
   font-weight: 500;
-  color: #636b78;
+  color: var(--text-muted);
   margin-bottom: 6px;
 }
 
@@ -1017,9 +1028,9 @@ select.form-control option {
   gap: 8px;
   padding: 4px 0;
   font-size: 11px;
-  color: #9ba3af;
+  color: var(--text-faint);
   font-weight: 500;
-  border-bottom: 1px solid #e0e3e8;
+  border-bottom: 1px solid var(--border);
   margin-bottom: 4px;
 }
 .vd2-section-row {
@@ -1028,12 +1039,12 @@ select.form-control option {
   gap: 8px;
   align-items: center;
   padding: 5px 0;
-  border-bottom: 1px solid #eceef1;
+  border-bottom: 1px solid var(--border);
 }
 .vd2-row-num {
   font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
-  color: #9ba3af;
+  color: var(--text-faint);
   text-align: center;
 }
 .vd2-distance-input {
@@ -1042,8 +1053,8 @@ select.form-control option {
   font-family: var(--font-barlow), sans-serif;
   font-size: 14px;
   background: #fff;
-  color: #1a1f2b;
-  border: 1px solid #e0e3e8;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
   border-radius: 6px;
   outline: none;
   transition: border-color 0.15s;
@@ -1053,17 +1064,17 @@ select.form-control option {
   box-shadow: 0 0 0 3px rgba(var(--seg-active-rgb),0.08);
 }
 .vd2-distance-input::placeholder {
-  color: #9ba3af;
+  color: var(--text-faint);
 }
 .vd2-drop-display {
   font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
-  color: #d97706;
+  color: var(--warning);
   white-space: nowrap;
   text-align: right;
 }
 .vd2-drop-display .pct {
-  color: #636b78;
+  color: var(--text-muted);
   margin-left: 2px;
 }
 .vd2-btn-delete-row {
@@ -1071,7 +1082,7 @@ select.form-control option {
   height: 28px;
   background: transparent;
   border: none;
-  color: #9ba3af;
+  color: var(--text-faint);
   cursor: pointer;
   border-radius: 50%;
   font-size: 16px;
@@ -1082,7 +1093,7 @@ select.form-control option {
 }
 .vd2-btn-delete-row:hover {
   background: rgba(220, 38, 38, 0.06);
-  color: #dc2626;
+  color: var(--danger);
 }
 .vd2-btn-delete-row:disabled {
   opacity: 0.2;
@@ -1090,7 +1101,7 @@ select.form-control option {
 }
 .vd2-btn-delete-row:disabled:hover {
   background: transparent;
-  color: #9ba3af;
+  color: var(--text-faint);
 }
 
 /* 区間追加・分岐追加ボタン */
@@ -1102,7 +1113,7 @@ select.form-control option {
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 600;
-  background: var(--accent-light);
+  background: rgba(var(--seg-active-rgb), 0.1);
   border: 2px solid var(--seg-active);
   color: var(--seg-active);
   border-radius: 20px;
@@ -1121,7 +1132,7 @@ select.form-control option {
   padding: 14px;
   font-size: 14px;
   font-weight: 600;
-  background: var(--accent-light);
+  background: rgba(var(--seg-active-rgb), 0.1);
   border: 2px solid var(--seg-active);
   color: var(--seg-active);
   border-radius: 10px;
@@ -1141,31 +1152,31 @@ select.form-control option {
   gap: 16px;
   padding: 10px 0 2px;
   margin-top: 4px;
-  border-top: 1px solid #e0e3e8;
+  border-top: 1px solid var(--border);
   font-family: var(--font-barlow), sans-serif;
   font-size: 13px;
 }
 .vd2-subtotal-label {
-  color: #636b78;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 500;
   font-family: inherit;
 }
 .vd2-subtotal-val {
-  color: #1a1f2b;
+  color: var(--text-primary);
   font-weight: 600;
 }
 .vd2-subtotal-pct {
   color: var(--seg-active);
 }
 .vd2-subtotal-dist {
-  color: #636b78;
+  color: var(--text-muted);
 }
 
 /* 結果カード */
 .vd2-result-card {
   background: #fff;
-  border: 1px solid #e0e3e8;
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 16px;
@@ -1174,7 +1185,7 @@ select.form-control option {
 .vd2-result-card h3 {
   font-size: 13px;
   font-weight: 700;
-  color: #636b78;
+  color: var(--text-muted);
   margin-bottom: 14px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1182,7 +1193,7 @@ select.form-control option {
 .vd2-empty-state {
   text-align: center;
   padding: 32px;
-  color: #9ba3af;
+  color: var(--text-faint);
   font-size: 13px;
 }
 
@@ -1199,14 +1210,14 @@ select.form-control option {
 .vd2-tree-node .name {
   font-family: inherit;
   font-weight: 500;
-  color: #1a1f2b;
+  color: var(--text-primary);
 }
 .vd2-tree-node .dist {
-  color: #636b78;
+  color: var(--text-muted);
   text-align: right;
 }
 .vd2-tree-node .volt {
-  color: #d97706;
+  color: var(--warning);
   text-align: right;
 }
 .vd2-tree-node .pct {
@@ -1214,7 +1225,7 @@ select.form-control option {
   text-align: right;
 }
 .vd2-tree-connector {
-  color: #9ba3af;
+  color: var(--text-faint);
   font-family: var(--font-barlow), sans-serif;
   display: inline-block;
   width: 20px;
@@ -1225,11 +1236,11 @@ select.form-control option {
 .vd2-worst-path {
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid #e0e3e8;
+  border-top: 1px solid var(--border);
 }
 .vd2-path-label {
   font-size: 11px;
-  color: #636b78;
+  color: var(--text-muted);
   margin-bottom: 6px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -1247,8 +1258,8 @@ select.form-control option {
   font-size: 15px;
   font-weight: 600;
 }
-.vd2-totals .t-dist { color: #636b78; }
-.vd2-totals .t-volt { color: #d97706; }
+.vd2-totals .t-dist { color: var(--text-muted); }
+.vd2-totals .t-volt { color: var(--warning); }
 .vd2-totals .t-pct  { color: var(--seg-active); }
 
 /* 基準判定テーブル */
@@ -1262,8 +1273,8 @@ select.form-control option {
   padding: 8px 10px;
   font-weight: 600;
   text-align: center;
-  color: #636b78;
-  border-bottom: 1px solid #e0e3e8;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
   font-size: 11px;
 }
 .vd2-std-table th:first-child {
@@ -1274,8 +1285,8 @@ select.form-control option {
   text-align: center;
   font-family: var(--font-barlow), sans-serif;
   font-size: 12px;
-  color: #9ba3af;
-  border-bottom: 1px solid #eceef1;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--border);
 }
 .vd2-std-table td:first-child {
   font-family: inherit;
@@ -1284,7 +1295,7 @@ select.form-control option {
 }
 .vd2-std-table tr.active-row td {
   background: rgba(var(--seg-active-rgb),0.06);
-  color: #1a1f2b;
+  color: var(--text-primary);
   font-weight: 600;
 }
 .vd2-std-table tr.active-row td:first-child {
@@ -1299,8 +1310,8 @@ select.form-control option {
   margin-top: 4px;
   font-weight: 700;
 }
-.vd2-actual-val.ok { color: #16a34a; }
-.vd2-actual-val.ng { color: #dc2626; }
+.vd2-actual-val.ok { color: var(--success); }
+.vd2-actual-val.ng { color: var(--danger); }
 
 /* 基準判定バッジ */
 .vd2-judgment {
@@ -1315,12 +1326,12 @@ select.form-control option {
 }
 .vd2-judgment.ok {
   background: rgba(22, 163, 74, 0.08);
-  color: #16a34a;
+  color: var(--success);
   border: 1px solid rgba(22, 163, 74, 0.3);
 }
 .vd2-judgment.ng {
   background: rgba(220, 38, 38, 0.06);
-  color: #dc2626;
+  color: var(--danger);
   border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
@@ -1346,10 +1357,10 @@ select.form-control option {
 .result-panel-empty {
   text-align: center;
   padding: 48px 24px;
-  color: #9ba3af;
+  color: var(--text-faint);
   font-size: 14px;
-  background: #f9fafb;
-  border: 2px dashed #e0e3e8;
+  background: var(--bg-secondary);
+  border: 2px dashed var(--border);
   border-radius: 10px;
 }
 
@@ -1374,7 +1385,7 @@ select.form-control option {
   padding: 12px;
   font-size: 14px;
   font-weight: 600;
-  background: var(--accent-light);
+  background: rgba(var(--seg-active-rgb), 0.1);
   border: 2px solid var(--seg-active);
   color: var(--seg-active);
   border-radius: 8px;
@@ -1395,8 +1406,8 @@ select.form-control option {
 
 /* 負荷エントリ行 */
 .load-entry-row {
-  background: #f9fafb;
-  border: 1px solid #e0e3e8;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -1405,8 +1416,8 @@ select.form-control option {
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  background: #f1f3f5;
-  border-bottom: 1px solid #e0e3e8;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
 }
 .load-entry-number {
   display: flex;
@@ -1425,10 +1436,10 @@ select.form-control option {
   flex: 1;
   padding: 5px 8px;
   font-size: 13px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   background: #fff;
-  color: #1a1f2b;
+  color: var(--text-primary);
   cursor: pointer;
 }
 .load-remove-btn {
@@ -1436,7 +1447,7 @@ select.form-control option {
   height: 28px;
   background: transparent;
   border: none;
-  color: #9ba3af;
+  color: var(--text-faint);
   cursor: pointer;
   border-radius: 50%;
   font-size: 18px;
@@ -1448,7 +1459,7 @@ select.form-control option {
 }
 .load-remove-btn:hover {
   background: rgba(220, 38, 38, 0.08);
-  color: #dc2626;
+  color: var(--danger);
 }
 .load-entry-body {
   padding: 12px;
@@ -1464,7 +1475,7 @@ select.form-control option {
 .load-field-label {
   font-size: 12px;
   font-weight: 500;
-  color: #636b78;
+  color: var(--text-muted);
   min-width: 72px;
   flex-shrink: 0;
 }
@@ -1476,16 +1487,16 @@ select.form-control option {
 }
 .load-field-unit {
   font-size: 12px;
-  color: #636b78;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 .form-control-sm {
   padding: 5px 8px;
   font-size: 13px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   background: #fff;
-  color: #1a1f2b;
+  color: var(--text-primary);
   width: 100%;
   outline: none;
   transition: border-color 0.15s;
@@ -1499,7 +1510,7 @@ select.form-control option {
 .load-wiring-section {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid #e8eaed;
+  border-top: 1px solid var(--border);
 }
 .load-wiring-toggle {
   display: block;
@@ -1507,7 +1518,7 @@ select.form-control option {
   text-align: left;
   padding: 4px 0;
   font-size: 11px;
-  color: #636b78;
+  color: var(--text-muted);
   background: none;
   border: none;
   cursor: pointer;
@@ -1520,7 +1531,7 @@ select.form-control option {
   margin-top: 8px;
   padding: 10px;
   background: #fff;
-  border: 1px solid #e0e3e8;
+  border: 1px solid var(--border);
   border-radius: 6px;
 }
 
@@ -1533,15 +1544,15 @@ select.form-control option {
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid #f0f1f3;
+  border-bottom: 1px solid var(--border);
 }
 .ref-label {
-  color: #636b78;
+  color: var(--text-muted);
   font-size: 12px;
 }
 .ref-value {
   font-weight: 600;
-  color: #1a1f2b;
+  color: var(--text-primary);
   font-family: var(--font-barlow), sans-serif;
 }
 .ref-value.highlight-value {
@@ -1550,7 +1561,7 @@ select.form-control option {
 }
 .ref-divider {
   height: 1px;
-  background: #e0e3e8;
+  background: var(--border);
   margin: 10px 0;
 }
 
@@ -1594,7 +1605,7 @@ select.form-control option {
   user-select: none;
 }
 .review-notes summary:hover {
-  color: var(--accent);
+  color: var(--seg-active);
 }
 .review-notes .review-notes-body {
   padding: 0 14px 14px;
@@ -1619,7 +1630,7 @@ select.form-control option {
 .ref-subtitle {
   font-size: 11px;
   font-weight: 600;
-  color: #636b78;
+  color: var(--text-muted);
   margin-bottom: 6px;
   letter-spacing: 0.04em;
 }
@@ -1651,12 +1662,12 @@ select.form-control option {
 .paywall-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--text-primary);
   margin: 0 0 0.75rem;
 }
 .paywall-body {
   font-size: 0.92rem;
-  color: #4a5568;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 0 0 1.4rem;
 }
@@ -1684,14 +1695,14 @@ select.form-control option {
 .paywall-btn-secondary {
   padding: 0.65rem 1rem;
   background: transparent;
-  color: #4a5568;
-  border: 1px solid #cbd5e0;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
   border-radius: 10px;
   font-size: 0.9rem;
   cursor: pointer;
 }
 .paywall-btn-secondary:hover {
-  background: #f7fafc;
+  background: var(--bg-secondary);
 }
 
 /* 課金導線が必要なボタンに付ける鍵アイコン */

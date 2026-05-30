@@ -249,7 +249,7 @@ function SectionCard({
             <span className="vd2-drop-display">
               {hasData && res.drops[i] > 0
                 ? <>▼ {res.drops[i].toFixed(2)}V <span className="pct">({(baseVoltage > 0 ? res.drops[i] / baseVoltage * 100 : 0).toFixed(2)}%)</span></>
-                : <span style={{ color: '#9ba3af' }}>—</span>
+                : <span style={{ color: 'var(--text-faint)' }}>—</span>
               }
             </span>
             <button type="button" className="vd2-btn-delete-row"
@@ -281,7 +281,7 @@ function SectionCard({
             </>
             : <>
               <span className="vd2-subtotal-label">小計</span>
-              <span style={{ color: '#9ba3af' }}>— 入力待ち</span>
+              <span style={{ color: 'var(--text-faint)' }}>— 入力待ち</span>
             </>
           }
         </div>
@@ -720,7 +720,7 @@ export default function VoltageDropV2Page() {
           {/* 基準判定 */}
           <div className="vd2-result-card">
             <h3>基準判定</h3>
-            <div style={{ fontSize: '12px', color: '#636b78', marginBottom: '12px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px' }}>
               供給元：{supplyType === 'transformer' ? '自家変圧器' : '電気事業者（低圧）'}
             </div>
             <StdTable

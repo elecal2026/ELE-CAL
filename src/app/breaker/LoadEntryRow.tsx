@@ -121,8 +121,8 @@ export default function LoadEntryRow({
         gap: '0.75rem',
         margin: '0 12px 12px 48px',
         padding: '10px 12px',
-        background: '#f8fafc',
-        border: '1px solid #e0e3e8',
+        background: 'var(--bg-secondary)',
+        border: '1px solid var(--border)',
         borderRadius: '8px',
         flexWrap: 'wrap',
       }}>
