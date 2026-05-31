@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/apartment_main`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/pipe_size`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/voltage_drop_v2`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/cable_rack`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     // 情報ページ
     { url: `${baseUrl}/questions`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/feedback`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },

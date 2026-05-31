@@ -57,7 +57,7 @@
 /* ── CARDS ── */
 .cardsGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   position: relative;
   z-index: 1;
@@ -253,14 +253,10 @@
    ブレークポイント基準: 540 / 425 / 320px（+タブレット900px）
    ========================================== */
 
-/* ── タブレット: 5列→3列 ── */
+/* ── タブレット ── */
 @media (max-width: 900px) {
   .page {
     padding: 16px 16px;
-  }
-
-  .cardsGrid {
-    grid-template-columns: repeat(3, 1fr);
   }
 
   .heroCopy h1 {

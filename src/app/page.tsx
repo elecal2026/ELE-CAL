@@ -104,7 +104,22 @@ export default function Home() {
           </div>
         </Link>
 
-        {/* 05 電圧降下計算 */}
+        {/* 05 ケーブルラック簡易選定 */}
+        <Link className={styles.card} href="/cable_rack">
+          <div className={`${styles.cardHead} ${styles.yellow}`}>
+            <span className={styles.cardTitle}>ラック選定</span>
+          </div>
+          <div className={styles.cardIcon}>
+            <Image
+              src="/image/cable_rack.png"
+              alt="ケーブルラック簡易選定"
+              width={240}
+              height={200}
+            />
+          </div>
+        </Link>
+
+        {/* 06 電圧降下計算 */}
         <Link className={styles.card} href="/voltage_drop_v2">
           <div className={`${styles.cardHead} ${styles.navy}`}>
             <span className={styles.cardTitle}>電圧降下計算</span>
