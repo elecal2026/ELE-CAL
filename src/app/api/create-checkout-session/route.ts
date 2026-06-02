@@ -60,7 +60,7 @@ export async function POST() {
         ? {}
         : {
             subscription_data: {
-              trial_period_days: 14,
+              trial_period_days: 30,
             },
           }),
       success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,

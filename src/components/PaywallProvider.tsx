@@ -58,8 +58,8 @@ function PaywallModal({ isSignedIn, onClose }: { isSignedIn: boolean; onClose: (
   const primaryLabel = isSignedIn ? 'プランを見る' : 'ログイン / 新規登録'
   const heading = isSignedIn ? 'この操作はプロプラン限定です' : 'この操作にはログインが必要です'
   const body = isSignedIn
-    ? '負荷の追加など、踏み込んだ操作はプロプラン契約者のみご利用いただけます。14日間の無料トライアルがご利用いただけます。'
-    : 'まずはログインまたは新規登録をお願いします。登録後、14日間の無料トライアルでお試しいただけます。'
+    ? '負荷の追加など、踏み込んだ操作はプロプラン契約者のみご利用いただけます。30日間の無料トライアルがご利用いただけます。'
+    : 'まずはログインまたは新規登録をお願いします。登録後、30日間の無料トライアルでお試しいただけます。'
 
   return (
     <div className="paywall-overlay" role="dialog" aria-modal="true" aria-labelledby="paywall-title" onClick={onClose}>

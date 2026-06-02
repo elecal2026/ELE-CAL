@@ -33,7 +33,7 @@ export default async function SubscribeSuccessPage({
           登録が完了しました！
         </h1>
         <p style={{ fontSize: '0.9rem', color: '#4a5568', marginBottom: '0.25rem' }}>
-          {isTrial ? '14日間の無料トライアルが開始されました。' : 'プロプランへのご登録ありがとうございます。'}
+          {isTrial ? '30日間の無料トライアルが開始されました。' : 'プロプランへのご登録ありがとうございます。'}
         </p>
         <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '2rem' }}>
           すべてのツールをご利用いただけます。

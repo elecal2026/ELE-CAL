@@ -87,7 +87,7 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
               </p>
             ) : (
               <p style={{ fontSize: '0.82rem', color: '#888', marginTop: '0.25rem' }}>
-                14日間の無料トライアル付き
+                30日間の無料トライアル付き
               </p>
             )}
           </div>
