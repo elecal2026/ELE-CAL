@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# 根拠原本PDF（Git外管理・根拠資料/フォルダに配置）
+docs/根拠/*.pdf
