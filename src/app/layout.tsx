@@ -10,6 +10,30 @@ import './globals.css'
 // jaJPで未翻訳（void 0）のキーを補完
 const customJaJP = {
   ...jaJP,
+  signIn: {
+    ...jaJP.signIn,
+    start: {
+      ...jaJP.signIn?.start,
+      title: 'ELE-CALにログイン',
+      subtitle: 'おかえりなさい！続けるにはログインしてください',
+      actionText: 'まだ登録されていませんか？',
+      actionLink: '新規登録',
+    },
+  },
+  signUp: {
+    ...jaJP.signUp,
+    start: {
+      ...jaJP.signUp?.start,
+      title: '新規登録',
+      subtitle: 'ようこそ！詳細を入力してください',
+      actionText: 'すでにアカウントをお持ちですか？',
+      actionLink: 'ログイン',
+    },
+    continue: {
+      ...jaJP.signUp?.continue,
+      actionLink: 'ログイン',
+    },
+  },
   unstable__errors: {
     ...jaJP.unstable__errors,
     external_account_not_found: 'Googleアカウントが見つかりませんでした。別のアカウントをお試しください。',

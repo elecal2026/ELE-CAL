@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { UserButton, SignInButton, Show } from '@clerk/nextjs';
+import { UserButton, SignInButton, SignUpButton, Show } from '@clerk/nextjs';
 import styles from './SiteHeader.module.css';
 
 async function openCustomerPortal() {
@@ -68,8 +68,13 @@ export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderPr
         {mode === 'top' && (
           <>
             <Show when="signed-out">
-              <SignInButton mode="modal">
-                <button className={styles.loginBtn} type="button">
+              <SignUpButton mode="modal" forceRedirectUrl="/subscribe">
+                <button className={styles.signupBtn} type="button">
+                  新規登録
+                </button>
+              </SignUpButton>
+              <SignInButton mode="modal" signUpForceRedirectUrl="/subscribe">
+                <button className={`${styles.loginBtn} ${styles.loginBtnDesktop}`} type="button">
                   ログイン
                 </button>
               </SignInButton>
