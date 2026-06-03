@@ -7,13 +7,18 @@ import { usePaywall } from '@/components/PaywallProvider'
 import { calculateApartment } from './calculations'
 import InputPanel from './InputPanel'
 import ResultPanel from './ResultPanel'
+import { CONTRACT_AMPS } from './types'
 import type { ApartmentInput } from './types'
 import { validateApartmentInput } from './validation'
 
 const DEFAULT_INPUT: ApartmentInput = {
-  units: 10,
   housingType: 'general',
   distributionSystem: 'singlePhase3Wire',
+  groups: CONTRACT_AMPS.map(amp => ({
+    contractAmp: amp,
+    units: amp === 40 ? 10 : 0,
+  })),
+  commonKva: 0,
 }
 
 export default function ApartmentMainPage() {
@@ -40,7 +45,7 @@ export default function ApartmentMainPage() {
           <div className="formula-box" style={{ marginTop: '1.5rem', marginBottom: 0 }}>
             <div className="formula">内線規程 資料 3-6-1 / 3-6-2</div>
             <div>
-              表に明示された住戸面積100m²基準の値をそのまま表示します。
+              一般集合住宅は住戸契約容量の積み上げ計算値と同戸数の標準表値を比較表示します。
               住戸面積補正や戸数範囲外への外挿は行いません。
             </div>
           </div>
@@ -48,11 +53,6 @@ export default function ApartmentMainPage() {
 
         <div className="breaker-result-col vd2-result-col">
           <ResultPanel result={result} issues={issues} />
-
-          <div className="disclaimer">
-            <strong>注意事項</strong>
-            本ツールの計算結果は参考値です。実務では最新の規格・基準を必ずご確認ください。
-          </div>
         </div>
       </div>
     </>

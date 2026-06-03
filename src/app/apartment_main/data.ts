@@ -1,5 +1,7 @@
 import type { ElectricRow, GeneralRow, HousingType } from './types'
 
+export const BREAKER_RATINGS = [40, 50, 60, 75, 100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 500, 600, 700] as const
+
 export const HOUSING_TYPE_LABELS: Record<HousingType, string> = {
   general: '一般集合住宅',
   electric23h: '全電化（23時一斉始動型）',
