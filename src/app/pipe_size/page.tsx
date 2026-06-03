@@ -385,8 +385,9 @@ export default function PipeSizePage() {
     <>
       <SiteHeader mode="sub" title="配管サイズ計算" />
 
-      <main className="main-content">
-        <section className="card">
+      <main className="vd2-main">
+        <div className="vd2-input-col">
+        <section className="card vd2-section-card">
           <p className="card-title">電線・ケーブルの入力</p>
 
           <div>
@@ -443,7 +444,9 @@ export default function PipeSizePage() {
             </div>
           )}
         </section>
+        </div>
 
+        <div className="vd2-result-col">
         {pipeResults && pipeResults.length > 0 && (
           <>
             <div className="total-area-box" style={{ display: 'flex' }}>
@@ -508,6 +511,7 @@ export default function PipeSizePage() {
             </ul>
           </div>
         </details>
+        </div>
       </main>
     </>
   )

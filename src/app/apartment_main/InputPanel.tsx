@@ -92,20 +92,6 @@ export default function InputPanel({
     <section className="card vd2-section-card">
       <p className="card-title">入力条件</p>
 
-      <div style={{
-        padding: '0.75rem 0.9rem',
-        marginBottom: '1rem',
-        background: 'var(--accent-bg)',
-        border: '1.5px solid var(--accent-border)',
-        borderRadius: '8px',
-        color: 'var(--accent-dark)',
-        fontSize: '0.84rem',
-        fontWeight: 700,
-        lineHeight: 1.6,
-      }}>
-        住戸面積100m²基準（内線規程 資料 3-6-1 / 3-6-2 準拠）
-      </div>
-
       <div className="form-group">
         <label className="form-label" htmlFor="apartment-units">
           戸数

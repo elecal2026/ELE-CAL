@@ -95,82 +95,79 @@ export default function AllowableCurrentPage() {
     <>
       <SiteHeader mode="sub" title="許容電流表" />
 
-      <main className="main-content">
-        <section className="card">
-          <p className="card-title">条件選択</p>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="sel-wire">電線種類</label>
-            <select
-              className="form-control"
-              id="sel-wire"
-              value={wire}
-              onChange={(e) => setWire(e.target.value)}
-            >
-              {WIRE_OPTIONS.map((w) => (
-                <option key={w.value} value={w.value}>{w.label}</option>
-              ))}
-            </select>
+      {/* 設定バー */}
+      <div className="breaker-settings-bar vd2-settings-bar">
+        <div className="breaker-setting-group vd2-setting-group">
+          <span className="breaker-setting-label vd2-setting-label">電線種類</span>
+          <select
+            className="form-control"
+            id="sel-wire"
+            value={wire}
+            onChange={(e) => setWire(e.target.value)}
+            style={{ fontSize: '0.85rem', padding: '0.3rem 0.5rem', minWidth: 180 }}
+          >
+            {WIRE_OPTIONS.map((w) => (
+              <option key={w.value} value={w.value}>{w.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="breaker-setting-group vd2-setting-group">
+          <span className="breaker-setting-label vd2-setting-label">敷設条件</span>
+          <div className="chips-group" style={{ margin: 0 }}>
+            {conditions.map((c) => {
+              const isActive = activeCondition === c
+              const showLock = !isActive && !isPaid
+              return (
+                <label className="chip-label" key={c}>
+                  <input
+                    type="radio"
+                    name="condition"
+                    value={c}
+                    checked={isActive}
+                    onChange={() => { if (isPaid) setCondition(c) }}
+                    onClick={(e) => {
+                      if (!isPaid && !isActive) { e.preventDefault(); openPaywall() }
+                    }}
+                  />
+                  <span className="chip-text">
+                    {showLock && <span aria-hidden="true" style={{ marginRight: '0.25em' }}>🔒</span>}
+                    {c}
+                  </span>
+                </label>
+              )
+            })}
           </div>
+        </div>
+        <div className="breaker-setting-group vd2-setting-group">
+          <span className="breaker-setting-label vd2-setting-label">導体サイズ</span>
+          <select
+            className="form-control"
+            id="sel-size"
+            value={activeSize}
+            onChange={(e) => setSize(e.target.value)}
+            style={{ fontSize: '0.85rem', padding: '0.3rem 0.5rem', minWidth: 120 }}
+          >
+            {sizes.map((s) => (
+              <option key={s} value={s}>{formatSize(s)}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* 警告 */}
+      {(wire === 'HIV' || (wire === 'VVF' && activeCondition === '埋込配線')) && (
+        <div style={{ padding: '0.4rem 2rem', background: '#fff', borderBottom: '1px solid var(--border)' }}>
           {wire === 'HIV' && (
-            <div className="validation-warning" style={{ marginTop: '-0.5rem', marginBottom: '0.75rem' }}>※ HIVはより線のみの規格です（単線サイズはありません）</div>
+            <div className="validation-warning" style={{ margin: 0 }}>※ HIVはより線のみの規格です（単線サイズはありません）</div>
           )}
-
-          <div className="form-group">
-            <label className="form-label">敷設条件</label>
-            <div className="chips-group">
-              {conditions.map((c) => {
-                const isActive = activeCondition === c
-                const showLock = !isActive && !isPaid
-                return (
-                  <label className="chip-label" key={c}>
-                    <input
-                      type="radio"
-                      name="condition"
-                      value={c}
-                      checked={isActive}
-                      onChange={() => {
-                        // 契約者のみ通常のラジオ動作で値を更新
-                        if (isPaid) setCondition(c)
-                      }}
-                      onClick={(e) => {
-                        // 未契約者は別チップへの変更を抑止し、課金導線を開く
-                        if (!isPaid && !isActive) {
-                          e.preventDefault()
-                          openPaywall()
-                        }
-                      }}
-                    />
-                    <span className="chip-text">
-                      {showLock && (
-                        <span aria-hidden="true" style={{ marginRight: '0.25em' }}>🔒</span>
-                      )}
-                      {c}
-                    </span>
-                  </label>
-                )
-              })}
-            </div>
-          </div>
           {wire === 'VVF' && activeCondition === '埋込配線' && (
-            <div className="validation-warning" style={{ marginTop: '-0.5rem', marginBottom: '0.75rem' }}>※ 埋込配線の許容電流は2心・3心共通の参考値です</div>
+            <div className="validation-warning" style={{ margin: 0 }}>※ 埋込配線の許容電流は2心・3心共通の参考値です</div>
           )}
+        </div>
+      )}
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="sel-size">導体サイズ（公称断面積）</label>
-            <select
-              className="form-control"
-              id="sel-size"
-              value={activeSize}
-              onChange={(e) => setSize(e.target.value)}
-            >
-              {sizes.map((s) => (
-                <option key={s} value={s}>{formatSize(s)}</option>
-              ))}
-            </select>
-          </div>
-        </section>
-
+      {/* 結果エリア（全幅） */}
+      <main className="main-content">
         <section className="result-box">
           <div className="result-label">許容電流</div>
           <div>

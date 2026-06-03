@@ -350,7 +350,8 @@ export default function CableRackPage() {
     <>
       <SiteHeader mode="sub" title="ケーブルラック簡易選定" />
 
-      <main className="main-content">
+      <main className="vd2-main">
+        <div className="vd2-input-col">
         {/* ケーブル入力 */}
         <section className="card">
           <p className="card-title">ケーブルの入力</p>
@@ -476,7 +477,9 @@ export default function CableRackPage() {
             </div>
           </details>
         </section>
+        </div>
 
+        <div className="vd2-result-col">
         {/* 計算結果 */}
         {hasResult && (
           <>
@@ -605,6 +608,7 @@ export default function CableRackPage() {
           ケーブル外径・質量は内線規程 JEAC8001-2022 資料0-1を参考にした代表値です。メーカー・型番・シース仕様により差があります。
           ラック本体・支持金具・アンカーの許容荷重は、使用メーカーのカタログ及び設計図書で最終確認してください。
           本ツールの計算結果で生じた損害について、作成者は一切の責任を負いません。
+        </div>
         </div>
       </main>
     </>

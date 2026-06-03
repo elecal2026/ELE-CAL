@@ -13,9 +13,9 @@ export const WIRE_SIZES = [
 // ========================================
 // 3705-1表: 200V三相誘導電動機1台の場合
 // (内線規程 JEAC8001-2022 3705-1表＋分岐回路表 / PDF p796-797 より)
-// breakerDirect/breakerStarDelta/groundWire は分岐回路表(p797)準拠。
+// breakerDirect/breakerStarDelta/groundWire は分岐回路表(p797)参考値。
 // 0.2/0.4kW は同表に記載がなく、最小定格15A・接地線1.6mm を準用。
-// ※旧版コードは breaker 値・接地線にズレがあり 2026-05-27 照合レポートで正本準拠に全面修正。
+// ※旧版コードは breaker 値・接地線にズレがあり 2026-05-27 照合レポートで正本照合し全面修正。
 //   削除した motorBreakerDirect/motorBreakerStarDelta(出典不明・未使用)の旧値は照合レポートに記録。
 // ========================================
 export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
