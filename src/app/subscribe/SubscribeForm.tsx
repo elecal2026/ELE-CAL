@@ -135,6 +135,15 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
             </div>
           )}
 
+          <p style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <a
+              href="/"
+              style={{ fontSize: '0.82rem', color: '#888', textDecoration: 'none' }}
+            >
+              今は登録しない → ELE-CALトップへ
+            </a>
+          </p>
+
         </div>
       </div>
     </div>
