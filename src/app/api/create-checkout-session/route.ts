@@ -78,6 +78,7 @@ export async function POST() {
           }),
       ...(trialCustomText ? { custom_text: trialCustomText } : {}),
       automatic_tax: { enabled: true },
+      customer_update: { address: 'auto' },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/subscribe`,
     })
