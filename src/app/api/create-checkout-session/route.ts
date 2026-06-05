@@ -52,6 +52,19 @@ export async function POST() {
     // にはトライアルを付与せず、即課金する
     const hasUsedTrial = !!subscription?.stripe_subscription_id
 
+    // トライアル終了日（今日+30日）を日本語表記で計算
+    const trialEndDate = new Date()
+    trialEndDate.setDate(trialEndDate.getDate() + 30)
+    const trialEndStr = `${trialEndDate.getFullYear()}年${trialEndDate.getMonth() + 1}月${trialEndDate.getDate()}日`
+
+    const trialCustomText = hasUsedTrial
+      ? undefined
+      : {
+          submit: {
+            message: `30日間無料トライアル｜クレジットカード情報を登録頂くと、${trialEndStr}まで無料でお使い頂けます。無料トライアル終了1日前まで「アカウント」→「お支払い情報」→「サブスクリプションをキャンセル」からいつでもキャンセルできます。キャンセルしない限りプランは自動更新されます。`,
+          },
+        }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
@@ -63,6 +76,8 @@ export async function POST() {
               trial_period_days: 30,
             },
           }),
+      ...(trialCustomText ? { custom_text: trialCustomText } : {}),
+      automatic_tax: { enabled: true },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/subscribe`,
     })

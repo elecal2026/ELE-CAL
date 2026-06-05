@@ -79,15 +79,11 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
           </ul>
 
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#1C2B4A' }}>¥500</span>
+            <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#1C2B4A' }}>¥550</span>
             <span style={{ fontSize: '0.9rem', color: '#888' }}> / 月（税込）</span>
-            {hasUsedTrial ? (
+            {hasUsedTrial && (
               <p style={{ fontSize: '0.82rem', color: '#888', marginTop: '0.25rem' }}>
                 登録後すぐにご利用いただけます
-              </p>
-            ) : (
-              <p style={{ fontSize: '0.82rem', color: '#888', marginTop: '0.25rem' }}>
-                30日間の無料トライアル付き
               </p>
             )}
           </div>

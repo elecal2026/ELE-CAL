@@ -19,6 +19,10 @@ const customJaJP = {
       actionText: 'まだ登録されていませんか？',
       actionLink: '新規登録',
     },
+    emailCode: {
+      ...jaJP.signIn?.emailCode,
+      resendButton: 'コードが届かない場合は再送信',
+    },
   },
   signUp: {
     ...jaJP.signUp,
@@ -32,6 +36,10 @@ const customJaJP = {
     continue: {
       ...jaJP.signUp?.continue,
       actionLink: 'ログイン',
+    },
+    emailCode: {
+      ...jaJP.signUp?.emailCode,
+      resendButton: 'コードが届かない場合は再送信',
     },
   },
   unstable__errors: {
