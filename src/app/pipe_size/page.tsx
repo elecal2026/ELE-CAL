@@ -97,7 +97,10 @@ const PIPE_RANGE: Record<string, Record<string, PipeEntry[]>> = {
 const PIPE_NAMES = Object.keys(PIPE_RANGE)
 
 const METAL_PIPES = new Set(['CP（厚鋼電線管）', 'EP（薄鋼電線管）', 'GP / PE（ねじなし・PF管相当）'])
-const CD_PIPES = new Set(['CD / PF-S（CD管・PF管単層）'])
+// 硬質ビニル管(VE): 3115-8表の硬質ビニル管列。補正係数は金属管(3110-8表)と同値(2.0/1.2)
+const VINYL_HARD_PIPES = new Set(['VE（硬質塩化ビニル電線管）'])
+// PF管・CD管: 3115-8表の合成樹脂製可とう管列。1.6/2.0→1.3、それ以外→1.0
+const PFCD_PIPES = new Set(['CD / PF-S（CD管・PF管単層）', 'PF-D（PF管複層）'])
 const IV_CORR20 = new Set(['1.6㎜', '2.0㎜', '1.25', '2', '3.5'])
 const IV_CORR12 = new Set(['2.6㎜', '3.2㎜', '5.5', '8'])
 
@@ -137,10 +140,12 @@ function getArea(wireType: string, size: string, core: string, qty: number, pipe
 
   let corrFactor = 1.0
   if (wireType === 'IV' && qty >= 2) {
-    if (METAL_PIPES.has(pipeName)) {
+    if (METAL_PIPES.has(pipeName) || VINYL_HARD_PIPES.has(pipeName)) {
+      // 金属管(3110-8表) / 硬質ビニル管VE(3115-8表) は同値: 1.6/2.0→2.0, 2.6/3.2/5.5/8→1.2
       if (IV_CORR20.has(size)) corrFactor = 2.0
       else if (IV_CORR12.has(size)) corrFactor = 1.2
-    } else if (CD_PIPES.has(pipeName)) {
+    } else if (PFCD_PIPES.has(pipeName)) {
+      // PF管・CD管(3115-8表): 1.6/2.0→1.3, それ以外→1.0
       if (IV_CORR20.has(size)) corrFactor = 1.3
     }
   }
@@ -438,8 +443,8 @@ export default function PipeSizePage() {
 
           {hasIV && (
             <div className="corr-note">
-              ⚠ IV線を2本以上収める場合、金属管（CP/EP/GP）では断面積に補正係数（×2.0 または ×1.2）が適用されます。
-              CD管では ×1.3 が適用されます（内線規程による）。
+              ⚠ IV線を2本以上収める場合、金属管（CP/EP/GP）・硬質ビニル管（VE）では断面積に補正係数（×2.0 または ×1.2）が適用されます。
+              PF管・CD管では ×1.3 が適用されます（内線規程 3110-8表・3115-8表による）。
             </div>
           )}
         </section>
