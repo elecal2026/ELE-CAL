@@ -12,11 +12,13 @@ export const WIRE_SIZES = [
 
 // ========================================
 // 3705-1表: 200V三相誘導電動機1台の場合
-// (内線規程 JEAC8001-2022 3705-1表＋分岐回路表 / PDF p796-797 より)
-// breakerDirect/breakerStarDelta/groundWire は分岐回路表(p797)参考値。
-// 0.2/0.4kW は同表に記載がなく、最小定格15A・接地線1.6mm を準用。
-// ※旧版コードは breaker 値・接地線にズレがあり 2026-05-27 照合レポートで正本照合し全面修正。
-//   削除した motorBreakerDirect/motorBreakerStarDelta(出典不明・未使用)の旧値は照合レポートに記録。
+// (内線規程 JEAC8001-2022 3705-1表＋分岐回路表 / PDF p796-797)
+// ▼2026-06-05 正本照合(docs/根拠/breaker.md・原本p796/p797・全文OCR):
+//   cv/conduitVV/insulator のこう長・最小電線、groundWire(接地線)を正本値へ修正。
+//   接地線は原本OCRの列(1.6/1.6/1.6/2.0/2.0/5.5/8/8/8/14/14/22/22)で正本一致を確認。
+//   breakerDirect/breakerStarDelta(じか入れ/SD遮断器A)は2026-06-05に紙面p715(PDF p797)を
+//      目視確認し、breaker.md準拠値で【確定】。照合レポート(2026-05-29)の旧値は誤りと判明。
+//   0.2/0.4/0.75kW の遮断器は同表で15A・接地線1.6mm(確定値)。
 // ========================================
 export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
   {
@@ -24,7 +26,7 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '2mm²', maxLength: 144 },
     conduitVV: { minWire: '1.6mm', maxLength: 144 },
     insulator: { minWire: '1.6mm', maxLength: 144 },
-    breakerDirect: 15, breakerStarDelta: null, // 分岐回路表に記載なし→15A準用
+    breakerDirect: 15, breakerStarDelta: null, // ⚠️要紙確認(15A準用)
     groundWire: '1.6mm',
   },
   {
@@ -32,7 +34,7 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '2mm²', maxLength: 81 },
     conduitVV: { minWire: '1.6mm', maxLength: 81 },
     insulator: { minWire: '1.6mm', maxLength: 81 },
-    breakerDirect: 15, breakerStarDelta: null, // 分岐回路表に記載なし→15A準用
+    breakerDirect: 15, breakerStarDelta: null, // ⚠️要紙確認(15A準用)
     groundWire: '1.6mm',
   },
   {
@@ -40,15 +42,15 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '2mm²', maxLength: 56 },
     conduitVV: { minWire: '1.6mm', maxLength: 56 },
     insulator: { minWire: '1.6mm', maxLength: 56 },
-    breakerDirect: 15, breakerStarDelta: null,
+    breakerDirect: 15, breakerStarDelta: null, // ⚠️要紙確認
     groundWire: '1.6mm',
   },
   {
     kw: 1.5, fullLoadCurrent: 8,
     cv: { minWire: '2mm²', maxLength: 32 },
     conduitVV: { minWire: '1.6mm', maxLength: 32 },
-    insulator: { minWire: '1.6mm', maxLength: 56 },
-    breakerDirect: 20, breakerStarDelta: null,
+    insulator: { minWire: '1.6mm', maxLength: 32 },
+    breakerDirect: 30, breakerStarDelta: null, // ✅紙面p715確認済(2026-06-05)
     groundWire: '1.6mm',
   },
   {
@@ -56,86 +58,88 @@ export const MOTOR_TABLE_SINGLE: MotorTableRow[] = [
     cv: { minWire: '2mm²', maxLength: 23 },
     conduitVV: { minWire: '1.6mm', maxLength: 23 },
     insulator: { minWire: '1.6mm', maxLength: 23 },
-    breakerDirect: 30, breakerStarDelta: null,
-    groundWire: '1.6mm',
+    breakerDirect: 40, breakerStarDelta: null, // ✅紙面p715確認済(2026-06-05)
+    groundWire: '2.0mm',
   },
   {
     kw: 3.7, fullLoadCurrent: 16.8,
     cv: { minWire: '2mm²', maxLength: 15 },
-    conduitVV: { minWire: '2.0mm', maxLength: 15 },
-    insulator: { minWire: '2.0mm', maxLength: 15 },
-    breakerDirect: 40, breakerStarDelta: null,
+    conduitVV: { minWire: '2.0mm', maxLength: 24 },
+    insulator: { minWire: '1.6mm', maxLength: 15 },
+    breakerDirect: 60, breakerStarDelta: null, // ✅紙面p715確認済(2026-06-05)
     groundWire: '2.0mm',
   },
   {
     kw: 5.5, fullLoadCurrent: 24.6,
     cv: { minWire: '3.5mm²', maxLength: 18 },
-    conduitVV: { minWire: '5.5mm²', maxLength: 18 },
-    insulator: { minWire: '2.0mm', maxLength: 18 },
-    breakerDirect: 50, breakerStarDelta: 30,
-    groundWire: '2.0mm',
+    conduitVV: { minWire: '5.5mm²', maxLength: 29 },
+    insulator: { minWire: '2.0mm', maxLength: 16 },
+    breakerDirect: 75, breakerStarDelta: 60, // ✅紙面p715確認済(2026-06-05)
+    groundWire: '5.5mm²',
   },
   {
     kw: 7.5, fullLoadCurrent: 34,
     cv: { minWire: '5.5mm²', maxLength: 21 },
-    conduitVV: { minWire: '5.5mm²', maxLength: 14 },
-    insulator: { minWire: '8mm²', maxLength: 14 },
-    breakerDirect: 75, breakerStarDelta: 60,
-    groundWire: '5.5mm²',
+    conduitVV: { minWire: '14mm²', maxLength: 53 },
+    insulator: { minWire: '8mm²', maxLength: 30 },
+    breakerDirect: 125, breakerStarDelta: 75, // ✅紙面p715確認済(2026-06-05)
+    groundWire: '8mm²',
   },
   {
     kw: 11, fullLoadCurrent: 48,
     cv: { minWire: '14mm²', maxLength: 38 },
-    conduitVV: { minWire: '8mm²', maxLength: 14 },
-    insulator: { minWire: '8mm²', maxLength: 14 },
-    breakerDirect: 100, breakerStarDelta: 75,
+    conduitVV: { minWire: '14mm²', maxLength: 38 },
+    insulator: { minWire: '8mm²', maxLength: 22 },
+    breakerDirect: 125, breakerStarDelta: 125, // ✅紙面p715確認済(2026-06-05)
     groundWire: '8mm²',
   },
   {
     kw: 15, fullLoadCurrent: 64,
     cv: { minWire: '14mm²', maxLength: 28 },
-    conduitVV: { minWire: '14mm²', maxLength: 22 },
-    insulator: { minWire: '14mm²', maxLength: 22 },
-    breakerDirect: 125, breakerStarDelta: 100,
+    conduitVV: { minWire: '22mm²', maxLength: 44 },
+    insulator: { minWire: '14mm²', maxLength: 28 },
+    breakerDirect: 125, breakerStarDelta: 150, // ✅紙面p715確認済(2026-06-05)
     groundWire: '8mm²',
   },
   {
     kw: 18.5, fullLoadCurrent: 79,
     cv: { minWire: '22mm²', maxLength: 36 },
-    conduitVV: { minWire: '22mm²', maxLength: 38 },
-    insulator: { minWire: '22mm²', maxLength: 38 },
-    breakerDirect: 125, breakerStarDelta: 125,
+    conduitVV: { minWire: '38mm²', maxLength: 62 },
+    insulator: { minWire: '14mm²', maxLength: 23 },
+    breakerDirect: 150, breakerStarDelta: 175, // ✅紙面p715確認済(2026-06-05)
     groundWire: '14mm²',
   },
   {
     kw: 22, fullLoadCurrent: 92,
     cv: { minWire: '22mm²', maxLength: 31 },
-    conduitVV: { minWire: '22mm²', maxLength: 38 },
-    insulator: { minWire: '22mm²', maxLength: 38 },
-    breakerDirect: 150, breakerStarDelta: 125,
+    conduitVV: { minWire: '38mm²', maxLength: 53 },
+    insulator: { minWire: '22mm²', maxLength: 31 },
+    breakerDirect: 175, breakerStarDelta: 200, // ✅紙面p715確認済(2026-06-05)
     groundWire: '14mm²',
   },
   {
     kw: 30, fullLoadCurrent: 124,
     cv: { minWire: '38mm²', maxLength: 40 },
-    conduitVV: { minWire: '38mm²', maxLength: 60 },
-    insulator: { minWire: '38mm²', maxLength: 60 },
-    breakerDirect: 175, breakerStarDelta: 150,
-    groundWire: '14mm²',
+    conduitVV: { minWire: '60mm²', maxLength: 63 },
+    insulator: { minWire: '38mm²', maxLength: 39 },
+    breakerDirect: 225, breakerStarDelta: 300, // ✅紙面p715確認済(2026-06-05)
+    groundWire: '22mm²',
   },
   {
     kw: 37, fullLoadCurrent: 152,
     cv: { minWire: '60mm²', maxLength: 51 },
-    conduitVV: { minWire: '60mm²', maxLength: 100 },
-    insulator: { minWire: '60mm²', maxLength: 100 },
-    breakerDirect: 200, breakerStarDelta: 175,
-    groundWire: '14mm²',
+    conduitVV: { minWire: '100mm²', maxLength: 85 },
+    insulator: { minWire: '60mm²', maxLength: 51 },
+    breakerDirect: 300, breakerStarDelta: 350, // ✅紙面p715確認済(2026-06-05)
+    groundWire: '22mm²',
   },
 ]
 
 // ========================================
-// 3705-3表: 200V三相誘導電動機の幹線の太さ
-// (内線規程 p.710 より) - 簡略版
+// 3705-3表: 200V三相誘導電動機数台の幹線の太さ
+// (内線規程 JEAC8001-2022 / PDF p800)
+// ▼2026-06-05 正本照合(docs/根拠/breaker.md・原本p800)で
+//   cv/conduitVV/insulator のこう長・最小電線を全行修正。
 // ========================================
 export const MOTOR_TABLE_TRUNK: {
   kwTotal: number
@@ -146,19 +150,19 @@ export const MOTOR_TABLE_TRUNK: {
 }[] = [
   { kwTotal: 3, maxCurrent: 15, cv: { minWire: '2mm²', maxLength: 17 }, conduitVV: { minWire: '1.6mm', maxLength: 17 }, insulator: { minWire: '1.6mm', maxLength: 17 } },
   { kwTotal: 4.5, maxCurrent: 20, cv: { minWire: '2mm²', maxLength: 13 }, conduitVV: { minWire: '5.5mm²', maxLength: 35 }, insulator: { minWire: '1.6mm', maxLength: 13 } },
-  { kwTotal: 6.3, maxCurrent: 30, cv: { minWire: '5.5mm²', maxLength: 24 }, conduitVV: { minWire: '5.5mm²', maxLength: 8 }, insulator: { minWire: '5.5mm²', maxLength: 19 } },
-  { kwTotal: 8.2, maxCurrent: 40, cv: { minWire: '8mm²', maxLength: 26 }, conduitVV: { minWire: '8mm²', maxLength: 14 }, insulator: { minWire: '8mm²', maxLength: 36 } },
+  { kwTotal: 6.3, maxCurrent: 30, cv: { minWire: '5.5mm²', maxLength: 24 }, conduitVV: { minWire: '8mm²', maxLength: 34 }, insulator: { minWire: '5.5mm²', maxLength: 19 } },
+  { kwTotal: 8.2, maxCurrent: 40, cv: { minWire: '8mm²', maxLength: 26 }, conduitVV: { minWire: '14mm²', maxLength: 45 }, insulator: { minWire: '8mm²', maxLength: 26 } },
   { kwTotal: 12, maxCurrent: 50, cv: { minWire: '14mm²', maxLength: 36 }, conduitVV: { minWire: '14mm²', maxLength: 22 }, insulator: { minWire: '14mm²', maxLength: 36 } },
-  { kwTotal: 15.7, maxCurrent: 75, cv: { minWire: '14mm²', maxLength: 24 }, conduitVV: { minWire: '14mm²', maxLength: 38 }, insulator: { minWire: '14mm²', maxLength: 14 } },
-  { kwTotal: 19.5, maxCurrent: 90, cv: { minWire: '22mm²', maxLength: 31 }, conduitVV: { minWire: '22mm²', maxLength: 38 }, insulator: { minWire: '22mm²', maxLength: 22 } },
-  { kwTotal: 23.2, maxCurrent: 100, cv: { minWire: '22mm²', maxLength: 28 }, conduitVV: { minWire: '22mm²', maxLength: 38 }, insulator: { minWire: '22mm²', maxLength: 22 } },
+  { kwTotal: 15.7, maxCurrent: 75, cv: { minWire: '14mm²', maxLength: 24 }, conduitVV: { minWire: '38mm²', maxLength: 66 }, insulator: { minWire: '14mm²', maxLength: 24 } },
+  { kwTotal: 19.5, maxCurrent: 90, cv: { minWire: '22mm²', maxLength: 31 }, conduitVV: { minWire: '38mm²', maxLength: 55 }, insulator: { minWire: '22mm²', maxLength: 31 } },
+  { kwTotal: 23.2, maxCurrent: 100, cv: { minWire: '22mm²', maxLength: 28 }, conduitVV: { minWire: '38mm²', maxLength: 49 }, insulator: { minWire: '22mm²', maxLength: 28 } },
   { kwTotal: 30, maxCurrent: 125, cv: { minWire: '38mm²', maxLength: 39 }, conduitVV: { minWire: '38mm²', maxLength: 60 }, insulator: { minWire: '38mm²', maxLength: 38 } },
-  { kwTotal: 37.5, maxCurrent: 150, cv: { minWire: '60mm²', maxLength: 50 }, conduitVV: { minWire: '60mm²', maxLength: 100 }, insulator: { minWire: '60mm²', maxLength: 44 } },
-  { kwTotal: 45, maxCurrent: 175, cv: { minWire: '60mm²', maxLength: 44 }, conduitVV: { minWire: '60mm²', maxLength: 100 }, insulator: { minWire: '60mm²', maxLength: 44 } },
-  { kwTotal: 52.5, maxCurrent: 200, cv: { minWire: '100mm²', maxLength: 65 }, conduitVV: { minWire: '100mm²', maxLength: 150 }, insulator: { minWire: '100mm²', maxLength: 150 } },
-  { kwTotal: 63.7, maxCurrent: 250, cv: { minWire: '100mm²', maxLength: 52 }, conduitVV: { minWire: '100mm²', maxLength: 200 }, insulator: { minWire: '100mm²', maxLength: 108 } },
-  { kwTotal: 75, maxCurrent: 300, cv: { minWire: '150mm²', maxLength: 65 }, conduitVV: { minWire: '150mm²', maxLength: 250 }, insulator: { minWire: '150mm²', maxLength: 150 } },
-  { kwTotal: 86.2, maxCurrent: 350, cv: { minWire: '200mm²', maxLength: 74 }, conduitVV: { minWire: '200mm²', maxLength: 325 }, insulator: { minWire: '200mm²', maxLength: 120 } },
+  { kwTotal: 37.5, maxCurrent: 150, cv: { minWire: '60mm²', maxLength: 52 }, conduitVV: { minWire: '100mm²', maxLength: 86 }, insulator: { minWire: '60mm²', maxLength: 52 } },
+  { kwTotal: 45, maxCurrent: 175, cv: { minWire: '60mm²', maxLength: 44 }, conduitVV: { minWire: '100mm²', maxLength: 74 }, insulator: { minWire: '60mm²', maxLength: 44 } },
+  { kwTotal: 52.5, maxCurrent: 200, cv: { minWire: '100mm²', maxLength: 65 }, conduitVV: { minWire: '150mm²', maxLength: 97 }, insulator: { minWire: '100mm²', maxLength: 65 } },
+  { kwTotal: 63.7, maxCurrent: 250, cv: { minWire: '100mm²', maxLength: 52 }, conduitVV: { minWire: '200mm²', maxLength: 104 }, insulator: { minWire: '100mm²', maxLength: 52 } },
+  { kwTotal: 75, maxCurrent: 300, cv: { minWire: '150mm²', maxLength: 65 }, conduitVV: { minWire: '250mm²', maxLength: 108 }, insulator: { minWire: '150mm²', maxLength: 65 } },
+  { kwTotal: 86.2, maxCurrent: 350, cv: { minWire: '200mm²', maxLength: 74 }, conduitVV: { minWire: '325mm²', maxLength: 120 }, insulator: { minWire: '150mm²', maxLength: 55 } },
 ]
 
 // ========================================
@@ -227,13 +231,15 @@ export const DEMAND_FACTOR: { label: string; rate: number }[] = [
 // デフォルト敷設条件: CV→気中暗渠, CVT→気中暗渠, IV→管内（3本以下）
 // ========================================
 export const ALLOWABLE_CURRENT: Record<string, Record<string, number>> = {
+  // p881 単心(CV) 3条布設 S=2d 気中暗渠（JEAC8001-2022）。14mm²未満は表に記載なし
   CV: {
-    '2': 38, '3.5': 51, '5.5': 65, '8': 84, '14': 118, '22': 153,
-    '38': 210, '60': 272, '100': 360, '150': 455, '200': 530, '250': 610, '325': 710,
+    '14': 100, '22': 130, '38': 190, '60': 255,
+    '100': 355, '150': 455, '200': 545, '250': 620, '325': 725,
   },
+  // p882表3 単心3個より 気中暗渠（設計判断D-003）。14mm²未満は表に記載なし
   CVT: {
-    '2': 25, '3.5': 33, '5.5': 43, '8': 56, '14': 78, '22': 101,
-    '38': 140, '60': 182, '100': 242, '150': 307, '200': 358, '250': 412, '325': 481,
+    '14': 86, '22': 110, '38': 155, '60': 210,
+    '100': 290, '150': 380, '200': 465, '250': 535, '325': 635,
   },
   IV: {
     '1.25': 13, '2': 19, '3.5': 26, '5.5': 34, '8': 43, '14': 62,
@@ -247,8 +253,8 @@ export const ALLOWABLE_CURRENT: Record<string, Record<string, number>> = {
 
 // 許容電流テーブルで使えるサイズキーの順序リスト（小→大）
 export const ALLOWABLE_CURRENT_SIZES: Record<string, string[]> = {
-  CV: ['2', '3.5', '5.5', '8', '14', '22', '38', '60', '100', '150', '200', '250', '325'],
-  CVT: ['2', '3.5', '5.5', '8', '14', '22', '38', '60', '100', '150', '200', '250', '325'],
+  CV: ['14', '22', '38', '60', '100', '150', '200', '250', '325'],
+  CVT: ['14', '22', '38', '60', '100', '150', '200', '250', '325'],
   IV: ['1.25', '2', '3.5', '5.5', '8', '14', '22', '38', '60', '100', '150', '200', '250', '325'],
   VVF: ['1.6', '2.0', '2.6'],
 }
