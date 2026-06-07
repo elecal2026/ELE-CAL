@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 ▼ アプリを開く
 https://ele-cal.com
 
-トライアル終了後は自動的に月額500円（税込）のプロプランに移行します。
+トライアル終了後は自動的に月額550円（税込）のプロプランに移行します。
 解約はいつでもアカウントページから行えます。
 https://ele-cal.com/account
 
