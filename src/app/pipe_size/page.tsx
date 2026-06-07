@@ -9,7 +9,8 @@ import { usePaywall } from '@/components/PaywallProvider'
 // 電線断面積テーブル（仕上り断面積 mm²）
 // ==========================================
 const WIRE_AREA: Record<string, number> = {
-  'IV|1.6㎜': 8.1, 'IV|2.0㎜': 10.2, 'IV|2.6㎜': 16.7, 'IV|3.2㎜': 24.7,
+  // ▼2026-06-05 正本照合(3110-7表/PDF p354): IV単線2.6㎜/3.2㎜の断面積を正本値(20/28)へ修正(旧16.7/24.7)
+  'IV|1.6㎜': 8.1, 'IV|2.0㎜': 10.2, 'IV|2.6㎜': 20, 'IV|3.2㎜': 28,
   'IV|1.25': 7.1, 'IV|2': 9.1, 'IV|3.5': 12.6, 'IV|5.5': 19.7,
   'IV|8': 28.3, 'IV|14': 45.4, 'IV|22': 66.5, 'IV|38': 103.9,
   'IV|60': 154.0, 'IV|100': 227.0, 'IV|150': 346.4, 'IV|200': 415.5,
@@ -57,17 +58,23 @@ const WIRE_OPTIONS: Record<string, { sizes: string[]; cores: string[] | null }> 
 interface PipeEntry { min: number; max: number; size: number }
 
 const PIPE_RANGE: Record<string, Record<string, PipeEntry[]>> = {
+  // ▼2026-06-05 正本照合(pipe_size.md / 3110-9・10・11表):
+  //   金属管3種のラベルと内断面積表の対応が循環的にズレていた
+  //   (旧CP←薄鋼3110-10 / 旧EP←ねじなし3110-11 / 旧GP/PE←厚鋼3110-9)。
+  //   各ラベルを正しい表へ再対応(中身を巡回シフト)。値の小数精度は維持。
+  //   CP=厚鋼(3110-9) / EP=薄鋼(3110-10) / GP/PE=ねじなし(3110-11)。
+  //   ※「GP / PE（ねじなし・PF管相当）」のラベル命名整理は別途(設計判断)。
   'CP（厚鋼電線管）': {
+    '32': [{ min: 0, max: 67.6, size: 16 }, { min: 67.6, max: 120.5, size: 22 }, { min: 120.5, max: 201.3, size: 28 }, { min: 201.3, max: 342.2, size: 36 }, { min: 342.2, max: 460.4, size: 42 }, { min: 460.4, max: 732.9, size: 54 }, { min: 732.9, max: 1217.5, size: 70 }, { min: 1217.5, max: 1702.3, size: 82 }, { min: 1702.3, max: 2206.6, size: 92 }, { min: 2206.6, max: 2845.3, size: 104 }],
+    '48': [{ min: 0, max: 101.4, size: 16 }, { min: 101.4, max: 180.8, size: 22 }, { min: 180.8, max: 302.0, size: 28 }, { min: 302.0, max: 513.4, size: 36 }, { min: 513.4, max: 690.6, size: 42 }, { min: 690.6, max: 1099.3, size: 54 }, { min: 1099.3, max: 1826.2, size: 70 }, { min: 1826.2, max: 2553.5, size: 82 }, { min: 2553.5, max: 3309.9, size: 92 }, { min: 3309.9, max: 4267.9, size: 104 }],
+  },
+  'EP（薄鋼電線管）': {
     '32': [{ min: 0, max: 63.6, size: 19 }, { min: 63.6, max: 123.9, size: 25 }, { min: 123.9, max: 205.6, size: 31 }, { min: 205.6, max: 306.1, size: 39 }, { min: 306.1, max: 569.5, size: 51 }, { min: 569.5, max: 889.8, size: 63 }, { min: 889.8, max: 1310.1, size: 75 }],
     '48': [{ min: 0, max: 95.3, size: 19 }, { min: 95.3, max: 185.8, size: 25 }, { min: 185.8, max: 308.4, size: 31 }, { min: 308.4, max: 459.2, size: 39 }, { min: 459.2, max: 854.2, size: 51 }, { min: 854.2, max: 1334.7, size: 63 }, { min: 1334.7, max: 1965.2, size: 75 }],
   },
-  'EP（薄鋼電線管）': {
+  'GP / PE（ねじなし・PF管相当）': {
     '32': [{ min: 0, max: 70.1, size: 19 }, { min: 70.1, max: 133.0, size: 25 }, { min: 133.0, max: 211.4, size: 31 }, { min: 211.4, max: 313.2, size: 39 }, { min: 313.2, max: 579.1, size: 51 }, { min: 579.1, max: 913.9, size: 63 }, { min: 913.9, max: 1324.7, size: 75 }],
     '48': [{ min: 0, max: 105.2, size: 19 }, { min: 105.2, max: 199.4, size: 25 }, { min: 199.4, max: 317.1, size: 31 }, { min: 317.1, max: 469.8, size: 39 }, { min: 469.8, max: 868.6, size: 51 }, { min: 868.6, max: 1370.8, size: 63 }, { min: 1370.8, max: 1987.1, size: 75 }],
-  },
-  'GP / PE（ねじなし・PF管相当）': {
-    '32': [{ min: 0, max: 67.6, size: 16 }, { min: 67.6, max: 120.5, size: 22 }, { min: 120.5, max: 201.3, size: 28 }, { min: 201.3, max: 342.2, size: 36 }, { min: 342.2, max: 460.4, size: 42 }, { min: 460.4, max: 732.9, size: 54 }, { min: 732.9, max: 1217.5, size: 70 }, { min: 1217.5, max: 1702.3, size: 82 }, { min: 1702.3, max: 2206.6, size: 92 }, { min: 2206.6, max: 2845.3, size: 104 }],
-    '48': [{ min: 0, max: 101.4, size: 16 }, { min: 101.4, max: 180.8, size: 22 }, { min: 180.8, max: 302.0, size: 28 }, { min: 302.0, max: 513.4, size: 36 }, { min: 513.4, max: 690.6, size: 42 }, { min: 690.6, max: 1099.3, size: 54 }, { min: 1099.3, max: 1826.2, size: 70 }, { min: 1826.2, max: 2553.5, size: 82 }, { min: 2553.5, max: 3309.9, size: 92 }, { min: 3309.9, max: 4267.9, size: 104 }],
   },
   'VE（硬質塩化ビニル電線管）': {
     '32': [{ min: 0, max: 49.3, size: 14 }, { min: 49.3, max: 81.4, size: 16 }, { min: 81.4, max: 121.7, size: 22 }, { min: 121.7, max: 197.1, size: 28 }, { min: 197.1, max: 307.9, size: 36 }, { min: 307.9, max: 402.1, size: 42 }, { min: 402.1, max: 653.7, size: 54 }, { min: 653.7, max: 1128.2, size: 70 }, { min: 1128.2, max: 1490.1, size: 82 }],
