@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import type { System, LoadEntry } from './types'
 
 import SiteHeader from '@/components/SiteHeader'
@@ -71,11 +71,13 @@ export default function BreakerPage() {
   const [margin, setMargin] = useState('1.25')
 
   // B-1: 三相3線時に100Vが選択されていたら200Vに自動切替
-  useEffect(() => {
-    if (system === 'three' && voltage === '100') {
+  // 補正は配電方式の選択ハンドラ側で行う（effect内同期setStateを避ける）
+  const selectSystem = (s: System) => {
+    setSystem(s)
+    if (s === 'three' && voltage === '100') {
       setVoltage('200')
     }
-  }, [system, voltage])
+  }
 
   // 三相3線時は100Vをdisabled
   const disabledVoltages = system === 'three' ? ['100'] : []
@@ -133,7 +135,7 @@ export default function BreakerPage() {
               { label: '三相3線', value: 'three' },
             ]}
             value={system}
-            onChange={setSystem}
+            onChange={selectSystem}
             compact
           />
         </div>

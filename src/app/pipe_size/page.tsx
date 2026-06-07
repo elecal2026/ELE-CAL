@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import { usePaywall } from '@/components/PaywallProvider'
 
@@ -326,22 +326,14 @@ export default function PipeSizePage() {
   // VVFが含まれるか
   const hasVVF = rows.some(r => r.wireType === 'VVF')
 
-  // 6kV CVT追加時にCD/PF管を自動的にオフにする
-  useEffect(() => {
-    if (has6kVCVT) {
-      setCheckedPipes(prev => {
-        const next = { ...prev }
-        let changed = false
-        for (const name of disabledPipes6kV) {
-          if (next[name]) {
-            next[name] = false
-            changed = true
-          }
-        }
-        return changed ? next : prev
-      })
-    }
-  }, [has6kVCVT, disabledPipes6kV])
+  // 6kV CVT追加時はCD/PF管を選択不可として扱う（実state は保持し、表示・計算上だけ除外）
+  // effect内同期setStateを避けるため派生値で表現する
+  const effectiveCheckedPipes = useMemo(() => {
+    if (!has6kVCVT) return checkedPipes
+    const next = { ...checkedPipes }
+    for (const name of disabledPipes6kV) next[name] = false
+    return next
+  }, [checkedPipes, has6kVCVT, disabledPipes6kV])
 
   // 行ごとの警告（断面積データなし）
   const rowWarnings = useMemo(() => {
@@ -361,8 +353,8 @@ export default function PipeSizePage() {
 
   // 選択中の配管
   const selectedPipes = useMemo(
-    () => PIPE_NAMES.filter((name) => checkedPipes[name]),
-    [checkedPipes]
+    () => PIPE_NAMES.filter((name) => effectiveCheckedPipes[name]),
+    [effectiveCheckedPipes]
   )
 
   // 計算結果
@@ -424,7 +416,7 @@ export default function PipeSizePage() {
                   <label className={`chip-label${isPipeDisabled ? ' disabled' : ''}`} key={name}>
                     <input
                       type="checkbox"
-                      checked={checkedPipes[name]}
+                      checked={effectiveCheckedPipes[name]}
                       onChange={() => togglePipe(name)}
                       disabled={isPipeDisabled}
                     />

@@ -13,12 +13,14 @@ function ToastInner() {
 
   useEffect(() => {
     if (!isThanks) return
-    setVisible(true)
+    // エントランスアニメ用：同期setStateを避けrAFで次フレームに表示ON
+    const raf = requestAnimationFrame(() => setVisible(true))
     const hideTimer = setTimeout(() => setVisible(false), VISIBLE_MS)
     const cleanTimer = setTimeout(() => {
       router.replace('/', { scroll: false })
     }, VISIBLE_MS + 400)
     return () => {
+      cancelAnimationFrame(raf)
       clearTimeout(hideTimer)
       clearTimeout(cleanTimer)
     }

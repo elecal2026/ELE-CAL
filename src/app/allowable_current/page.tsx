@@ -57,8 +57,8 @@ const WIRE_OPTIONS = [
   { value: 'VVF', label: 'VVF（ビニル絶縁ビニルシースケーブル 平形）' },
   { value: 'VVR', label: 'VVR（ビニル絶縁ビニルシースケーブル 丸形）' },
   { value: 'CV', label: 'CV（架橋ポリエチレン絶縁ビニルシースケーブル 単心）' },
-  { value: 'CVD', label: 'CV-D（CVの2心）' },
-  { value: 'CVT', label: 'CV-T（CVの3心）' },
+  { value: 'CVD', label: 'CVD（単心2個より）' },
+  { value: 'CVT', label: 'CVT（単心3個より）' },
 ]
 
 function formatSize(sizeKey: string): string {

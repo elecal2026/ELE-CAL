@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean }) {
   const [stripeReady, setStripeReady] = useState<boolean | null>(null)
@@ -136,12 +137,12 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
           )}
 
           <p style={{ textAlign: 'center', marginTop: '1rem' }}>
-            <a
+            <Link
               href="/"
               style={{ fontSize: '0.82rem', color: '#888', textDecoration: 'none' }}
             >
               今は登録しない → ELE-CALトップへ
-            </a>
+            </Link>
           </p>
 
         </div>

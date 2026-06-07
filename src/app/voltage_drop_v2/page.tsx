@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import { usePaywall } from '@/components/PaywallProvider'
 
@@ -457,17 +457,19 @@ export default function VoltageDropV2Page() {
   // V-1: 三相3線 × 100V → 200Vに自動切替
   // V-2: 単相3線 × 400V → 200Vに自動切替
   // V-3: 電気事業者低圧 × 400V → 200Vに自動切替
-  useEffect(() => {
-    if (method === '3phase3wire' && baseVoltage === 100) {
+  // 補正は方式・供給元の選択ハンドラ側で行う（effect内同期setStateを避ける）
+  const selectMethod = (m: string) => {
+    setMethod(m)
+    if ((m === '3phase3wire' && baseVoltage === 100) || (m === '1phase3wire' && baseVoltage === 400)) {
       setBaseVoltage(200); setCustomVoltageOpen(false)
     }
-    if (method === '1phase3wire' && baseVoltage === 400) {
+  }
+  const selectSupplyType = (s: string) => {
+    setSupplyType(s)
+    if (s === 'utility' && baseVoltage === 400) {
       setBaseVoltage(200); setCustomVoltageOpen(false)
     }
-    if (supplyType === 'utility' && baseVoltage === 400) {
-      setBaseVoltage(200); setCustomVoltageOpen(false)
-    }
-  }, [method, supplyType, baseVoltage])
+  }
 
   // 無効な電圧プリセットを計算
   const disabledVoltages = useMemo(() => {
@@ -600,18 +602,18 @@ export default function VoltageDropV2Page() {
           <span className="vd2-setting-label">方式</span>
           <div className="vd2-chip-group">
             <button type="button" className={`vd2-chip${method === '1phase3wire' ? ' active' : ''}`}
-              onClick={() => setMethod('1phase3wire')}>単相3線</button>
+              onClick={() => selectMethod('1phase3wire')}>単相3線</button>
             <button type="button" className={`vd2-chip${method === '3phase3wire' ? ' active' : ''}`}
-              onClick={() => setMethod('3phase3wire')}>三相3線</button>
+              onClick={() => selectMethod('3phase3wire')}>三相3線</button>
           </div>
         </div>
         <div className="vd2-setting-group">
           <span className="vd2-setting-label">供給元</span>
           <div className="vd2-chip-group">
             <button type="button" className={`vd2-chip${supplyType === 'transformer' ? ' active' : ''}`}
-              onClick={() => setSupplyType('transformer')}>自家変圧器</button>
+              onClick={() => selectSupplyType('transformer')}>自家変圧器</button>
             <button type="button" className={`vd2-chip${supplyType === 'utility' ? ' active' : ''}`}
-              onClick={() => setSupplyType('utility')}>電気事業者</button>
+              onClick={() => selectSupplyType('utility')}>電気事業者</button>
           </div>
         </div>
         <div className="vd2-setting-group">
