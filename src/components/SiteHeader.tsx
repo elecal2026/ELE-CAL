@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import Link from 'next/link';
 import { UserButton, SignInButton, SignUpButton, Show } from '@clerk/nextjs';
 import styles from './SiteHeader.module.css';
@@ -41,6 +42,13 @@ const UserIcon = () => (
   </svg>
 );
 
+const GearIcon = () => (
+  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
+
 interface SiteHeaderProps {
   mode: 'top' | 'sub';
   title?: string;
@@ -48,7 +56,13 @@ interface SiteHeaderProps {
 }
 
 export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderProps) {
+  const userButtonRef = useRef<HTMLDivElement>(null);
   const className = mode === 'sub' ? `${styles.topbar} ${styles.subMode}` : styles.topbar;
+
+  const handleSettingsClick = () => {
+    const btn = userButtonRef.current?.querySelector('button') as HTMLElement;
+    btn?.click();
+  };
 
   return (
     <header className={className}>
@@ -80,26 +94,32 @@ export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderPr
               </SignInButton>
             </Show>
             <Show when="signed-in">
-              <UserButton
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox: { width: 36, height: 36 },
-                  },
-                }}
-              >
-                <UserButton.MenuItems>
-                  <UserButton.Link
-                    label="アカウント"
-                    labelIcon={<UserIcon />}
-                    href="/account"
-                  />
-                  <UserButton.Action
-                    label="お支払い管理"
-                    labelIcon={<CardIcon />}
-                    onClick={openCustomerPortal}
-                  />
-                </UserButton.MenuItems>
-              </UserButton>
+              <div className={styles.settingsWrapper}>
+                <button
+                  className={`${styles.loginBtn} ${styles.settingsBtn}`}
+                  type="button"
+                  onClick={handleSettingsClick}
+                >
+                  <GearIcon />
+                  設定
+                </button>
+                <div ref={userButtonRef} className={styles.hiddenUserButton}>
+                  <UserButton>
+                    <UserButton.MenuItems>
+                      <UserButton.Link
+                        label="アカウント"
+                        labelIcon={<UserIcon />}
+                        href="/account"
+                      />
+                      <UserButton.Action
+                        label="お支払い管理"
+                        labelIcon={<CardIcon />}
+                        onClick={openCustomerPortal}
+                      />
+                    </UserButton.MenuItems>
+                  </UserButton>
+                </div>
+              </div>
             </Show>
           </>
         )}

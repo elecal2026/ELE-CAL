@@ -122,8 +122,9 @@ export default async function RootLayout({
 }) {
   // サブスク状態をサーバ側で取得し、PaywallProvider に流し込む
   const { userId } = await auth()
-  let isPaid = false
-  if (userId && isDbConfigured()) {
+  // BYPASS_PAYWALL=true の場合は全員課金済み扱い（ローカル確認用。本番には設定しない）
+  let isPaid = process.env.BYPASS_PAYWALL === 'true'
+  if (!isPaid && userId && isDbConfigured()) {
     try {
       const sub = await getSubscription(userId)
       isPaid = !!sub && (sub.status === 'active' || sub.status === 'trialing')

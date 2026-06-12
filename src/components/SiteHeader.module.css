@@ -127,6 +127,23 @@
   border-color: #bbb;
 }
 
+.settingsBtn {
+  gap: 6px;
+}
+
+.settingsWrapper {
+  position: relative;
+}
+
+.hiddenUserButton {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* ── 戻るボタン（sub モード） ── */
 .backBtn {
   display: flex;

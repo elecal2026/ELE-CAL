@@ -52,7 +52,7 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
     ? '処理中...'
     : hasUsedTrial
       ? 'プランに登録する'
-      : '無料トライアルを始める'
+      : '無料トライアルを利用する'
 
   return (
     <div style={{ minHeight: '100vh', background: '#F4F4F4', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
@@ -66,28 +66,27 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
         </div>
 
         <div style={{ padding: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1C2B4A', marginBottom: '1rem', textAlign: 'center' }}>
-            プロプラン
+          <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1C2B4A', marginBottom: '1rem', textAlign: 'center', lineHeight: 1.5 }}>
+            無料トライアルにご登録頂くと<br />30日間全ての機能を無料でご利用頂けます
           </h2>
 
-          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem', fontSize: '0.9rem', color: '#555' }}>
-            {['許容電流表', '電圧降下計算', '配管サイズ計算', 'ブレーカー選定', '今後の新機能も利用可能'].map((item) => (
-              <li key={item} style={{ padding: '0.4rem 0', borderBottom: '1px solid #F4F4F4' }}>
-                <span style={{ color: '#C8281E', marginRight: '0.5rem', fontWeight: 700 }}>✓</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#1C2B4A' }}>¥550</span>
-            <span style={{ fontSize: '0.9rem', color: '#888' }}> / 月（税込）</span>
-            {hasUsedTrial && (
-              <p style={{ fontSize: '0.82rem', color: '#888', marginTop: '0.25rem' }}>
-                登録後すぐにご利用いただけます
-              </p>
-            )}
+          <div style={{ fontSize: '0.82rem', color: '#555', marginBottom: '1.25rem', lineHeight: 1.7 }}>
+            <p style={{ margin: '0 0 0.5rem' }}>※30日間を過ぎると自動的にプロプランに移行します。</p>
+            <p style={{ margin: '0 0 0.5rem' }}>※キャンセルは更新日の1日前まで、「アイコン」→「お支払い管理」→「サブスクリプションをキャンセル」からいつでも可能です。場所が分からない方はFAQの動画もご覧下さい。</p>
           </div>
+
+          <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '1rem', fontWeight: 700, color: '#1C2B4A' }}>プロプラン</span>
+          </div>
+          <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+            <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1C2B4A' }}>550円</span>
+            <span style={{ fontSize: '0.9rem', color: '#888' }}>／月（税込）</span>
+          </div>
+          {hasUsedTrial && (
+            <p style={{ fontSize: '0.82rem', color: '#888', textAlign: 'center', marginBottom: '1rem' }}>
+              ※無料トライアルをご利用済みの方はプロプランの更新となります。
+            </p>
+          )}
 
           {stripeReady === null ? (
             <div style={{ textAlign: 'center', color: '#888', fontSize: '0.9rem' }}>読み込み中...</div>

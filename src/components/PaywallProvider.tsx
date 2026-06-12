@@ -54,12 +54,10 @@ export function PaywallProvider({
 
 function PaywallModal({ isSignedIn, onClose }: { isSignedIn: boolean; onClose: () => void }) {
   // 未ログイン → サインインへ。ログイン済み未契約 → 課金ページへ
-  const primaryHref = isSignedIn ? '/subscribe' : '/sign-in'
+  const primaryHref = isSignedIn ? '/subscribe' : '/sign-in?redirect_url=/subscribe'
   const primaryLabel = isSignedIn ? 'プランを見る' : 'ログイン / 新規登録'
-  const heading = isSignedIn ? 'この操作はプロプラン限定です' : 'この操作にはログインが必要です'
-  const body = isSignedIn
-    ? '負荷の追加など、踏み込んだ操作はプロプラン契約者のみご利用いただけます。30日間の無料トライアルがご利用いただけます。'
-    : 'まずはログインまたは新規登録をお願いします。登録後、30日間の無料トライアルでお試しいただけます。'
+  const heading = '全ての機能を使うには登録が必要です'
+  const body = '全ての機能を使う為には、「無料トライアル」の登録又は、「サブスクリプション」の更新が必要です。下記のボタンからご確認下さい。'
 
   return (
     <div className="paywall-overlay" role="dialog" aria-modal="true" aria-labelledby="paywall-title" onClick={onClose}>
