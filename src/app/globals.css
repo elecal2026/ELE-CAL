@@ -1732,3 +1732,27 @@ select.form-control option {
    集合住宅幹線設計 固有スタイル
    ========================================== */
 /* ここに apartment_main 専用のクラスを追加していく */
+
+/* ==========================================
+   Clerk メール認証 カウントダウン非表示
+   ==========================================
+   cl-form の次の兄弟div（再送信エリア）内の
+   カウントダウン数字部分を隠す。
+   ボタン非活性時はspanまたはtimeにseconds表示 */
+.cl-form + div span,
+.cl-form + div time,
+.cl-form ~ div span,
+.cl-formResendCodeLink span,
+.cl-formResendCodeLink time {
+  display: none !important;
+}
+
+/* 再送信ボタン本体のテキストは見せる（disabled時も） */
+.cl-formResendCodeLink {
+  pointer-events: none;
+  opacity: 0.5;
+}
+.cl-formResendCodeLink:not([disabled]):not([aria-disabled="true"]) {
+  pointer-events: auto;
+  opacity: 1;
+}
