@@ -72,7 +72,7 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
 
           <div style={{ fontSize: '0.82rem', color: '#555', marginBottom: '1.25rem', lineHeight: 1.7 }}>
             <p style={{ margin: '0 0 0.5rem' }}>※30日間を過ぎると自動的にプロプランに移行します。</p>
-            <p style={{ margin: '0 0 0.5rem' }}>※キャンセルは更新日の1日前まで、「アイコン」→「お支払い管理」→「サブスクリプションをキャンセル」からいつでも可能です。場所が分からない方はFAQの動画もご覧下さい。</p>
+            <p style={{ margin: '0 0 0.5rem' }}>※キャンセルは更新日の1日前まで、「設定」→「お支払い管理」→「サブスクリプションをキャンセル」からいつでも可能です。</p>
           </div>
 
           <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>

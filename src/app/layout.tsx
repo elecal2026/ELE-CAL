@@ -21,7 +21,10 @@ const customJaJP = {
     },
     emailCode: {
       ...jaJP.signIn?.emailCode,
-      resendButton: 'コードが届かない場合は再送信',
+      subtitle: 'このコードの有効期間は10分間です',
+      resendButton: '再送信したい方はこちら',
+      resendButton__loading: '再送信中...',
+      resendButton__inactive: '再送信したい方はこちら',
     },
   },
   signUp: {
@@ -39,7 +42,10 @@ const customJaJP = {
     },
     emailCode: {
       ...jaJP.signUp?.emailCode,
-      resendButton: 'コードが届かない場合は再送信',
+      subtitle: 'このコードの有効期間は10分間です',
+      resendButton: '再送信したい方はこちら',
+      resendButton__loading: '再送信中...',
+      resendButton__inactive: '再送信したい方はこちら',
     },
   },
   unstable__errors: {

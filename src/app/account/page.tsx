@@ -4,6 +4,7 @@ import Link from 'next/link'
 import SiteHeader from '@/components/SiteHeader'
 import { getSubscription, isDbConfigured } from '@/lib/db'
 import AccountActions from './AccountActions'
+import AccountSecurity from './AccountSecurity'
 
 export const dynamic = 'force-dynamic'
 
@@ -130,6 +131,7 @@ export default async function AccountPage() {
               borderRadius: '14px',
               border: '1px solid #e2e8f0',
               padding: '1.25rem',
+              marginBottom: '1rem',
             }}
           >
             <Link
@@ -152,6 +154,9 @@ export default async function AccountPage() {
             </Link>
           </section>
         )}
+
+        {/* セキュリティ・アカウント管理 */}
+        <AccountSecurity />
       </div>
     </div>
   )

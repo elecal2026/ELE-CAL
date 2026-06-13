@@ -104,7 +104,7 @@ export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderPr
                   設定
                 </button>
                 <div ref={userButtonRef} className={styles.hiddenUserButton}>
-                  <UserButton>
+                  <UserButton appearance={{ elements: { userButtonPopoverActionButton__manageAccount: { display: 'none' } } }}>
                     <UserButton.MenuItems>
                       <UserButton.Link
                         label="アカウント"
