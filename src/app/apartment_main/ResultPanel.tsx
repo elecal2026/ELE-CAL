@@ -1,6 +1,12 @@
 import type { ApartmentResult, ElectricRow, GeneralRow } from './types'
 import type { ValidationIssue } from './validation'
 
+const MAX_MASTER_CVT_SIZE_MM2 = 325
+
+function formatCvtSize(cableMm2: number): string {
+  return cableMm2 <= MAX_MASTER_CVT_SIZE_MM2 ? `${cableMm2} mm²` : '該当なし'
+}
+
 function RefRow({ label, value, highlight = false }: {
   label: string
   value: string
@@ -87,7 +93,7 @@ function GeneralResultPanel({ result, warnings }: {
           <RefRow label={`${standardRow.units}戸 想定最大負荷`} value={`${standardRow.maxLoadKva.toFixed(1)} kVA`} />
           <RefRow label="単相3線式 電流" value={`${standardRow.currentA} A`} />
           <RefRow label="配線用遮断器" value={`${standardRow.breakerA} A`} />
-          <RefRow label="CVT最小太さ" value={`${standardRow.cableMm2} mm²`} />
+          <RefRow label="CVT最小太さ" value={formatCvtSize(standardRow.cableMm2)} />
         </div>
         <div style={{ marginTop: '0.5rem' }}>
           <DiffBadge diffKva={diffKva} />
@@ -166,8 +172,13 @@ function ElectricResultPanel({ result }: {
         <RefRow label="電気温水器の想定負荷" value={`${electricRow.heaterKva.toFixed(1)} kVA`} />
         <RefRow label="単相3線式 電流" value={`${electricRow.currentA} A`} highlight />
         <RefRow label="配線用遮断器" value={`${electricRow.breakerA} A`} />
-        <RefRow label="CVT最小太さ" value={`${electricRow.cableMm2} mm²`} />
+        <RefRow label="CVT最小太さ" value={formatCvtSize(electricRow.cableMm2)} />
       </div>
+      {electricRow.cableMm2 > MAX_MASTER_CVT_SIZE_MM2 && (
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+          CVT最小太さは現在の選択範囲外のため、該当なしと表示しています。
+        </p>
+      )}
     </section>
   )
 }

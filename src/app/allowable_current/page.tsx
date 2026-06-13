@@ -3,6 +3,12 @@
 import { useState, useMemo } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import { usePaywall } from '@/components/PaywallProvider'
+import {
+  WIRE_TYPES,
+  getWireSpecsByType,
+  type WireSpec,
+  type WireTypeId,
+} from '@/data/wire-master'
 
 // ==========================================
 // 許容電流データ（電技解釈・JCS 0168 参考値）
@@ -15,6 +21,8 @@ const DATA: Record<string, Record<string, Record<string, number>>> = {
     '管内（4本）': { '1.25': 12, '2': 17, '3.5': 23, '5.5': 31, '8': 38, '14': 55, '22': 72, '38': 102, '60': 137, '100': 188, '150': 249, '200': 296, '250': 351, '325': 410 },
   },
   HIV: {
+    // 気中: HIV = IV気中（単線）× 1.22（7捨8入）。p151計算例の方式をラクダ掲載単線サイズへ適用
+    '気中（単線）': { '1.2': 24, '1.6': 33, '2.0': 42, '2.6': 58 },
     // 気中: HIV = IV気中（より線）× 1.22（7捨8入）。p151計算例で確認（docs/根拠/allowable_current.md §5B）
     '気中（より線）': { '1.25': 23, '2': 33, '3.5': 45, '5.5': 59, '8': 74, '14': 107, '22': 140, '38': 197, '60': 264, '100': 363, '150': 482, '200': 572, '250': 678, '325': 793 },
     // 管内: HIV管内 = IV管内（3本以下）× 1.22（7捨8入）。1.22は1340-3表の汎用補正係数（絶縁物温度75℃で決まり布設条件に依存しない）。p151例(2)で管内収納時も1.22と減少係数を独立に掛ける構造を確認（2026-06-07 別エージェント検証）
@@ -54,48 +62,61 @@ const DATA: Record<string, Record<string, Record<string, number>>> = {
   },
 }
 
-const WIRE_OPTIONS = [
-  { value: 'IV', label: 'IV（600Vビニル絶縁電線）' },
-  { value: 'HIV', label: 'HIV（600V二種ビニル絶縁電線）' },
-  { value: 'VVF', label: 'VVF（ビニル絶縁ビニルシースケーブル 平形）' },
-  { value: 'VVR', label: 'VVR（ビニル絶縁ビニルシースケーブル 丸形）' },
-  { value: 'CV', label: 'CV（架橋ポリエチレン絶縁ビニルシースケーブル 単心）' },
-  { value: 'CVD', label: 'CVD（単心2個より）' },
-  { value: 'CVT', label: 'CVT（単心3個より）' },
-]
+function getConditions(wire: WireTypeId): string[] {
+  const conditions = Object.keys(DATA[wire] ?? {})
 
-function formatSize(sizeKey: string): string {
-  const solidSizes = new Set(['1.0', '1.2', '1.6', '2.0', '2.6', '3.2'])
-  if (solidSizes.has(sizeKey)) return `${sizeKey} mm`
-  return `${sizeKey} mm²`
+  if (wire === 'IV' || wire === 'HIV') {
+    return [...new Set(conditions.map((condition) =>
+      condition.replace('気中（単線）', '気中').replace('気中（より線）', '気中')
+    ))]
+  }
+
+  if (wire === 'VVF' || wire === 'VVR') {
+    return [...new Set(conditions.map((condition) => condition.replace(/（[23]心）$/, '')))]
+  }
+
+  return conditions
+}
+
+function getAmp(wire: WireTypeId, condition: string, spec: WireSpec): number | undefined {
+  let dataCondition = condition
+
+  if (wire === 'IV' || wire === 'HIV') {
+    if (condition === '気中') {
+      dataCondition = spec.sizeUnit === 'mm' ? '気中（単線）' : '気中（より線）'
+    }
+  } else if (wire === 'VVF' || wire === 'VVR') {
+    if (spec.coreLabel !== '2心' && spec.coreLabel !== '3心') return undefined
+    dataCondition = `${condition}（${spec.coreLabel}）`
+  } else if (wire === 'CV' && spec.coreLabel !== '単心') {
+    return undefined
+  }
+
+  return DATA[wire]?.[dataCondition]?.[spec.sizeText]
 }
 
 export default function AllowableCurrentPage() {
   const { isPaid, openPaywall } = usePaywall()
 
-  const [wire, setWire] = useState('IV')
+  const [wire, setWire] = useState<WireTypeId>('IV')
   // 契約者は別チップへの変更でこの setter が使われる。未契約者は activeCondition の自動フォールバックのみ
   const [condition, setCondition] = useState('')
-  const [size, setSize] = useState('')
+  const [specId, setSpecId] = useState('')
 
   // 線種が変わったら条件リストを更新
-  const conditions = useMemo(() => Object.keys(DATA[wire] ?? {}), [wire])
+  const conditions = useMemo(() => getConditions(wire), [wire])
 
   // 条件が選択肢にない場合、最初の条件に自動切替
   const activeCondition = conditions.includes(condition) ? condition : conditions[0] ?? ''
 
-  // サイズリスト
-  const sizeMap = DATA[wire]?.[activeCondition] ?? {}
-  const sizes = Object.keys(sizeMap)
+  // ラクダ掲載仕様をすべて選択肢へ表示
+  const specs = useMemo(() => getWireSpecsByType(wire), [wire])
 
-  // サイズが選択肢にない場合、最初のサイズに自動切替
-  const activeSize = sizes.includes(size) ? size : sizes[0] ?? ''
+  // 選択中の仕様が線種に存在しない場合、最初の仕様に自動切替
+  const activeSpec = specs.find((spec) => spec.id === specId) ?? specs[0]
 
   // 許容電流
-  const amp = sizeMap[activeSize]
-
-  // 線種名
-  const wireName = WIRE_OPTIONS.find((w) => w.value === wire)?.label ?? wire
+  const amp = activeSpec ? getAmp(wire, activeCondition, activeSpec) : undefined
 
   return (
     <>
@@ -109,11 +130,11 @@ export default function AllowableCurrentPage() {
             className="form-control"
             id="sel-wire"
             value={wire}
-            onChange={(e) => setWire(e.target.value)}
+            onChange={(e) => setWire(e.target.value as WireTypeId)}
             style={{ fontSize: '0.85rem', padding: '0.3rem 0.5rem', minWidth: 180 }}
           >
-            {WIRE_OPTIONS.map((w) => (
-              <option key={w.value} value={w.value}>{w.label}</option>
+            {WIRE_TYPES.filter((wireType) => wireType.active).map((wireType) => (
+              <option key={wireType.id} value={wireType.id}>{wireType.displayName}</option>
             ))}
           </select>
         </div>
@@ -145,39 +166,37 @@ export default function AllowableCurrentPage() {
           </div>
         </div>
         <div className="breaker-setting-group vd2-setting-group">
-          <span className="breaker-setting-label vd2-setting-label">導体サイズ</span>
+          <span className="breaker-setting-label vd2-setting-label">太さ・心数</span>
           <select
             className="form-control"
-            id="sel-size"
-            value={activeSize}
-            onChange={(e) => setSize(e.target.value)}
-            style={{ fontSize: '0.85rem', padding: '0.3rem 0.5rem', minWidth: 120 }}
+            id="sel-spec"
+            value={activeSpec?.id ?? ''}
+            onChange={(e) => setSpecId(e.target.value)}
+            style={{ fontSize: '0.85rem', padding: '0.3rem 0.5rem', minWidth: 150 }}
           >
-            {sizes.map((s) => (
-              <option key={s} value={s}>{formatSize(s)}</option>
+            {specs.map((spec) => (
+              <option key={spec.id} value={spec.id}>{spec.specDisplay}</option>
             ))}
           </select>
         </div>
       </div>
-
-      {/* 警告 */}
-      {wire === 'HIV' && (
-        <div style={{ padding: '0.4rem 2rem', background: '#fff', borderBottom: '1px solid var(--border)' }}>
-          <div className="validation-warning" style={{ margin: 0 }}>※ HIVはより線のみの規格です（単線サイズはありません）</div>
-        </div>
-      )}
 
       {/* 結果エリア（全幅） */}
       <main className="main-content">
         <section className="result-box">
           <div className="result-label">許容電流</div>
           <div>
-            <span className="current-value">{amp !== undefined ? amp : '—'}</span>
-            <span className="result-unit">A</span>
+            <span className="current-value">{amp !== undefined ? amp : '該当なし'}</span>
+            {amp !== undefined && <span className="result-unit">A</span>}
           </div>
           <div className="condition-summary">
-            {amp !== undefined ? `${wireName}　${formatSize(activeSize)}　${activeCondition}` : ''}
+            {activeSpec ? `${activeSpec.fullDisplay}　${activeCondition}` : ''}
           </div>
+          {amp === undefined && activeSpec && (
+            <div className="validation-warning" style={{ marginTop: '0.75rem' }}>
+              選択した仕様・敷設条件に対応する許容電流値はありません。
+            </div>
+          )}
         </section>
 
         <section className="card mt-2">
@@ -186,17 +205,20 @@ export default function AllowableCurrentPage() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th className="size-col">サイズ</th>
+                  <th className="size-col">太さ・心数</th>
                   <th className="amp-col">許容電流 (A)</th>
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(sizeMap).map(([s, a]) => (
-                  <tr key={s} className={s === activeSize ? 'highlight' : ''}>
-                    <td className="size-col">{formatSize(s)}</td>
-                    <td className="amp-col">{a} A</td>
-                  </tr>
-                ))}
+                {specs.map((spec) => {
+                  const specAmp = getAmp(wire, activeCondition, spec)
+                  return (
+                    <tr key={spec.id} className={spec.id === activeSpec?.id ? 'highlight' : ''}>
+                      <td className="size-col">{spec.specDisplay}</td>
+                      <td className="amp-col">{specAmp !== undefined ? `${specAmp} A` : '該当なし'}</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -213,7 +235,6 @@ export default function AllowableCurrentPage() {
           <summary>検討事項（実装検討中）</summary>
           <div className="review-notes-body">
             <ul>
-              <li><strong>A-5:</strong> CV系の名称について — 許容電流表では「CV / CVD / CVT」、配管サイズ計算では「CV / CV-D / CV-T / CV-Q」と表記が異なる。統一を検討。</li>
               <li><strong>A-6:</strong> IV 14mm²以上を管内4本で使用するケースは実務で稀。注記の追加を検討。</li>
               <li><strong>A-7:</strong> 温度補正未考慮 — 現在のデータは周囲温度30℃基準。高温環境での減少係数表の追加を検討。</li>
             </ul>
