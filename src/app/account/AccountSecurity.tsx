@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useUser, useClerk } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -26,8 +25,6 @@ const btnStyle = (color: string, disabled: boolean): React.CSSProperties => ({
 
 export default function AccountSecurity() {
   const { user } = useUser()
-  const { signOut } = useClerk()
-  const router = useRouter()
 
   // パスワード変更
   const [currentPw, setCurrentPw] = useState('')
@@ -40,12 +37,8 @@ export default function AccountSecurity() {
   const [emailMsg, setEmailMsg] = useState<{ text: string; ok: boolean } | null>(null)
   const [emailLoading, setEmailLoading] = useState(false)
 
-  // アカウント削除
-  const [deleteConfirm, setDeleteConfirm] = useState('')
-  const [deleteLoading, setDeleteLoading] = useState(false)
-  const [deleteMsg, setDeleteMsg] = useState<{ text: string; ok: boolean } | null>(null)
-
   const hasPassword = user?.passwordEnabled
+  const isGoogleUser = user?.externalAccounts?.some(ea => ea.provider === 'google') ?? false
 
   const handlePasswordChange = async () => {
     if (!currentPw || !newPw) return
@@ -78,21 +71,6 @@ export default function AccountSecurity() {
       setEmailMsg({ text: msg, ok: false })
     } finally {
       setEmailLoading(false)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (deleteConfirm !== '削除') return
-    setDeleteLoading(true)
-    setDeleteMsg(null)
-    try {
-      await user?.delete()
-      await signOut()
-      router.push('/')
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'エラーが発生しました'
-      setDeleteMsg({ text: msg, ok: false })
-      setDeleteLoading(false)
     }
   }
 
@@ -156,8 +134,8 @@ export default function AccountSecurity() {
         </section>
       )}
 
-      {/* メールアドレス変更 */}
-      <section style={sectionStyle}>
+      {/* メールアドレス変更（Google認証ユーザーには非表示） */}
+      {!isGoogleUser && <section style={sectionStyle}>
         <h2 style={{ fontSize: '0.85rem', color: '#718096', fontWeight: 600, marginBottom: '0.75rem' }}>
           メールアドレス変更
         </h2>
@@ -185,41 +163,7 @@ export default function AccountSecurity() {
             {emailLoading ? '送信中...' : '確認メールを送信する'}
           </button>
         </div>
-      </section>
-
-      {/* アカウント削除 */}
-      <section style={{ ...sectionStyle, border: '1px solid #fed7d7' }}>
-        <h2 style={{ fontSize: '0.85rem', color: '#c53030', fontWeight: 600, marginBottom: '0.5rem' }}>
-          アカウント削除
-        </h2>
-        <p style={{ fontSize: '0.82rem', color: '#718096', marginBottom: '0.75rem', lineHeight: 1.6 }}>
-          削除すると元に戻せません。契約中の場合は先に解約してください。
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <div>
-            <label style={labelStyle}>確認のため「削除」と入力してください</label>
-            <input
-              type="text"
-              value={deleteConfirm}
-              onChange={e => setDeleteConfirm(e.target.value)}
-              style={inputStyle}
-              placeholder="削除"
-            />
-          </div>
-          {deleteMsg && (
-            <p style={{ fontSize: '0.82rem', color: '#dc2626', margin: 0 }}>
-              {deleteMsg.text}
-            </p>
-          )}
-          <button
-            onClick={handleDelete}
-            disabled={deleteLoading || deleteConfirm !== '削除'}
-            style={btnStyle('#dc2626', deleteLoading || deleteConfirm !== '削除')}
-          >
-            {deleteLoading ? '削除中...' : 'アカウントを削除する'}
-          </button>
-        </div>
-      </section>
+      </section>}
     </>
   )
 }
