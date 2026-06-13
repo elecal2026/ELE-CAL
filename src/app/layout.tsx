@@ -24,7 +24,7 @@ const customJaJP = {
       subtitle: 'このコードの有効期間は10分間です',
       resendButton: '再送信したい方はこちら',
       resendButton__loading: '再送信中...',
-      resendButton__inactive: '再送信したい方はこちら',
+      resendButton__inactive: '再送信したい方はこちらをクリック。このカウントが０になったら、再送信が可能です。',
     },
   },
   signUp: {
@@ -45,7 +45,7 @@ const customJaJP = {
       subtitle: 'このコードの有効期間は10分間です',
       resendButton: '再送信したい方はこちら',
       resendButton__loading: '再送信中...',
-      resendButton__inactive: '再送信したい方はこちら',
+      resendButton__inactive: '再送信したい方はこちらをクリック。このカウントが０になったら、再送信が可能です。',
     },
   },
   unstable__errors: {
