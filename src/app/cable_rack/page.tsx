@@ -3,6 +3,12 @@
 import { useState, useMemo, useCallback } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import { usePaywall } from '@/components/PaywallProvider'
+import {
+  WIRE_TYPES,
+  getWireSpecsByType,
+  type WireSpec,
+  type WireTypeId,
+} from '@/data/wire-master'
 
 // ==========================================
 // ケーブル外径・質量 代表値テーブル
@@ -45,15 +51,6 @@ const CABLE_TABLE: Record<string, { od: number; mass: number }> = {
   'CV|3|38':   { od: 54,  mass: 3.13 },
   'CV|3|60':   { od: 64,  mass: 4.65 },
   'CV|3|100':  { od: 81,  mass: 7.44 },
-  // CV 4心 (4C)
-  'CV|4|2':    { od: 24,  mass: 0.48 },
-  'CV|4|3.5':  { od: 26,  mass: 0.61 },
-  'CV|4|5.5':  { od: 30,  mass: 0.85 },
-  'CV|4|8':    { od: 34,  mass: 1.14 },
-  'CV|4|14':   { od: 41,  mass: 1.73 },
-  'CV|4|22':   { od: 49,  mass: 2.59 },
-  'CV|4|38':   { od: 60,  mass: 4.02 },
-  'CV|4|60':   { od: 72,  mass: 6.01 },
   // CVT（トリプレックス型 3心より合わせ）
   'CVT|3|8':   { od: 28,  mass: 0.76 },
   'CVT|3|14':  { od: 33,  mass: 1.10 },
@@ -74,83 +71,68 @@ const CABLE_TABLE: Record<string, { od: number; mass: number }> = {
   'VVF|3|2.6': { od: 18,  mass: 0.33 },
 }
 
-const CABLE_OPTIONS = {
-  CV: {
-    coreOptions: [
-      { val: '1', label: '1C（単心）' },
-      { val: '2', label: '2C' },
-      { val: '3', label: '3C' },
-      { val: '4', label: '4C' },
-    ],
-    sizesByCore: {
-      '1': ['2', '3.5', '5.5', '8', '14', '22', '38', '60', '100', '150', '200', '250', '325'],
-      '2': ['2', '3.5', '5.5', '8', '14', '22', '38', '60', '100'],
-      '3': ['2', '3.5', '5.5', '8', '14', '22', '38', '60', '100'],
-      '4': ['2', '3.5', '5.5', '8', '14', '22', '38', '60'],
-    } as Record<string, string[]>,
-  },
-  CVT: {
-    coreOptions: [{ val: '3', label: 'T（3心より合わせ）' }],
-    sizesByCore: {
-      '3': ['8', '14', '22', '38', '60', '100', '150', '200', '250', '325'],
-    } as Record<string, string[]>,
-  },
-  VVF: {
-    coreOptions: [
-      { val: '2', label: '2C' },
-      { val: '3', label: '3C' },
-    ],
-    sizesByCore: {
-      '2': ['1.6', '2.0', '2.6'],
-      '3': ['1.6', '2.0', '2.6'],
-    } as Record<string, string[]>,
-  },
-}
-
 const RACK_WIDTHS = [200, 300, 400, 500, 600, 800, 1000]
 
-const LAYOUT_MARGINS = [
-  { label: 'なし',       value: 1.00 },
-  { label: '標準',       value: 1.10 },
-  { label: '余裕あり',   value: 1.20 },
-  { label: 'かなり余裕', value: 1.30 },
-]
-
-const FUTURE_RATES = [
-  { label: '0%',  value: 0 },
-  { label: '20%', value: 20 },
-  { label: '30%', value: 30 },
-  { label: '50%', value: 50 },
-]
+const RACK_WIDTH_USAGE_RATES = [100, 95, 90, 85, 80, 75, 70]
 
 interface CableRow {
   id: number
-  cableType: 'CV' | 'CVT' | 'VVF' | 'custom'
-  core: string
-  size: string
+  wireTypeId: WireTypeId | 'custom'
+  specId: string
   qty: number
   customOd: string
   customMass: string
 }
 
-function getOd(row: CableRow): number {
-  if (row.cableType === 'custom') return parseFloat(row.customOd) || 0
-  return CABLE_TABLE[`${row.cableType}|${row.core}|${row.size}`]?.od ?? 0
+function getCableTableKey(spec: WireSpec): string | undefined {
+  if (spec.wireTypeId === 'CV') {
+    const core = spec.coreLabel === '単心' ? '1' : spec.coreLabel?.replace('心', '')
+    if (core !== '1' && core !== '2' && core !== '3') return undefined
+    return `CV|${core}|${spec.sizeText}`
+  }
+
+  if (spec.wireTypeId === 'CVT') {
+    return `CVT|3|${spec.sizeText}`
+  }
+
+  if (spec.wireTypeId === 'VVF' && !spec.variantLabel) {
+    const core = spec.coreLabel?.replace('心', '')
+    if (core !== '2' && core !== '3') return undefined
+    return `VVF|${core}|${spec.sizeText}`
+  }
+
+  return undefined
 }
 
-function getMass(row: CableRow): number {
-  if (row.cableType === 'custom') return parseFloat(row.customMass) || 0
-  return CABLE_TABLE[`${row.cableType}|${row.core}|${row.size}`]?.mass ?? 0
+function getSelectedSpec(row: CableRow): WireSpec | undefined {
+  if (row.wireTypeId === 'custom') return undefined
+  const specs = getWireSpecsByType(row.wireTypeId)
+  return specs.find(spec => spec.id === row.specId) ?? specs[0]
+}
+
+function getCableData(row: CableRow): { od: number; mass: number } | undefined {
+  if (row.wireTypeId === 'custom') {
+    const od = parseFloat(row.customOd)
+    const mass = parseFloat(row.customMass)
+    return Number.isFinite(od) && od > 0 && Number.isFinite(mass) && mass > 0
+      ? { od, mass }
+      : undefined
+  }
+
+  const spec = getSelectedSpec(row)
+  const key = spec ? getCableTableKey(spec) : undefined
+  return key ? CABLE_TABLE[key] : undefined
 }
 
 // 最小曲げ半径係数（公共建築工事標準仕様書 2.10.4）
 // 低圧単心（CV 1C）: ×8、多心・CVT・VVF: ×6
-function getBendFactor(cableType: string, core: string): number {
-  return cableType === 'CV' && core === '1' ? 8 : 6
+function getBendFactor(row: CableRow): number {
+  const spec = getSelectedSpec(row)
+  return spec?.wireTypeId === 'CV' && spec.coreLabel === '単心' ? 8 : 6
 }
 
 function makeInitialRow(id: number): CableRow {
-  return { id, cableType: 'CV', core: '3', size: '22', qty: 1, customOd: '', customMass: '' }
+  return { id, wireTypeId: 'CV', specId: 'CV-S-22-3', qty: 1, customOd: '', customMass: '' }
 }
 
 // ==========================================
@@ -164,55 +146,47 @@ function CableRowItem({
   onChange: (r: CableRow) => void
   onRemove: () => void
 }) {
-  const isCustom = row.cableType === 'custom'
-  const opts = isCustom ? null : CABLE_OPTIONS[row.cableType as keyof typeof CABLE_OPTIONS]
-  const sizeOpts = opts ? opts.sizesByCore[row.core] ?? [] : []
-  const od = getOd(row)
-  const mass = getMass(row)
+  const isCustom = row.wireTypeId === 'custom'
+  const specs = row.wireTypeId === 'custom' ? [] : getWireSpecsByType(row.wireTypeId)
+  const activeSpec = getSelectedSpec(row)
+  const cableData = getCableData(row)
 
-  const handleTypeChange = (type: CableRow['cableType']) => {
-    if (type === 'custom') {
-      onChange({ ...row, cableType: 'custom', core: '', size: '' })
+  const handleTypeChange = (wireTypeId: CableRow['wireTypeId']) => {
+    if (wireTypeId === 'custom') {
+      onChange({ ...row, wireTypeId: 'custom', specId: '' })
       return
     }
-    const newOpts = CABLE_OPTIONS[type]
-    const newCore = newOpts.coreOptions[0].val
-    const newSizes = newOpts.sizesByCore[newCore]
-    onChange({ ...row, cableType: type, core: newCore, size: newSizes[0] })
-  }
-
-  const handleCoreChange = (core: string) => {
-    const sizes = opts!.sizesByCore[core]
-    onChange({ ...row, core, size: sizes[0] })
+    const firstSpec = getWireSpecsByType(wireTypeId)[0]
+    onChange({ ...row, wireTypeId, specId: firstSpec?.id ?? '' })
   }
 
   return (
     <div className="wire-row">
       <div className="wire-row-grid">
         <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label" style={{ fontSize: '0.78rem' }}>線種</label>
+          <label className="form-label" style={{ fontSize: '0.78rem' }}>電線種類</label>
           <select
-            className="form-control" value={row.cableType}
-            onChange={e => handleTypeChange(e.target.value as CableRow['cableType'])}
+            className="form-control" value={row.wireTypeId}
+            onChange={e => handleTypeChange(e.target.value as CableRow['wireTypeId'])}
             style={{ fontSize: '0.9rem', padding: '0.5rem 2rem 0.5rem 0.6rem' }}
           >
-            <option value="CV">CV</option>
-            <option value="CVT">CVT</option>
-            <option value="VVF">VVF</option>
+            {WIRE_TYPES.filter(wireType => wireType.active).map(wireType => (
+              <option key={wireType.id} value={wireType.id}>{wireType.displayName}</option>
+            ))}
             <option value="custom">手入力</option>
           </select>
         </div>
 
-        {!isCustom && opts ? (
+        {!isCustom ? (
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label" style={{ fontSize: '0.78rem' }}>芯数</label>
+            <label className="form-label" style={{ fontSize: '0.78rem' }}>電線仕様</label>
             <select
-              className="form-control" value={row.core}
-              onChange={e => handleCoreChange(e.target.value)}
+              className="form-control" value={activeSpec?.id ?? ''}
+              onChange={e => onChange({ ...row, specId: e.target.value })}
               style={{ fontSize: '0.9rem', padding: '0.5rem 2rem 0.5rem 0.6rem' }}
             >
-              {opts.coreOptions.map(c => (
-                <option key={c.val} value={c.val}>{c.label}</option>
+              {specs.map(spec => (
+                <option key={spec.id} value={spec.id}>{spec.specDisplay}</option>
               ))}
             </select>
           </div>
@@ -230,25 +204,12 @@ function CableRowItem({
       </div>
 
       <div className="wire-row-bottom">
-        {!isCustom ? (
-          <div className="form-group">
-            <label className="form-label" style={{ fontSize: '0.78rem' }}>サイズ (mm²)</label>
-            <select
-              className="form-control" value={row.size}
-              onChange={e => onChange({ ...row, size: e.target.value })}
-              style={{ fontSize: '0.9rem', padding: '0.5rem 2rem 0.5rem 0.6rem' }}
-            >
-              {sizeOpts.map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-        ) : (
+        {isCustom && (
           <div className="form-group">
             <label className="form-label" style={{ fontSize: '0.78rem' }}>質量 (kg/m)</label>
             <input
               type="number" className="form-control" value={row.customMass}
-              placeholder="例: 1.5" min="0" step="0.01"
+              placeholder="例: 1.5" min="0.01" step="0.01"
               onChange={e => onChange({ ...row, customMass: e.target.value })}
               style={{ fontSize: '0.9rem', padding: '0.5rem 0.6rem' }}
             />
@@ -267,9 +228,9 @@ function CableRowItem({
           </div>
         </div>
 
-        {!isCustom && od > 0 && (
+        {!isCustom && (
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', alignSelf: 'flex-end', paddingBottom: '4px', whiteSpace: 'nowrap' }}>
-            φ{od}mm / {mass} kg/m
+            {cableData ? `φ${cableData.od}mm / ${cableData.mass} kg/m` : '外径・質量: 該当なし'}
           </div>
         )}
 
@@ -293,8 +254,7 @@ export default function CableRackPage() {
   const [direction, setDirection] = useState<'horizontal' | 'vertical'>('horizontal')
   const [outdoor, setOutdoor] = useState(false)
   const [hasCover, setHasCover] = useState(false)
-  const [layoutMargin, setLayoutMargin] = useState(1.10)
-  const [futureRate, setFutureRate] = useState(20)
+  const [rackWidthUsage, setRackWidthUsage] = useState(90)
   const [rackMassInput, setRackMassInput] = useState('')
   const [coverMassInput, setCoverMassInput] = useState('')
 
@@ -313,42 +273,46 @@ export default function CableRackPage() {
   }, [])
 
   const calc = useMemo(() => {
-    const multiplier = 1 + futureRate / 100
     let occupyWidth = 0
     let cableMassPerM = 0
-    let maxOd = 0
+    let minBendRadius = 0
     let maxBendFactor = 6
+    let missingDataCount = 0
 
     for (const row of rows) {
-      const od = getOd(row)
-      const mass = getMass(row)
-      occupyWidth += od * row.qty
-      cableMassPerM += mass * row.qty
-      if (od > maxOd) {
-        maxOd = od
-        maxBendFactor = getBendFactor(row.cableType, row.core)
+      const cableData = getCableData(row)
+      if (!cableData) {
+        missingDataCount += 1
+        continue
+      }
+      occupyWidth += cableData.od * row.qty
+      cableMassPerM += cableData.mass * row.qty
+      const bendFactor = getBendFactor(row)
+      const bendRadius = cableData.od * bendFactor
+      if (bendRadius > minBendRadius) {
+        minBendRadius = bendRadius
+        maxBendFactor = bendFactor
       }
     }
 
-    const requiredWidth = occupyWidth * layoutMargin * multiplier
-    const recommendedWidth = RACK_WIDTHS.find(w => w >= requiredWidth) ?? null
+    const requiredWidth = occupyWidth / (rackWidthUsage / 100)
+    const recommendedWidth = RACK_WIDTHS.find(w => occupyWidth / w * 100 <= rackWidthUsage + 1e-9) ?? null
     const rackMassVal = parseFloat(rackMassInput) || 0
     const coverMassVal = parseFloat(coverMassInput) || 0
-    const totalMass = (cableMassPerM + rackMassVal + coverMassVal) * multiplier
+    const totalMass = cableMassPerM + rackMassVal + coverMassVal
     const boltSize = recommendedWidth !== null
       ? (recommendedWidth > 600 ? 'M12以上（呼び径12mm以上）' : 'M9以上（呼び径9mm以上）')
       : '—'
     const hInterval = material === 'steel' ? '2m以下' : '1.5m以下'
-    const minBendRadius = maxOd > 0 ? maxOd * maxBendFactor : null
 
-    return { occupyWidth, requiredWidth, recommendedWidth, cableMassPerM, totalMass, boltSize, hInterval, minBendRadius, maxBendFactor }
-  }, [rows, layoutMargin, futureRate, material, rackMassInput, coverMassInput])
+    return { occupyWidth, requiredWidth, recommendedWidth, cableMassPerM, totalMass, boltSize, hInterval, minBendRadius: minBendRadius || null, maxBendFactor, missingDataCount }
+  }, [rows, rackWidthUsage, material, rackMassInput, coverMassInput])
 
-  const hasResult = rows.some(r => getOd(r) > 0)
+  const hasMissingData = calc.missingDataCount > 0
 
   return (
     <>
-      <SiteHeader mode="sub" title="ケーブルラック簡易選定" />
+      <SiteHeader mode="sub" title="ラック選定" />
 
       <main className="vd2-main">
         <div className="vd2-input-col">
@@ -374,30 +338,18 @@ export default function CableRackPage() {
           <p className="card-title">ラック設定</p>
 
           <div className="form-group">
-            <label className="form-label">並べ方の余裕</label>
+            <label className="form-label">ラック幅使用率</label>
             <div className="chips-group">
-              {LAYOUT_MARGINS.map(m => (
-                <label className="chip-label" key={m.value}>
-                  <input type="radio" name="layoutMargin" checked={layoutMargin === m.value} onChange={() => setLayoutMargin(m.value)} />
-                  <span className="chip-text" style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}>{m.label}</span>
+              {RACK_WIDTH_USAGE_RATES.map(rate => (
+                <label className="chip-label" key={rate}>
+                  <input type="radio" name="rackWidthUsage" checked={rackWidthUsage === rate} onChange={() => setRackWidthUsage(rate)} />
+                  <span className="chip-text" style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}>{rate}%</span>
                 </label>
               ))}
             </div>
             <p className="text-sm text-muted mt-1">
-              ※ 公共建築工事標準仕様書の規定値ではありません。ケーブルの並び・結束・蛇行・施工余裕を見込む簡易係数（ELE-CAL独自）です。
+              ※ 規程による指定値ではありません。施工時の並べやすさ・配線余裕を考慮して設定するELE-CAL独自設定です。数値が小さいほど余裕を大きく見込みます。
             </p>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">将来増設率</label>
-            <div className="chips-group">
-              {FUTURE_RATES.map(r => (
-                <label className="chip-label" key={r.value}>
-                  <input type="radio" name="futureRate" checked={futureRate === r.value} onChange={() => setFutureRate(r.value)} />
-                  <span className="chip-text" style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}>{r.label}</span>
-                </label>
-              ))}
-            </div>
           </div>
 
           <div className="form-group">
@@ -481,17 +433,21 @@ export default function CableRackPage() {
 
         <div className="vd2-result-col">
         {/* 計算結果 */}
-        {hasResult && (
+        {(
           <>
             <div className="total-area-box">
               <div>
                 <div className="label" style={{ fontSize: '0.78rem' }}>推奨ラック幅</div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  占有幅 {calc.occupyWidth.toFixed(0)}mm × 余裕{layoutMargin.toFixed(2)} × (1+{futureRate}%) = 必要幅 {calc.requiredWidth.toFixed(0)}mm
+                  {hasMissingData
+                    ? `外径・質量データがない電線仕様が${calc.missingDataCount}件あります。`
+                    : `占有幅 ${calc.occupyWidth.toFixed(0)}mm ÷ 使用率${rackWidthUsage}% = 必要幅 ${calc.requiredWidth.toFixed(0)}mm`}
                 </div>
               </div>
               <div>
-                {calc.recommendedWidth !== null ? (
+                {hasMissingData ? (
+                  <span style={{ color: 'var(--accent)', fontSize: '1rem', fontWeight: 700 }}>該当なし</span>
+                ) : calc.recommendedWidth !== null ? (
                   <>
                     <span className="value">{calc.recommendedWidth}</span>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginLeft: '4px' }}>mm</span>
@@ -504,23 +460,34 @@ export default function CableRackPage() {
               </div>
             </div>
 
-            <section className="card">
+            {hasMissingData ? (
+              <section className="card">
+                <p className="card-title">選定結果</p>
+                <div className="validation-warning">
+                  選択した電線仕様の外径・質量データが不足しているため、ラック幅・概算荷重は該当なしです。
+                  別の電線仕様を選択するか、手入力で外径・質量を指定してください。
+                </div>
+              </section>
+            ) : (
+              <section className="card">
               <p className="card-title">選定結果</p>
 
               <div className="form-group">
-                <label className="form-label" style={{ fontSize: '0.78rem' }}>ラック幅候補と余裕</label>
+                <label className="form-label" style={{ fontSize: '0.78rem' }}>ラック幅候補</label>
                 <div className="table-wrapper">
                   <table className="pipe-table">
                     <thead>
                       <tr>
                         <th>ラック幅 (mm)</th>
-                        <th style={{ textAlign: 'center' }}>充足</th>
-                        <th style={{ textAlign: 'center' }}>余裕幅 (mm)</th>
+                        <th style={{ textAlign: 'center' }}>判定</th>
+                        <th style={{ textAlign: 'center' }}>実占有率 (%)</th>
+                        <th style={{ textAlign: 'center' }}>空き幅 (mm)</th>
                       </tr>
                     </thead>
                     <tbody>
                       {RACK_WIDTHS.map(w => {
-                        const ok = w >= calc.requiredWidth
+                        const actualUsageRate = calc.occupyWidth / w * 100
+                        const ok = actualUsageRate <= rackWidthUsage + 1e-9
                         const isRecommend = w === calc.recommendedWidth
                         return (
                           <tr key={w} style={isRecommend ? { background: 'rgba(var(--seg-active-rgb),0.06)' } : {}}>
@@ -531,7 +498,10 @@ export default function CableRackPage() {
                               <span className={`badge ${ok ? 'badge-ok' : 'badge-ng'}`}>{ok ? 'OK' : 'NG'}</span>
                             </td>
                             <td style={{ textAlign: 'center', fontSize: '0.85rem', color: ok ? 'var(--text-secondary)' : 'var(--danger)' }}>
-                              {ok ? `+${(w - calc.requiredWidth).toFixed(0)}` : `−${(calc.requiredWidth - w).toFixed(0)}`}
+                              {actualUsageRate.toFixed(1)}
+                            </td>
+                            <td style={{ textAlign: 'center', fontSize: '0.85rem', color: w >= calc.occupyWidth ? 'var(--text-secondary)' : 'var(--danger)' }}>
+                              {(w - calc.occupyWidth).toFixed(0)}
                             </td>
                           </tr>
                         )
@@ -562,7 +532,7 @@ export default function CableRackPage() {
                   </div>
                   {calc.minBendRadius !== null && (
                     <div className="result-row" style={{ padding: '0.6rem 0.75rem' }}>
-                      <span className="label">最小曲げ半径（最大ケーブル基準）</span>
+                      <span className="label">最小曲げ半径（最大値）</span>
                       <span className="value">{calc.minBendRadius.toFixed(0)} mm（外径×{calc.maxBendFactor}）</span>
                     </div>
                   )}
@@ -573,11 +543,11 @@ export default function CableRackPage() {
                 <label className="form-label" style={{ fontSize: '0.78rem' }}>概算荷重</label>
                 <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
                   <div className="result-row" style={{ padding: '0.6rem 0.75rem' }}>
-                    <span className="label">ケーブル重量（増設率適用前）</span>
+                    <span className="label">ケーブル重量</span>
                     <span className="value">{calc.cableMassPerM.toFixed(2)} kg/m</span>
                   </div>
                   <div className="result-row" style={{ padding: '0.6rem 0.75rem' }}>
-                    <span className="label">設計荷重（増設率{futureRate}%込み）</span>
+                    <span className="label">概算荷重（追加荷重込み）</span>
                     <span className="value">{calc.totalMass.toFixed(2)} kg/m</span>
                   </div>
                 </div>
@@ -598,13 +568,15 @@ export default function CableRackPage() {
               <p className="text-sm text-muted mt-1">
                 電力ケーブルは原則として積重ね不可。1段並べで選定してください（2.10.4）。
               </p>
-            </section>
+              </section>
+            )}
           </>
         )}
 
         <div className="disclaimer">
           <strong>⚠ 注意事項</strong>
-          本ツールは、公共建築工事標準仕様書（電気設備工事編）令和7年版を参考に、ケーブルラック幅・概算荷重・支持間隔の目安を算出する簡易ツールです。
+          本ツールは、内線規程及び公共建築工事標準仕様書（電気設備工事編）令和7年版等を参考に、ケーブルラック幅・概算荷重・支持間隔の目安を算出する簡易ツールです。
+          ラック幅使用率は規程による指定値ではなく、施工時の並べやすさ・配線余裕を考慮するためのELE-CAL独自設定です。
           ケーブル外径・質量は内線規程 JEAC8001-2022 資料0-1を参考にした代表値です。メーカー・型番・シース仕様により差があります。
           ラック本体・支持金具・アンカーの許容荷重は、使用メーカーのカタログ及び設計図書で最終確認してください。
           本ツールの計算結果で生じた損害について、作成者は一切の責任を負いません。
