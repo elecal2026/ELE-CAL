@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import { UserButton, SignInButton, SignUpButton, Show } from '@clerk/nextjs';
 import styles from './SiteHeader.module.css';
+import { usePaywall } from './PaywallProvider';
 
 async function openCustomerPortal() {
   try {
@@ -57,6 +58,7 @@ interface SiteHeaderProps {
 
 export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderProps) {
   const userButtonRef = useRef<HTMLDivElement>(null);
+  const { isPaid } = usePaywall();
   const className = mode === 'sub' ? `${styles.topbar} ${styles.subMode}` : styles.topbar;
 
   const handleSettingsClick = () => {
@@ -111,11 +113,13 @@ export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderPr
                         labelIcon={<UserIcon />}
                         href="/account"
                       />
-                      <UserButton.Action
-                        label="お支払い管理"
-                        labelIcon={<CardIcon />}
-                        onClick={openCustomerPortal}
-                      />
+                      {isPaid && (
+                        <UserButton.Action
+                          label="お支払い管理"
+                          labelIcon={<CardIcon />}
+                          onClick={openCustomerPortal}
+                        />
+                      )}
                     </UserButton.MenuItems>
                   </UserButton>
                 </div>
