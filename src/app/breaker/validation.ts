@@ -1,4 +1,5 @@
 import type { System, LoadEntry } from './types'
+import { getWireSpecById } from '@/data/wire-master'
 
 export interface ValidationIssue {
   id: string
@@ -60,23 +61,25 @@ export function validateBreakerInputs(
       })
     }
 
+    const activeSpec = load.wiring.specId ? getWireSpecById(load.wiring.specId) : undefined
+
     // B-6: IV × 60mm²以上
-    if (load.wiring.wireType === 'IV' && ['60mm²', '100mm²', '150mm²', '200mm²'].includes(load.wiring.wireSize)) {
+    if (activeSpec?.wireTypeId === 'IV' && activeSpec.sizeUnit === 'mm²' && activeSpec.sizeValue >= 60) {
       issues.push({
         id: 'B-6',
         level: 'warning',
         target: i,
-        message: `負荷${i + 1}: IV ${load.wiring.wireSize}は一般的ではありません。CVまたはCVTを検討してください。`,
+        message: `負荷${i + 1}: ${activeSpec.fullDisplay}は一般的ではありません。CVまたはCVTを検討してください。`,
       })
     }
 
     // B-9 / B-10 / B-11 / B-12: 配線情報の不完全チェック
-    const { wireType, wireSize, wireLength } = load.wiring
-    const hasAny = wireType !== '' || wireSize !== '' || wireLength !== ''
+    const { wireTypeId, specId, wireLength } = load.wiring
+    const hasAny = wireTypeId !== '' || specId !== '' || (parseFloat(wireLength) || 0) > 0
     if (hasAny) {
       const missing: string[] = []
-      if (wireType === '') missing.push('電線種類')
-      if (wireSize === '') missing.push('太さ')
+      if (wireTypeId === '') missing.push('電線種類')
+      if (specId === '') missing.push('電線仕様')
       if (wireLength === '') missing.push('長さ')
       if (missing.length > 0) {
         issues.push({
@@ -90,28 +93,4 @@ export function validateBreakerInputs(
   })
 
   return issues
-}
-
-/**
- * 電線種類に応じた利用可能な電線サイズを返す
- * B-7/B-8: CV/CVTではmm表記サイズを除外
- */
-export function getAvailableWireSizes(wireType: string): string[] {
-  const ALL_SIZES = [
-    '1.6mm', '2.0mm', '2.6mm',
-    '5.5mm²', '8mm²', '14mm²', '22mm²', '38mm²',
-    '60mm²', '100mm²', '150mm²', '200mm²',
-  ]
-
-  if (wireType === 'CV' || wireType === 'CVT') {
-    // CV/CVTはmm²サイズのみ（単線サイズは存在しない）
-    return ALL_SIZES.filter(s => s.includes('mm²'))
-  }
-
-  if (wireType === 'VVF') {
-    // VVFは1.6mm〜2.6mmのみ
-    return ALL_SIZES.filter(s => ['1.6mm', '2.0mm', '2.6mm'].includes(s))
-  }
-
-  return ALL_SIZES
 }

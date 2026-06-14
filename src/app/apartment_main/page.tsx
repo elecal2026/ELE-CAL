@@ -7,18 +7,19 @@ import { usePaywall } from '@/components/PaywallProvider'
 import { calculateApartment } from './calculations'
 import InputPanel from './InputPanel'
 import ResultPanel from './ResultPanel'
-import { CONTRACT_AMPS } from './types'
 import type { ApartmentInput } from './types'
 import { validateApartmentInput } from './validation'
 
 const DEFAULT_INPUT: ApartmentInput = {
   housingType: 'general',
-  distributionSystem: 'singlePhase3Wire',
-  groups: CONTRACT_AMPS.map(amp => ({
-    contractAmp: amp,
-    units: amp === 40 ? 10 : 0,
-  })),
-  commonKva: 0,
+  groups: [{
+    id: 'housing-1',
+    distributionSystem: 'singlePhase3Wire',
+    voltage: 200,
+    contractAmp: 40,
+    units: 10,
+  }],
+  commonItems: [],
 }
 
 export default function ApartmentMainPage() {
@@ -46,7 +47,7 @@ export default function ApartmentMainPage() {
             <div className="formula">内線規程 資料 3-6-1 / 3-6-2</div>
             <div>
               一般集合住宅は住戸契約容量の積み上げ計算値と同戸数の標準表値を比較表示します。
-              住戸面積補正や戸数範囲外への外挿は行いません。
+              共用部負荷には需要率を掛けず、住戸需要負荷へ加算します。住戸面積補正や戸数範囲外への外挿は行いません。
             </div>
           </div>
         </div>

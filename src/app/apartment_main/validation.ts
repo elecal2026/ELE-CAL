@@ -38,11 +38,14 @@ export function validateApartmentInput(input: ApartmentInput): ValidationIssue[]
     })
   }
 
-  if (input.distributionSystem === 'threePhase3Wire' && input.housingType === 'general') {
+  if (
+    input.housingType === 'general'
+    && input.groups.some(group => group.distributionSystem !== 'singlePhase3Wire')
+  ) {
     issues.push({
       id: 'AM-4',
       level: 'warning',
-      message: '三相3線式は電流のみ算出します。配線用遮断器・CVTケーブルは集合住宅向け資料に値がないため、別途確認してください。',
+      message: '単相2線の住戸を含むため、同戸数の標準表にある単相3線式電流・遮断器・CVT値は直接適用できません。',
     })
   }
 

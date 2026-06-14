@@ -1,10 +1,10 @@
 import type { LoadEntry, System, StartMethod, MotorTableRow, WelderTableRow, WireVerification } from './types'
 import {
   BREAKER_RATINGS, MOTOR_TABLE_SINGLE, WELDER_TABLE,
-  ALLOWABLE_CURRENT, ALLOWABLE_CURRENT_SIZES,
   RX_DATA, COPPER_CONDUCTIVITY,
-  WIRE_SIZE_TO_MM2, WIRE_SIZE_TO_KEY,
 } from './constants'
+import { getAllowableCurrentForSpec, getConditionSummary } from '@/data/allowable-current'
+import { getWireSpecById, getWireSpecsByType, type WireSpec, type WireTypeId } from '@/data/wire-master'
 
 /**
  * 溶接機の使用率を考慮した等価電力を計算
@@ -133,28 +133,12 @@ export function getMotorWireInfo(
 // ========================================
 
 /**
- * WIRE_SIZES文字列 → 断面積(mm²)に変換
+ * 共通マスターの電線仕様 → 導体断面積(mm²)に変換
  */
-export function getWireSizeMm2(sizeStr: string): number | null {
-  return WIRE_SIZE_TO_MM2[sizeStr] ?? null
-}
-
-/**
- * WIRE_SIZES文字列 → 許容電流テーブルのキーに変換
- */
-function toAllowableKey(sizeStr: string): string | null {
-  return WIRE_SIZE_TO_KEY[sizeStr] ?? null
-}
-
-/**
- * 許容電流を取得
- */
-export function getAllowableCurrent(wireType: string, wireSizeStr: string): number | null {
-  const key = toAllowableKey(wireSizeStr)
-  if (!key) return null
-  const table = ALLOWABLE_CURRENT[wireType]
-  if (!table) return null
-  return table[key] ?? null
+export function getWireSizeMm2(spec: WireSpec): number {
+  return spec.sizeUnit === 'mm'
+    ? Math.PI * (spec.sizeValue / 2) ** 2
+    : spec.sizeValue
 }
 
 /**
@@ -212,7 +196,9 @@ function judgeVd(rate: number): 'ok' | 'warn' | 'ng' {
  * ブレーカー定格以上の許容電流 かつ 電圧降下4%以内 を満たす最小サイズ
  */
 export function recommendWireSize(
-  wireType: string,
+  wireTypeId: WireTypeId,
+  installationMethod: LoadEntry['wiring']['installationMethod'],
+  wireCount: LoadEntry['wiring']['wireCount'],
   breakerRating: number,
   system: System,
   current: number,
@@ -220,30 +206,21 @@ export function recommendWireSize(
   voltage: number,
   powerFactor: number
 ): string | null {
-  const sizes = ALLOWABLE_CURRENT_SIZES[wireType]
-  const table = ALLOWABLE_CURRENT[wireType]
-  if (!sizes || !table) return null
+  const specs = getWireSpecsByType(wireTypeId)
 
-  for (const sizeKey of sizes) {
-    const amp = table[sizeKey]
+  for (const spec of specs) {
+    const amp = getAllowableCurrentForSpec(wireTypeId, installationMethod, wireCount, spec)
     if (amp === undefined || amp < breakerRating) continue
 
     // 電圧降下もチェック（長さが指定されている場合のみ）
     if (lengthM > 0) {
-      const mm2 = parseFloat(sizeKey)
-      if (isNaN(mm2) || mm2 <= 0) continue
+      const mm2 = getWireSizeMm2(spec)
       const vd = calcVoltageDrop(system, current, lengthM, mm2, powerFactor)
       const rate = (vd / voltage) * 100
       if (rate > 4) continue
     }
 
-    // WIRE_SIZES表示形式に変換
-    const mm2 = parseFloat(sizeKey)
-    if (mm2 < 5.5) {
-      // 丸線表記のサイズは対応が難しいので mm² 表記で返す
-      return `${sizeKey}mm²`
-    }
-    return `${sizeKey}mm²`
+    return spec.specDisplay
   }
 
   return null // 適合するサイズなし
@@ -257,23 +234,24 @@ export function verifyWiring(
   system: System,
   voltage: number,
   powerFactor: number,
-  breakerRating: number | null,
-  loadCurrent: number
+  breakerRating: number | null
 ): WireVerification[] {
   return loads.map((load, index) => {
-    const { wireType, wireSize, wireLength } = load.wiring
+    const { wireTypeId, specId, installationMethod, wireCount, wireLength } = load.wiring
+    const spec = specId ? getWireSpecById(specId) : undefined
 
     // 基本情報
     const lengthM = parseFloat(wireLength) || 0
-    const wireSizeMm2 = wireSize ? getWireSizeMm2(wireSize) : null
+    const wireSizeMm2 = spec ? getWireSizeMm2(spec) : null
 
     // 未入力の場合
-    if (!wireType || !wireSize) {
+    if (!wireTypeId || !spec) {
       return {
         loadIndex: index,
         loadName: load.name || `負荷${index + 1}`,
-        wireType,
-        wireSize,
+        wireType: wireTypeId,
+        wireSpecDisplay: spec?.specDisplay ?? '',
+        conditionSummary: '',
         wireLength: lengthM,
         wireSizeMm2: wireSizeMm2 ?? 0,
         allowableCurrent: null,
@@ -286,7 +264,7 @@ export function verifyWiring(
     }
 
     // ① 許容電流
-    const allowableCurrent = getAllowableCurrent(wireType, wireSize)
+    const allowableCurrent = getAllowableCurrentForSpec(wireTypeId, installationMethod, wireCount, spec) ?? null
     const isAllowableOk = allowableCurrent !== null && breakerRating !== null
       ? breakerRating <= allowableCurrent
       : null
@@ -316,15 +294,17 @@ export function verifyWiring(
 
     if (needsRecommendation && breakerRating !== null) {
       recommendedSize = recommendWireSize(
-        wireType, breakerRating, system, individualCurrent, lengthM, voltage, powerFactor
+        wireTypeId, installationMethod, wireCount,
+        breakerRating, system, individualCurrent, lengthM, voltage, powerFactor
       )
     }
 
     return {
       loadIndex: index,
       loadName: load.name || `負荷${index + 1}`,
-      wireType,
-      wireSize,
+      wireType: wireTypeId,
+      wireSpecDisplay: spec.specDisplay,
+      conditionSummary: getConditionSummary(installationMethod, wireCount, wireTypeId),
       wireLength: lengthM,
       wireSizeMm2: wireSizeMm2 ?? 0,
       allowableCurrent,
@@ -411,7 +391,7 @@ export function calculateAll(
 
   // 配線検証
   const wireVerifications = verifyWiring(
-    loads, system, voltage, powerFactor, selectedBreaker, loadCurrent
+    loads, system, voltage, powerFactor, selectedBreaker
   )
 
   return {

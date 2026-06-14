@@ -1,13 +1,18 @@
-import { useMemo } from 'react'
-import type { LoadEntry, WiringConfig, LoadType, StartMethod, WireType, System } from './types'
+import type { LoadEntry, WiringConfig, LoadType, StartMethod } from './types'
 import { LOAD_TYPE_LABELS, START_METHOD_LABELS } from './constants'
-import { getAvailableWireSizes, type ValidationIssue } from './validation'
+import { type ValidationIssue } from './validation'
+import {
+  INSTALLATION_METHODS,
+  WIRE_COUNTS,
+  isInsulatedWire,
+  type InstallationMethod,
+  type WireCount,
+} from '@/data/allowable-current'
+import { WIRE_TYPES, getWireSpecsByType, type WireTypeId } from '@/data/wire-master'
 
 interface LoadEntryRowProps {
   entry: LoadEntry
   index: number
-  system: System
-  voltage: string
   onChange: (updated: LoadEntry) => void
   onRemove: () => void
   warnings: ValidationIssue[]
@@ -16,8 +21,6 @@ interface LoadEntryRowProps {
 export default function LoadEntryRow({
   entry,
   index,
-  system,
-  voltage,
   onChange,
   onRemove,
   warnings,
@@ -31,20 +34,16 @@ export default function LoadEntryRow({
     update({ wiring: { ...entry.wiring, ...partial } })
   }
 
-  // B-7/B-8: 電線種類に応じた利用可能サイズ
-  const availableSizes = useMemo(
-    () => getAvailableWireSizes(entry.wiring.wireType),
-    [entry.wiring.wireType],
-  )
+  const selectedWireType = entry.wiring.wireTypeId || undefined
+  const availableSpecs = selectedWireType ? getWireSpecsByType(selectedWireType) : []
+  const showWireCount = selectedWireType
+    ? isInsulatedWire(selectedWireType) && entry.wiring.installationMethod === '配管内'
+    : false
 
-  // 電線種類変更時にサイズが利用不可ならリセット
-  const handleWireTypeChange = (newType: WireType | '') => {
-    const newSizes = getAvailableWireSizes(newType)
-    const currentSize = entry.wiring.wireSize
-    const sizeStillValid = currentSize === '' || newSizes.includes(currentSize)
+  const handleWireTypeChange = (newType: WireTypeId | '') => {
     updateWiring({
-      wireType: newType,
-      wireSize: sizeStillValid ? currentSize : '',
+      wireTypeId: newType,
+      specId: newType ? getWireSpecsByType(newType)[0]?.id ?? '' : '',
     })
   }
 
@@ -131,31 +130,60 @@ export default function LoadEntryRow({
           <label className="load-field-label">電線種類</label>
           <select
             className="form-control form-control-sm"
-            value={entry.wiring.wireType}
-            onChange={(e) => handleWireTypeChange(e.target.value as WireType | '')}
+            value={entry.wiring.wireTypeId}
+            onChange={(e) => handleWireTypeChange(e.target.value as WireTypeId | '')}
           >
             <option value="">— 未選択 —</option>
-            <option value="CV">CV</option>
-            <option value="CVT">CVT</option>
-            <option value="IV">IV</option>
-            <option value="VVF">VVF</option>
-          </select>
-        </div>
-
-        {/* 電線太さ */}
-        <div className="load-field-row" style={{ marginBottom: 0, minWidth: '120px', flex: 1 }}>
-          <label className="load-field-label">太さ</label>
-          <select
-            className="form-control form-control-sm"
-            value={entry.wiring.wireSize}
-            onChange={(e) => updateWiring({ wireSize: e.target.value })}
-          >
-            <option value="">— 未選択 —</option>
-            {availableSizes.map(s => (
-              <option key={s} value={s}>{s}</option>
+            {WIRE_TYPES.filter((wireType) => wireType.active).map((wireType) => (
+              <option key={wireType.id} value={wireType.id}>{wireType.displayName}</option>
             ))}
           </select>
         </div>
+
+        {/* 電線仕様 */}
+        <div className="load-field-row" style={{ marginBottom: 0, minWidth: '150px', flex: 1.4 }}>
+          <label className="load-field-label">電線仕様</label>
+          <select
+            className="form-control form-control-sm"
+            value={entry.wiring.specId}
+            onChange={(e) => updateWiring({ specId: e.target.value })}
+            disabled={!selectedWireType}
+          >
+            <option value="">— 未選択 —</option>
+            {availableSpecs.map((spec) => (
+              <option key={spec.id} value={spec.id}>{spec.specDisplay}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* 敷設方法 */}
+        <div className="load-field-row" style={{ marginBottom: 0, minWidth: '110px', flex: 1 }}>
+          <label className="load-field-label">敷設方法</label>
+          <select
+            className="form-control form-control-sm"
+            value={entry.wiring.installationMethod}
+            onChange={(e) => updateWiring({ installationMethod: e.target.value as InstallationMethod })}
+          >
+            {INSTALLATION_METHODS.map((method) => (
+              <option key={method} value={method}>{method}</option>
+            ))}
+          </select>
+        </div>
+
+        {showWireCount && (
+          <div className="load-field-row" style={{ marginBottom: 0, minWidth: '150px', flex: 1 }}>
+            <label className="load-field-label">電流が流れる電線数</label>
+            <select
+              className="form-control form-control-sm"
+              value={entry.wiring.wireCount}
+              onChange={(e) => updateWiring({ wireCount: e.target.value as WireCount })}
+            >
+              {WIRE_COUNTS.map((count) => (
+                <option key={count} value={count}>{count}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* 長さ */}
         <div className="load-field-row" style={{ marginBottom: 0, minWidth: '100px', flex: 1 }}>

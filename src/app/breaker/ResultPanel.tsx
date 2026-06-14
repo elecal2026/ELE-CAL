@@ -112,7 +112,7 @@ export default function ResultPanel({
       )}
 
       {/* 配線検証 */}
-      {result.wireVerifications.some(v => v.allowableCurrent !== null || v.voltageDrop !== null) && (
+      {result.wireVerifications.some(v => v.wireType && v.wireSpecDisplay) && (
         <section className="card vd2-result-card">
           <p className="card-title">配線検証</p>
           {result.wireVerifications.map((v) => (
@@ -299,7 +299,7 @@ function WireVerificationRow({
   breakerRating: number | null
 }) {
   // 電線情報が未入力の場合はスキップ
-  if (!v.wireType && !v.wireSize) return null
+  if (!v.wireType || !v.wireSpecDisplay) return null
 
   const VD_BADGE: Record<string, { cls: string; text: string }> = {
     ok: { cls: 'badge-ok', text: '良好' },
@@ -318,27 +318,29 @@ function WireVerificationRow({
       <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '8px', color: 'var(--text-primary)' }}>
         {v.loadName}
         <span style={{ fontWeight: 400, fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '8px' }}>
-          {v.wireType} {v.wireSize}{v.wireLength > 0 ? ` / ${v.wireLength}m` : ''}
+          {v.wireType} {v.wireSpecDisplay} / {v.conditionSummary}{v.wireLength > 0 ? ` / ${v.wireLength}m` : ''}
         </span>
       </div>
 
       {/* 許容電流 */}
-      {v.allowableCurrent !== null && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4px', fontSize: '0.85rem' }}>
-          <span style={{ color: 'var(--text-secondary)', minWidth: '80px' }}>許容電流:</span>
-          <span style={{ fontWeight: 600 }}>{v.allowableCurrent} A</span>
-          {breakerRating !== null && (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4px', fontSize: '0.85rem' }}>
+        <span style={{ color: 'var(--text-secondary)', minWidth: '80px' }}>許容電流:</span>
+        <span style={{ fontWeight: 600 }}>{v.allowableCurrent !== null ? `${v.allowableCurrent} A` : '該当なし'}</span>
+        {v.allowableCurrent !== null && (
+          <>
+            {breakerRating !== null && (
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               （ブレーカー {breakerRating}A {v.isAllowableOk ? '≦' : '>'} {v.allowableCurrent}A）
             </span>
-          )}
-          {v.isAllowableOk !== null && (
-            <span className={`badge ${v.isAllowableOk ? 'badge-ok' : 'badge-ng'}`}>
-              {v.isAllowableOk ? 'OK' : 'NG'}
-            </span>
-          )}
-        </div>
-      )}
+            )}
+            {v.isAllowableOk !== null && (
+              <span className={`badge ${v.isAllowableOk ? 'badge-ok' : 'badge-ng'}`}>
+                {v.isAllowableOk ? 'OK' : 'NG'}
+              </span>
+            )}
+          </>
+        )}
+      </div>
 
       {/* 電圧降下 */}
       {v.voltageDrop !== null && v.voltageDropRate !== null && (

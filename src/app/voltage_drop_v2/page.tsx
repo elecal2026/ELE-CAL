@@ -3,22 +3,21 @@
 import { useState, useMemo, useCallback } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import { usePaywall } from '@/components/PaywallProvider'
+import {
+  WIRE_TYPES,
+  getWireSpecById,
+  getWireSpecsByType,
+  type WireTypeId,
+} from '@/data/wire-master'
 
 // ==========================================
 // 定数
 // ==========================================
-const COEFF: Record<string, number> = {
-  '1phase3wire': 35.6,
-  '3phase3wire': 30.8,
-}
-
-const T_SZ = [22, 38, 60, 100, 150, 200, 250, 325]
 const T_CR = [75, 100, 125, 150, 200, 225, 300]
-const B_SZ = [1.25, 2, 3.5, 5.5, 8, 14, 22, 38]
 const B_CR = [15, 16, 20, 30, 40, 50, 75]
 const NM = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫','⑬','⑭','⑮','⑯','⑰','⑱','⑲','⑳']
 
-const VOLTAGE_PRESETS = [100, 200, 400]
+const VOLTAGE_PRESETS = [100, 200]
 
 interface StdRule {
   min: number; max: number; label: string
@@ -44,7 +43,8 @@ const STD: Record<string, StdRule[]> = {
 // 型
 // ==========================================
 interface SectionData {
-  wireSize: number | null
+  wireTypeId: WireTypeId | ''
+  specId: string
   current: number | null
   sections: (number | null)[]
 }
@@ -74,13 +74,27 @@ interface FullPath {
 // ==========================================
 // 計算関数（純粋関数）
 // ==========================================
-function calcDrop(method: string, I: number | null, L: number | null, A: number | null): number {
+function getCoefficient(method: string, baseVoltage: number): number {
+  if (method === '3phase3wire') return 30.8
+  return baseVoltage === 100 ? 17.8 : 35.6
+}
+
+function getConductorArea(specId: string): number | null {
+  const spec = getWireSpecById(specId)
+  if (!spec) return null
+  return spec.sizeUnit === 'mm²'
+    ? spec.sizeValue
+    : Math.PI * (spec.sizeValue / 2) ** 2
+}
+
+function calcDrop(method: string, baseVoltage: number, I: number | null, L: number | null, A: number | null): number {
   if (!I || !L || !A || A <= 0) return 0
-  return COEFF[method] * I * L / 1000 / A
+  return getCoefficient(method, baseVoltage) * I * L / 1000 / A
 }
 
 function getSecResult(method: string, data: SectionData, baseVoltage: number): SecResult {
-  const drops = data.sections.map(d => calcDrop(method, data.current, d, data.wireSize))
+  const conductorArea = getConductorArea(data.specId)
+  const drops = data.sections.map(d => calcDrop(method, baseVoltage, data.current, d, conductorArea))
   const totalDrop = drops.reduce((a, b) => a + b, 0)
   const totalDist = data.sections.reduce<number>((a, b) => a + (b || 0), 0)
   const pct = baseVoltage > 0 ? totalDrop / baseVoltage * 100 : 0
@@ -161,14 +175,13 @@ function ValueChips({ label, options, value, onChange }: {
 // セクションカード（幹線 / 分岐共用）
 // ==========================================
 function SectionCard({
-  data, label, isBranch, sizes, currents, method, baseVoltage,
+  data, label, isBranch, currents, method, baseVoltage,
   allBranches, warnings,
   onUpdate, onDelete, onUpdateParent,
 }: {
   data: SectionData
   label: string
   isBranch: boolean
-  sizes: number[]
   currents: number[]
   method: string
   baseVoltage: number
@@ -180,7 +193,13 @@ function SectionCard({
 }) {
   const { isPaid, requirePaid } = usePaywall()
   const res = getSecResult(method, data, baseVoltage)
-  const hasData = !!(data.wireSize && data.current)
+  const availableSpecs = data.wireTypeId ? getWireSpecsByType(data.wireTypeId) : []
+  const hasData = !!(data.specId && data.current)
+
+  const handleWireTypeChange = (wireTypeId: WireTypeId | '') => {
+    onUpdate('wireTypeId', wireTypeId)
+    onUpdate('specId', wireTypeId ? getWireSpecsByType(wireTypeId)[0]?.id ?? '' : '')
+  }
 
   return (
     <div className="vd2-section-card">
@@ -214,15 +233,42 @@ function SectionCard({
         </div>
       )}
 
-      <ValueChips label="太さ (mm²)" options={sizes} value={data.wireSize}
-        onChange={(v) => onUpdate('wireSize', v)} />
+      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="vd2-param-row" style={{ flex: '1 1 140px' }}>
+          <div className="vd2-param-label">電線種類</div>
+          <select
+            className="form-control form-control-sm"
+            value={data.wireTypeId}
+            onChange={(e) => handleWireTypeChange(e.target.value as WireTypeId | '')}
+          >
+            <option value="">— 未選択 —</option>
+            {WIRE_TYPES.filter((wireType) => wireType.active).map((wireType) => (
+              <option key={wireType.id} value={wireType.id}>{wireType.displayName}</option>
+            ))}
+          </select>
+        </div>
+        <div className="vd2-param-row" style={{ flex: '2 1 200px' }}>
+          <div className="vd2-param-label">電線仕様</div>
+          <select
+            className="form-control form-control-sm"
+            value={data.specId}
+            onChange={(e) => onUpdate('specId', e.target.value)}
+            disabled={!data.wireTypeId}
+          >
+            <option value="">— 未選択 —</option>
+            {availableSpecs.map((spec) => (
+              <option key={spec.id} value={spec.id}>{spec.specDisplay}</option>
+            ))}
+          </select>
+        </div>
+      </div>
       <ValueChips label="電流 (A)" options={currents} value={data.current}
         onChange={(v) => onUpdate('current', v)} />
 
       {/* 部分入力エラー */}
-      {((data.wireSize != null && data.current == null) || (data.wireSize == null && data.current != null)) && (
+      {((data.specId && data.current == null) || (!data.specId && data.current != null)) && (
         <div className="validation-error" style={{ marginBottom: '8px' }}>
-          {data.wireSize == null ? '太さを入力してください' : '電流を入力してください'}
+          {!data.specId ? '電線仕様を選択してください' : '電流を入力してください'}
         </div>
       )}
 
@@ -435,15 +481,6 @@ function StdTable({ supplyType, totalDist, totalPct, trunkPct, branchPct }: {
   )
 }
 
-// ==========================================
-// メインページ
-// ==========================================
-// 電線太さに対する目安許容電流（V-4チェック用、大まかな上限値）
-const ROUGH_CAPACITY: Record<number, number> = {
-  1.25: 20, 2: 30, 3.5: 45, 5.5: 55, 8: 70, 14: 100, 22: 140,
-  38: 190, 60: 250, 100: 340, 150: 440, 200: 520, 250: 600, 325: 700,
-}
-
 export default function VoltageDropV2Page() {
   const { isPaid, requirePaid } = usePaywall()
 
@@ -451,37 +488,33 @@ export default function VoltageDropV2Page() {
   const [method, setMethod] = useState('1phase3wire')
   const [supplyType, setSupplyType] = useState('transformer')
   const [baseVoltage, setBaseVoltage] = useState(200)
-  const [customVoltageOpen, setCustomVoltageOpen] = useState(false)
-  const [customVoltageText, setCustomVoltageText] = useState('')
 
   // V-1: 三相3線 × 100V → 200Vに自動切替
-  // V-2: 単相3線 × 400V → 200Vに自動切替
-  // V-3: 電気事業者低圧 × 400V → 200Vに自動切替
   // 補正は方式・供給元の選択ハンドラ側で行う（effect内同期setStateを避ける）
   const selectMethod = (m: string) => {
     setMethod(m)
-    if ((m === '3phase3wire' && baseVoltage === 100) || (m === '1phase3wire' && baseVoltage === 400)) {
-      setBaseVoltage(200); setCustomVoltageOpen(false)
+    if (m === '3phase3wire' && baseVoltage === 100) {
+      setBaseVoltage(200)
     }
   }
   const selectSupplyType = (s: string) => {
     setSupplyType(s)
-    if (s === 'utility' && baseVoltage === 400) {
-      setBaseVoltage(200); setCustomVoltageOpen(false)
-    }
   }
 
   // 無効な電圧プリセットを計算
   const disabledVoltages = useMemo(() => {
     const disabled = new Set<number>()
     if (method === '3phase3wire') disabled.add(100)
-    if (method === '1phase3wire') disabled.add(400)
-    if (supplyType === 'utility') disabled.add(400)
     return disabled
-  }, [method, supplyType])
+  }, [method])
 
   // 幹線・分岐
-  const [trunk, setTrunk] = useState<SectionData>({ wireSize: null, current: null, sections: [null] })
+  const [trunk, setTrunk] = useState<SectionData>({
+    wireTypeId: '',
+    specId: '',
+    current: null,
+    sections: [null],
+  })
   const [branches, setBranches] = useState<BranchData[]>([])
   const [nextId, setNextId] = useState(1)
 
@@ -501,7 +534,7 @@ export default function VoltageDropV2Page() {
     const pid = branches.length > 0 ? branches[branches.length - 1].id : 'trunk'
     setBranches(prev => [...prev, {
       id: `branch-${n}`, label: `分岐${lb}`, parentId: pid,
-      wireSize: null, current: null, sections: [null],
+      wireTypeId: '', specId: '', current: null, sections: [null],
     }])
     setNextId(prev => prev + 1)
   }, [nextId, branches, requirePaid])
@@ -538,59 +571,40 @@ export default function VoltageDropV2Page() {
 
   const branchPct = baseVoltage > 0 ? branchDv / baseVoltage * 100 : 0
 
-  // V-4/V-5/V-6: 警告の計算
-  const trunkWarnings = useMemo(() => {
-    const w: string[] = []
-    if (trunk.wireSize && trunk.current) {
-      const cap = ROUGH_CAPACITY[trunk.wireSize]
-      if (cap && trunk.current > cap * 1.5) {
-        w.push(`電流 ${trunk.current}A は ${trunk.wireSize}mm² の目安許容電流（${cap}A）を大幅に超えています。電線サイズを確認してください。`)
-      }
-    }
-    return w
-  }, [trunk.wireSize, trunk.current])
-
-  const branchWarnings = useMemo(() => {
+  const branchWarnings = (() => {
     const map: Map<string, string[]> = new Map()
+    const trunkSpec = getWireSpecById(trunk.specId)
+    const trunkArea = getConductorArea(trunk.specId)
     for (const br of branches) {
       const w: string[] = []
-      // V-4: 電線サイズ × 電流の妥当性
-      if (br.wireSize && br.current) {
-        const cap = ROUGH_CAPACITY[br.wireSize]
-        if (cap && br.current > cap * 1.5) {
-          w.push(`電流 ${br.current}A は ${br.wireSize}mm² の目安許容電流（${cap}A）を大幅に超えています。`)
-        }
-      }
-      // V-5: 分岐電流 > 幹線電流
       if (br.current && trunk.current && br.current > trunk.current) {
         w.push(`分岐の電流（${br.current}A）が幹線の電流（${trunk.current}A）を超えています。`)
       }
-      // V-6: 分岐太さ > 幹線太さ
-      if (br.wireSize && trunk.wireSize && br.wireSize > trunk.wireSize) {
-        w.push(`分岐の電線サイズ（${br.wireSize}mm²）が幹線（${trunk.wireSize}mm²）より太いです。`)
+      const branchSpec = getWireSpecById(br.specId)
+      const branchArea = getConductorArea(br.specId)
+      if (branchSpec && trunkSpec && branchArea && trunkArea && branchArea > trunkArea) {
+        w.push(`分岐の電線仕様（${branchSpec.fullDisplay}）の導体断面積が幹線（${trunkSpec.fullDisplay}）より大きくなっています。`)
       }
       if (w.length > 0) map.set(br.id, w)
     }
     return map
-  }, [branches, trunk.wireSize, trunk.current])
+  })()
 
   // E: バリデーション — 分岐の部分入力チェック
   const hasValidationError = useMemo(() => {
     for (const br of branches) {
-      if ((br.wireSize != null && br.current == null) || (br.wireSize == null && br.current != null)) {
+      if ((br.specId && br.current == null) || (!br.specId && br.current != null)) {
         return true
       }
     }
     // 幹線の部分入力
-    if ((trunk.wireSize != null && trunk.current == null) || (trunk.wireSize == null && trunk.current != null)) {
+    if ((trunk.specId && trunk.current == null) || (!trunk.specId && trunk.current != null)) {
       return true
     }
     return false
   }, [trunk, branches])
 
-  const hasResult = !!(trunk.wireSize && trunk.current && trunkResult.totalDist > 0 && !hasValidationError)
-
-  const isCustomVoltage = customVoltageOpen || !VOLTAGE_PRESETS.includes(baseVoltage)
+  const hasResult = !!(trunk.specId && trunk.current && trunkResult.totalDist > 0 && !hasValidationError)
 
   return (
     <>
@@ -608,44 +622,29 @@ export default function VoltageDropV2Page() {
           </div>
         </div>
         <div className="vd2-setting-group">
-          <span className="vd2-setting-label">供給元</span>
-          <div className="vd2-chip-group">
-            <button type="button" className={`vd2-chip${supplyType === 'transformer' ? ' active' : ''}`}
-              onClick={() => selectSupplyType('transformer')}>自家変圧器</button>
-            <button type="button" className={`vd2-chip${supplyType === 'utility' ? ' active' : ''}`}
-              onClick={() => selectSupplyType('utility')}>電気事業者</button>
-          </div>
-        </div>
-        <div className="vd2-setting-group">
           <span className="vd2-setting-label">基準電圧</span>
           <div className="vd2-chip-group">
             {VOLTAGE_PRESETS.map(v => {
               const isDisabled = disabledVoltages.has(v)
               return (
                 <button key={v} type="button"
-                  className={`vd2-chip${baseVoltage === v && !customVoltageOpen ? ' active' : ''}${isDisabled ? ' disabled' : ''}`}
+                  className={`vd2-chip${baseVoltage === v ? ' active' : ''}${isDisabled ? ' disabled' : ''}`}
                   disabled={isDisabled}
-                  onClick={() => { setCustomVoltageOpen(false); setBaseVoltage(v) }}>
+                  onClick={() => setBaseVoltage(v)}>
                   {v}V
                 </button>
               )
             })}
-            <button type="button" className={`vd2-chip${isCustomVoltage ? ' active' : ''}`}
-              onClick={() => setCustomVoltageOpen(true)}>
-              その他
-            </button>
           </div>
-          {isCustomVoltage && (
-            <input type="number" className="vd2-chip-custom" placeholder="V" min="1"
-              value={customVoltageText}
-              onChange={(e) => {
-                setCustomVoltageText(e.target.value)
-                const v = parseFloat(e.target.value)
-                if (v > 0) setBaseVoltage(v)
-              }}
-              autoFocus
-            />
-          )}
+        </div>
+        <div className="vd2-setting-group">
+          <span className="vd2-setting-label">供給元</span>
+          <div className="vd2-chip-group">
+            <button type="button" className={`vd2-chip${supplyType === 'transformer' ? ' active' : ''}`}
+              onClick={() => selectSupplyType('transformer')}>自家変圧器</button>
+            <button type="button" className={`vd2-chip${supplyType === 'utility' ? ' active' : ''}`}
+              onClick={() => selectSupplyType('utility')}>電気事業者（低圧）</button>
+          </div>
         </div>
       </div>
 
@@ -655,9 +654,8 @@ export default function VoltageDropV2Page() {
           {/* 幹線 */}
           <SectionCard
             data={trunk} label="幹線" isBranch={false}
-            sizes={T_SZ} currents={T_CR}
+            currents={T_CR}
             method={method} baseVoltage={baseVoltage}
-            warnings={trunkWarnings}
             onUpdate={updateTrunk}
           />
 
@@ -665,7 +663,7 @@ export default function VoltageDropV2Page() {
           {branches.map(br => (
             <SectionCard key={br.id}
               data={br} label={br.label} isBranch={true}
-              sizes={B_SZ} currents={B_CR}
+              currents={B_CR}
               method={method} baseVoltage={baseVoltage}
               allBranches={branches}
               warnings={branchWarnings.get(br.id)}
@@ -688,12 +686,12 @@ export default function VoltageDropV2Page() {
             {hasValidationError ? (
               <div className="vd2-empty-state">
                 <div className="validation-error" style={{ textAlign: 'left' }}>
-                  入力にエラーがあります。太さと電流は両方入力してください。
+                  入力にエラーがあります。電線仕様と電流は両方入力してください。
                 </div>
               </div>
             ) : !hasResult ? (
               <div className="vd2-empty-state">
-                幹線の太さ・電流・距離を入力すると<br />結果が表示されます
+                幹線の電線仕様・電流・距離を入力すると<br />結果が表示されます
               </div>
             ) : (
               <>
@@ -738,7 +736,6 @@ export default function VoltageDropV2Page() {
             <summary>検討事項（実装検討中）</summary>
             <div className="review-notes-body">
               <ul>
-                <li><strong>V-10:</strong> カスタム値の上限チェック — 現在は任意の正数を入力可能。非現実的な値（電線10000mm²等）への上限設定を検討。</li>
                 <li><strong>V-11:</strong> 単相2線式の追加 — 現在は単相3線・三相3線のみ。住宅の引込線等で使われる単相2線（COEFF定数の追加が必要）の対応を検討。</li>
               </ul>
             </div>

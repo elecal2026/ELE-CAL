@@ -1,11 +1,15 @@
+import type { InstallationMethod, WireCount } from '@/data/allowable-current'
+import type { WireTypeId } from '@/data/wire-master'
+
 export type LoadType = 'general' | 'motor' | 'welder'
-export type WireType = 'CV' | 'CVT' | 'IV' | 'VVF'
 export type StartMethod = 'direct' | 'starDelta'
 export type System = 'single2' | 'single3' | 'three'
 
 export interface WiringConfig {
-  wireType: WireType | ''   // 空文字 = 未選択
-  wireSize: string           // 空文字 = 未選択
+  wireTypeId: WireTypeId | ''
+  specId: string
+  installationMethod: InstallationMethod
+  wireCount: WireCount
   wireLength: string
 }
 
@@ -46,7 +50,8 @@ export interface WireVerification {
   loadIndex: number
   loadName: string
   wireType: string
-  wireSize: string
+  wireSpecDisplay: string
+  conditionSummary: string
   wireLength: number
   wireSizeMm2: number
   allowableCurrent: number | null

@@ -18,7 +18,13 @@ function createLoad(): LoadEntry {
     powerKw: '',
     startMethod: 'direct',
     usageRate: '50',
-    wiring: { wireType: '', wireSize: '', wireLength: '0' },
+    wiring: {
+      wireTypeId: '',
+      specId: '',
+      installationMethod: 'ころがし',
+      wireCount: '3本以下',
+      wireLength: '0',
+    },
   }
 }
 
@@ -203,8 +209,6 @@ export default function BreakerPage() {
                     key={load.id}
                     entry={load}
                     index={i}
-                    system={system}
-                    voltage={voltage}
                     onChange={(updated) => updateLoad(load.id, updated)}
                     onRemove={() => removeLoad(load.id)}
                     warnings={validationIssues.filter(v => v.target === i)}

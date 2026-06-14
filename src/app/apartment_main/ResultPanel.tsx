@@ -1,4 +1,4 @@
-import type { ApartmentResult, ElectricRow, GeneralRow } from './types'
+import type { ApartmentResult, SystemSummary } from './types'
 import type { ValidationIssue } from './validation'
 
 const MAX_MASTER_CVT_SIZE_MM2 = 325
@@ -33,6 +33,33 @@ function DiffBadge({ diffKva }: { diffKva: number }) {
   )
 }
 
+function SystemSummaryCards({ summaries }: { summaries: SystemSummary[] }) {
+  if (summaries.length === 0) return null
+
+  return (
+    <section className="card vd2-section-card" style={{ marginTop: '0.75rem' }}>
+      <p className="card-title">系統別内訳</p>
+      <p className="apartment-section-description" style={{ marginBottom: '0.75rem' }}>
+        異なる配電方式の電流は合算せず、系統ごとに表示します。
+      </p>
+      <div className="apartment-result-grid">
+        {summaries.map(summary => (
+          <div className="apartment-system-result" key={summary.key}>
+            <strong>{summary.label}</strong>
+            <div className="ref-table-result">
+              {summary.dwellingKva > 0 && <RefRow label="住宅用需要負荷" value={`${summary.dwellingKva.toFixed(1)} kVA`} />}
+              {summary.commonKva > 0 && <RefRow label="共用部加算" value={`${summary.commonKva.toFixed(1)} kVA`} />}
+              <RefRow label="系統合計" value={`${summary.totalKva.toFixed(1)} kVA`} />
+              <RefRow label="計算電流" value={`${summary.currentA} A`} highlight />
+              <RefRow label="主開閉器候補" value={`${summary.breakerA} A`} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function GeneralResultPanel({ result, warnings }: {
   result: Extract<ApartmentResult, { mode: 'general' }>
   warnings: ValidationIssue[]
@@ -59,42 +86,37 @@ function GeneralResultPanel({ result, warnings }: {
               <span className="rb-label">合計</span>
               <span className="rb-val">{result.totalUnits}</span> 戸
             </div>
-            <div className="result-badge">
-              <span className="rb-label">需要率</span>
-              <span className="rb-val">{result.demandRate}</span> %
-            </div>
+          <div className="result-badge">
+            <span className="rb-label">需要率</span>
+            <span className="rb-val">{result.demandRate}</span> %
           </div>
         </div>
+      </div>
 
-        <div className="ref-table-result">
-          {result.isThreePhase ? (
-            <>
-              <RefRow label="三相3線式 電流" value={`${result.threePhaseCurrentA} A`} highlight />
-              <RefRow label="主開閉器候補" value="要別途確認" />
-              <RefRow label="CVT参考" value="要別途確認" />
-            </>
-          ) : (
-            <>
-              <RefRow label="幹線電流" value={`${result.currentA} A`} highlight />
-              <RefRow label="主開閉器候補" value={`${result.breakerA} A`} />
-            </>
-          )}
-          {result.commonKva > 0 && (
-            <RefRow label="うち共用部加算" value={`${result.commonKva.toFixed(1)} kVA`} />
-          )}
-        </div>
-      </section>
+      <div className="ref-table-result">
+        <RefRow label="住宅用需要負荷" value={`${result.dwellingLoadKva.toFixed(1)} kVA`} />
+        <RefRow label="共用部加算" value={`${result.commonKva.toFixed(1)} kVA`} />
+        <RefRow label="建物全体の合計容量" value={`${result.maxLoadKva.toFixed(1)} kVA`} highlight />
+      </div>
+    </section>
+
+      <SystemSummaryCards summaries={result.systemSummaries} />
 
       <section className="card vd2-section-card" style={{ marginTop: '0.75rem' }}>
         <p className="card-title" style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-          参考：同戸数の標準表値（内線規程 資料3-6-1）
+          参考：同戸数の住宅用標準表値
         </p>
         <div className="ref-table-result">
           <RefRow label={`${standardRow.units}戸 想定最大負荷`} value={`${standardRow.maxLoadKva.toFixed(1)} kVA`} />
-          <RefRow label="単相3線式 電流" value={`${standardRow.currentA} A`} />
-          <RefRow label="配線用遮断器" value={`${standardRow.breakerA} A`} />
-          <RefRow label="CVT最小太さ" value={formatCvtSize(standardRow.cableMm2)} />
+          <RefRow label="単相3線式 電流" value={result.standardElectricalApplicable ? `${standardRow.currentA} A` : '該当なし'} />
+          <RefRow label="配線用遮断器" value={result.standardElectricalApplicable ? `${standardRow.breakerA} A` : '該当なし'} />
+          <RefRow label="CVT最小太さ" value={result.standardElectricalApplicable ? formatCvtSize(standardRow.cableMm2) : '該当なし'} />
         </div>
+        {!result.standardElectricalApplicable && (
+          <p className="apartment-card-note">
+            住宅用に単相2線が含まれるため、単相3線100/200Vを前提とする標準表の電流・遮断器・CVT値は該当なしです。
+          </p>
+        )}
         <div style={{ marginTop: '0.5rem' }}>
           <DiffBadge diffKva={diffKva} />
         </div>
@@ -107,12 +129,9 @@ function GeneralResultPanel({ result, warnings }: {
             <li>住戸合計容量（需要率前）: {result.totalRawKva.toFixed(1)} kVA</li>
             <li>換算方式: 契約A ÷ 10 = kVA（例: 40A = 4.0kVA）</li>
             <li>需要率 {result.demandRate}% 適用後: {result.dwellingLoadKva.toFixed(1)} kVA</li>
-            {result.commonKva > 0 && <li>共用部加算: {result.commonKva.toFixed(1)} kVA</li>}
+            <li>共用部加算: {result.commonKva.toFixed(1)} kVA（需要率は適用しない）</li>
             <li>想定最大負荷: {result.maxLoadKva.toFixed(1)} kVA</li>
-            {result.isThreePhase
-              ? <li>三相3線式電流: {result.maxLoadKva.toFixed(1)} × 1000 ÷ (√3 × 200) = {result.threePhaseCurrentA} A</li>
-              : <li>幹線電流: {result.maxLoadKva.toFixed(1)} × 1000 ÷ 200 = {result.currentA} A（切り上げ）</li>
-            }
+            <li>電流と主開閉器候補は、異なる配電方式を合算せず系統別に算出</li>
           </ul>
           <p style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
             需要率は内線規程資料3-6-1の表値を使用。換算方式（A÷10=kVA）は同表が住戸面積100m²・4kVA/戸を前提とすることに基づく目安値です。主開閉器候補はCVT・電圧降下・許容電流等の確認前の候補値です。
@@ -144,42 +163,51 @@ function ElectricResultPanel({ result }: {
   }
 
   return (
-    <section className="card vd2-result-card">
-      <p className="card-title">標準表値（全電化）</p>
-      <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
-        {sourceTitle} / {totalUnits}戸
-      </p>
-
-      <div className="result-main">
-        <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.2rem' }}>
-          想定最大負荷
-        </div>
-        <span className="result-breaker">{electricRow.maxLoadKva.toFixed(1)}</span>
-        <span className="result-breaker-unit"> kVA</span>
-        <div className="result-sub">
-          <div className="result-badge">
-            <span className="rb-label">需要率</span>
-            <span className="rb-val">{electricRow.demandRate}</span> %
-          </div>
-          <div className="result-badge">
-            <span className="rb-label">重畳率</span>
-            <span className="rb-val">{electricRow.overlapRate}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="ref-table-result">
-        <RefRow label="電気温水器の想定負荷" value={`${electricRow.heaterKva.toFixed(1)} kVA`} />
-        <RefRow label="単相3線式 電流" value={`${electricRow.currentA} A`} highlight />
-        <RefRow label="配線用遮断器" value={`${electricRow.breakerA} A`} />
-        <RefRow label="CVT最小太さ" value={formatCvtSize(electricRow.cableMm2)} />
-      </div>
-      {electricRow.cableMm2 > MAX_MASTER_CVT_SIZE_MM2 && (
-        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-          CVT最小太さは現在の選択範囲外のため、該当なしと表示しています。
+    <>
+      <section className="card vd2-result-card">
+        <p className="card-title">標準表値（全電化）</p>
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+          {sourceTitle} / {totalUnits}戸
         </p>
-      )}
-    </section>
+
+        <div className="result-main">
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.2rem' }}>
+            想定最大負荷
+          </div>
+          <span className="result-breaker">{electricRow.maxLoadKva.toFixed(1)}</span>
+          <span className="result-breaker-unit"> kVA</span>
+          <div className="result-sub">
+            <div className="result-badge">
+              <span className="rb-label">需要率</span>
+              <span className="rb-val">{electricRow.demandRate}</span> %
+            </div>
+            <div className="result-badge">
+              <span className="rb-label">重畳率</span>
+              <span className="rb-val">{electricRow.overlapRate}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="ref-table-result">
+          <RefRow label="電気温水器の想定負荷" value={`${electricRow.heaterKva.toFixed(1)} kVA`} />
+          <RefRow label="単相3線式 電流" value={`${electricRow.currentA} A`} highlight />
+          <RefRow label="配線用遮断器" value={`${electricRow.breakerA} A`} />
+          <RefRow label="CVT最小太さ" value={formatCvtSize(electricRow.cableMm2)} />
+          {result.commonKva > 0 && (
+            <>
+              <RefRow label="共用部加算" value={`${result.commonKva.toFixed(1)} kVA`} />
+              <RefRow label="建物全体の合計容量" value={`${result.maxLoadKva.toFixed(1)} kVA`} />
+            </>
+          )}
+        </div>
+        {electricRow.cableMm2 > MAX_MASTER_CVT_SIZE_MM2 && (
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+            CVT最小太さは現在の選択範囲外のため、該当なしと表示しています。
+          </p>
+        )}
+      </section>
+      <SystemSummaryCards summaries={result.systemSummaries} />
+    </>
   )
 }
 

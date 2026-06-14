@@ -326,7 +326,7 @@ I_corrected = I_base × K_temp × K_group
 
 ## 7. ELE-CAL現状値との対応関係
 
-`src/app/allowable_current/page.tsx` の DATA オブジェクトとの対応予定と、PDF目視後の差分：
+`src/data/allowable-current.ts` の共有データとの対応予定と、PDF目視後の差分：
 
 | ELE-CAL内 | 内線規程の出典候補 | PDF照合結果 |
 |---|---|---|
@@ -342,10 +342,12 @@ I_corrected = I_base × K_temp × K_group
 | `CVD.*` | p882 表3 単心2個より | 2026-06-07にPDF p882正本値へ修正済み。UIラベルは旧表現のため変更が必要。 |
 | `CVT.*` | p882 表3 単心3個より | 2026-06-07にPDF p882正本値へ修正済み。UIラベルは旧表現のため変更が必要。 |
 
-### 7.1 `src/app/breaker/constants.ts` 側コピーのリスク
+### 7.1 ブレーカー側コピーの解消（2026-06-14）
 
-- `ALLOWABLE_CURRENT.IV` は `allowable_current/page.tsx` の `IV.管内（3本以下）` と同様に、8/14/22/100/150mm²などでPDF p148より+1Aの値を含む。
-- `ALLOWABLE_CURRENT.CV` / `ALLOWABLE_CURRENT.CVT` は2026-06-07に `allowable_current/page.tsx` の採用値と同期済み。
+- 許容電流表とブレーカー配線検証は、`src/data/allowable-current.ts` の同じデータ・条件判定を使用する。
+- `src/app/breaker/constants.ts` に存在した許容電流のコピーは削除した。
+- ブレーカー側でも、共通電線マスターの電線仕様、`ころがし` / `配管内`、IV/HIV配管内の電流が流れる電線数から許容電流を判定する。
+- 対応値がない仕様・条件は、計算値を推測せず結果を `該当なし` とする。
 
 > ⚠️ VVF・VVRの主要な許容電流は、内線規程資料1-3-3のPDF p880で確認できる。ただし、ELE-CALの各列がp880のどの施設条件に対応するかと、VVF「埋込配線」値の根拠は要照合。
 
