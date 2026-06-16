@@ -252,9 +252,6 @@ export default function ResultPanel({
           <div key={w.id} className="validation-warning" style={{ marginBottom: '0.5rem' }}>{w.message}</div>
         ))}
         <ElectricResultPanel result={result} />
-        <div className="disclaimer" style={{ marginTop: '1rem' }}>
-          本ツールは、「内線規程 第14版 JEAC8001-2022」を参考資料の一つとして計算しております。計算結果は目安としてご利用いただき、最終的なご判断は、実際の条件をご確認のうえお客様にてお願いいたします。
-        </div>
       </>
     )
   }
@@ -265,9 +262,6 @@ export default function ResultPanel({
         result={result}
         warnings={warnings.filter(w => w.id === 'AM-4')}
       />
-      <div className="disclaimer" style={{ marginTop: '1rem' }}>
-        本ツールは、「内線規程 第14版 JEAC8001-2022」を参考資料の一つとして計算しております。計算結果は目安としてご利用いただき、最終的なご判断は、実際の条件をご確認のうえお客様にてお願いいたします。
-      </div>
     </>
   )
 }
