@@ -1,5 +1,5 @@
 {
-  "version": "2026-06-13",
+  "version": "2026-06-16",
   "source": "電線ケーブル一覧.md（ラクダより抜粋）",
   "wireTypes": [
     {
@@ -683,39 +683,39 @@
       "sourceScope": "rakuda"
     },
     {
-      "id": "VVF-D-2_0-2-E1_6-SHEATH-BLUE",
+      "id": "VVF-D-2_0-2-E1_6-SEP",
       "wireTypeId": "VVF",
       "sizeValue": 2,
       "sizeText": "2.0",
       "sizeUnit": "mm",
       "coreLabel": "2心",
-      "variantLabel": "+E1.6mm シース青",
-      "specDisplay": "2.0mm-2心+E1.6mm シース青",
-      "fullDisplay": "VVF 2.0mm-2心+E1.6mm シース青",
+      "variantLabel": "+E1.6mmセパレート",
+      "specDisplay": "2.0mm-2心+E1.6mmセパレート",
+      "fullDisplay": "VVF 2.0mm-2心+E1.6mmセパレート",
       "sourceScope": "rakuda"
     },
     {
-      "id": "VVF-D-2_0-2-E1_6-EARTH-BLACK",
+      "id": "VVF-D-2_6-2-E1_6-SEP",
       "wireTypeId": "VVF",
-      "sizeValue": 2,
-      "sizeText": "2.0",
+      "sizeValue": 2.6,
+      "sizeText": "2.6",
       "sizeUnit": "mm",
       "coreLabel": "2心",
-      "variantLabel": "+E1.6mm アース黒",
-      "specDisplay": "2.0mm-2心+E1.6mm アース黒",
-      "fullDisplay": "VVF 2.0mm-2心+E1.6mm アース黒",
+      "variantLabel": "+E1.6mmセパレート",
+      "specDisplay": "2.6mm-2心+E1.6mmセパレート",
+      "fullDisplay": "VVF 2.6mm-2心+E1.6mmセパレート",
       "sourceScope": "rakuda"
     },
     {
-      "id": "VVF-S-5_5-2-E1_6",
+      "id": "VVF-S-5_5-2-E1_6-SEP",
       "wireTypeId": "VVF",
       "sizeValue": 5.5,
       "sizeText": "5.5",
       "sizeUnit": "mm²",
       "coreLabel": "2心",
-      "variantLabel": "+E1.6mm",
-      "specDisplay": "5.5mm²-2心+E1.6mm",
-      "fullDisplay": "VVF 5.5mm²-2心+E1.6mm",
+      "variantLabel": "+E1.6mmセパレート",
+      "specDisplay": "5.5mm²-2心+E1.6mmセパレート",
+      "fullDisplay": "VVF 5.5mm²-2心+E1.6mmセパレート",
       "sourceScope": "rakuda"
     },
     {
@@ -752,42 +752,6 @@
       "variantLabel": null,
       "specDisplay": "2.6mm-2心",
       "fullDisplay": "VVR 2.6mm-2心",
-      "sourceScope": "rakuda"
-    },
-    {
-      "id": "VVR-D-1_6-3",
-      "wireTypeId": "VVR",
-      "sizeValue": 1.6,
-      "sizeText": "1.6",
-      "sizeUnit": "mm",
-      "coreLabel": "3心",
-      "variantLabel": null,
-      "specDisplay": "1.6mm-3心",
-      "fullDisplay": "VVR 1.6mm-3心",
-      "sourceScope": "rakuda"
-    },
-    {
-      "id": "VVR-D-2_0-3",
-      "wireTypeId": "VVR",
-      "sizeValue": 2,
-      "sizeText": "2.0",
-      "sizeUnit": "mm",
-      "coreLabel": "3心",
-      "variantLabel": null,
-      "specDisplay": "2.0mm-3心",
-      "fullDisplay": "VVR 2.0mm-3心",
-      "sourceScope": "rakuda"
-    },
-    {
-      "id": "VVR-D-2_6-3",
-      "wireTypeId": "VVR",
-      "sizeValue": 2.6,
-      "sizeText": "2.6",
-      "sizeUnit": "mm",
-      "coreLabel": "3心",
-      "variantLabel": null,
-      "specDisplay": "2.6mm-3心",
-      "fullDisplay": "VVR 2.6mm-3心",
       "sourceScope": "rakuda"
     },
     {
@@ -884,6 +848,42 @@
       "variantLabel": null,
       "specDisplay": "38mm²-3心",
       "fullDisplay": "VVR 38mm²-3心",
+      "sourceScope": "rakuda"
+    },
+    {
+      "id": "VVR-S-60-3",
+      "wireTypeId": "VVR",
+      "sizeValue": 60,
+      "sizeText": "60",
+      "sizeUnit": "mm²",
+      "coreLabel": "3心",
+      "variantLabel": null,
+      "specDisplay": "60mm²-3心",
+      "fullDisplay": "VVR 60mm²-3心",
+      "sourceScope": "rakuda"
+    },
+    {
+      "id": "VVR-S-100-3",
+      "wireTypeId": "VVR",
+      "sizeValue": 100,
+      "sizeText": "100",
+      "sizeUnit": "mm²",
+      "coreLabel": "3心",
+      "variantLabel": null,
+      "specDisplay": "100mm²-3心",
+      "fullDisplay": "VVR 100mm²-3心",
+      "sourceScope": "rakuda"
+    },
+    {
+      "id": "VVR-S-150-3",
+      "wireTypeId": "VVR",
+      "sizeValue": 150,
+      "sizeText": "150",
+      "sizeUnit": "mm²",
+      "coreLabel": "3心",
+      "variantLabel": null,
+      "specDisplay": "150mm²-3心",
+      "fullDisplay": "VVR 150mm²-3心",
       "sourceScope": "rakuda"
     },
     {
