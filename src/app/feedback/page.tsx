@@ -57,7 +57,7 @@ export default function FeedbackPage() {
 
   return (
     <div className={styles.page}>
-      <SiteHeader mode="sub" title="要望・バグ報告" />
+      <SiteHeader mode="sub" title="要望BOX" />
 
       <main className={styles.main}>
         <p className={styles.lead}>
