@@ -732,7 +732,7 @@ export default function VoltageDropV2Page() {
             />
           </div>
 
-          <details className="review-notes">
+          <details className="review-notes" hidden>
             <summary>検討事項（実装検討中）</summary>
             <div className="review-notes-body">
               <ul>

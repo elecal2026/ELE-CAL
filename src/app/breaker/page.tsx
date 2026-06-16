@@ -245,7 +245,7 @@ export default function BreakerPage() {
             すべてのケースを網羅していません。実際の施工設計では、最新の規格・基準をご確認ください。
           </div>
 
-          <details className="review-notes">
+          <details className="review-notes" hidden>
             <summary>検討事項（実装検討中）</summary>
             <div className="review-notes-body">
               <ul>

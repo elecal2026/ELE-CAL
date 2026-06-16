@@ -182,7 +182,7 @@ export default function AllowableCurrentPage() {
             本ツールの使用により生じた損害について、作成者は一切の責任を負いません。
           </div>
 
-          <details className="review-notes">
+          <details className="review-notes" hidden>
             <summary>検討事項（実装検討中）</summary>
             <div className="review-notes-body">
               <ul>
