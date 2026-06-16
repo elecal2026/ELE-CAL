@@ -240,9 +240,7 @@ export default function BreakerPage() {
           />
 
           <div className="disclaimer">
-            <strong>注意事項</strong>
-            本ツールは参考計算です。内線規程テーブルは主要な値を収録していますが、
-            すべてのケースを網羅していません。実際の施工設計では、最新の規格・基準をご確認ください。
+            本ツールは、「内線規程 第14版 JEAC8001-2022」を参考資料の一つとして計算しております。計算結果は目安としてご利用いただき、最終的なご判断は、実際の条件をご確認のうえお客様にてお願いいたします。
           </div>
 
           <details className="review-notes" hidden>

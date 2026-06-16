@@ -732,6 +732,10 @@ export default function VoltageDropV2Page() {
             />
           </div>
 
+          <div className="disclaimer">
+            本ツールは、「内線規程 第14版 JEAC8001-2022」を参考資料の一つとして計算しております。計算結果は目安としてご利用いただき、最終的なご判断は、実際の条件をご確認のうえお客様にてお願いいたします。
+          </div>
+
           <details className="review-notes" hidden>
             <summary>検討事項（実装検討中）</summary>
             <div className="review-notes-body">

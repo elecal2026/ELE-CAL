@@ -253,8 +253,7 @@ export default function ResultPanel({
         ))}
         <ElectricResultPanel result={result} />
         <div className="disclaimer" style={{ marginTop: '1rem' }}>
-          <strong>注意事項</strong>
-          本ツールの計算結果は内線規程資料の参考値です。実務では最新の規格・基準を必ずご確認ください。
+          本ツールは、「内線規程 第14版 JEAC8001-2022」を参考資料の一つとして計算しております。計算結果は目安としてご利用いただき、最終的なご判断は、実際の条件をご確認のうえお客様にてお願いいたします。
         </div>
       </>
     )
@@ -267,8 +266,7 @@ export default function ResultPanel({
         warnings={warnings.filter(w => w.id === 'AM-4')}
       />
       <div className="disclaimer" style={{ marginTop: '1rem' }}>
-        <strong>注意事項</strong>
-        本ツールの計算結果は参考値です。実務では電圧降下・許容電流・布設条件・電力会社協議など別途確認してください。
+        本ツールは、「内線規程 第14版 JEAC8001-2022」を参考資料の一つとして計算しております。計算結果は目安としてご利用いただき、最終的なご判断は、実際の条件をご確認のうえお客様にてお願いいたします。
       </div>
     </>
   )

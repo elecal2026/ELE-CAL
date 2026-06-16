@@ -176,10 +176,7 @@ export default function AllowableCurrentPage() {
           </section>
 
           <div className="disclaimer">
-            <strong>⚠ 注意事項</strong>
-            本データは電気設備技術基準・解釈（電技解釈）およびJCS 0168を参考に作成しています。
-            実務においては必ず最新の規格・基準を確認してください。
-            本ツールの使用により生じた損害について、作成者は一切の責任を負いません。
+            本ツールは、「内線規程 第14版 JEAC8001-2022」を参考資料の一つとして計算しております。計算結果は目安としてご利用いただき、最終的なご判断は、実際の条件をご確認のうえお客様にてお願いいたします。
           </div>
 
           <details className="review-notes" hidden>
