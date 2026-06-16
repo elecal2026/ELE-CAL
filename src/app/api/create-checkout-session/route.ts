@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { getStripe, isStripeConfigured } from '@/lib/stripe'
 import { getSubscription, upsertSubscription } from '@/lib/db'
 import { isDbConfigured } from '@/lib/db'
@@ -36,7 +36,21 @@ export async function POST() {
     let customerId = subscription?.stripe_customer_id
 
     if (!customerId) {
+      const client = await clerkClient()
+      const clerkUser = await client.users.getUser(userId)
+      const email = clerkUser.emailAddresses.find(
+        (e) => e.id === clerkUser.primaryEmailAddressId
+      )?.emailAddress
+
+      if (!email) {
+        return NextResponse.json(
+          { error: 'メールアドレスを取得できませんでした' },
+          { status: 400 }
+        )
+      }
+
       const customer = await stripe.customers.create({
+        email,
         metadata: { clerk_user_id: userId },
       })
       customerId = customer.id
