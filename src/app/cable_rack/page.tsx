@@ -231,7 +231,7 @@ export default function CableRackPage() {
 
   return (
     <>
-      <SiteHeader mode="sub" title="ラック選定" />
+      <SiteHeader mode="sub" title="ラックサイズ選定" />
 
       <main className="vd2-main">
         <div className="vd2-input-col">

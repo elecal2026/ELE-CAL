@@ -107,7 +107,7 @@ export default function Home() {
         {/* 05 ケーブルラック簡易選定 */}
         <Link className={styles.card} href="/cable_rack">
           <div className={`${styles.cardHead} ${styles.yellow}`}>
-            <span className={styles.cardTitle}>ラック選定</span>
+            <span className={styles.cardTitle}>ラックサイズ選定</span>
           </div>
           <div className={styles.cardIcon}>
             <Image
