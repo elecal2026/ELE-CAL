@@ -73,17 +73,15 @@ function QuantityControl({
 }) {
   return (
     <div className="apartment-quantity-row">
-      <div className="qty-control">
-        <button type="button" aria-label={`${unit}を減らす`} onClick={() => onChange(Math.max(0, value - 1))}>−</button>
-        <input
-          type="number"
-          min={0}
-          step={1}
-          value={value}
-          onChange={(e) => onChange(Math.max(0, Number.parseInt(e.target.value, 10) || 0))}
-        />
-        <button type="button" aria-label={`${unit}を増やす`} onClick={() => onChange(value + 1)}>＋</button>
-      </div>
+      <input
+        type="number"
+        className="form-control apartment-quantity-input"
+        min={0}
+        step={1}
+        value={value}
+        aria-label={`${unit}数`}
+        onChange={(e) => onChange(Math.max(0, Number.parseInt(e.target.value, 10) || 0))}
+      />
       <span className="apartment-quantity-unit">{unit}</span>
     </div>
   )
@@ -516,7 +514,7 @@ export default function InputPanel({
           <span className="apartment-count-badge">合計 {totalUnits} 戸</span>
         </div>
 
-        <div className="apartment-entry-grid">
+        <div className="apartment-entry-list">
           {input.groups.map(group => (
             <HousingCard
               key={group.id}
@@ -533,7 +531,7 @@ export default function InputPanel({
           ))}
         </div>
 
-        <button className="btn-add" type="button" onClick={addGroup}>
+        <button className="btn-add apartment-section-add" type="button" onClick={addGroup}>
           {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
           ＋ 別の配電方式を追加
         </button>
@@ -551,7 +549,7 @@ export default function InputPanel({
         </div>
 
         {input.commonItems.length > 0 ? (
-          <div className="apartment-entry-grid">
+          <div className="apartment-entry-list">
             {input.commonItems.map(item => (
               <CommonCard
                 key={item.id}
@@ -570,7 +568,7 @@ export default function InputPanel({
           <p className="apartment-empty-note">共用部負荷がない場合は、追加せずに計算できます。</p>
         )}
 
-        <button className="btn-add" type="button" onClick={addCommonItem}>
+        <button className="btn-add apartment-section-add" type="button" onClick={addCommonItem}>
           {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
           ＋ 共用部の配電方式を追加
         </button>
