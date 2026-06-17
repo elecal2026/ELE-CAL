@@ -221,11 +221,6 @@ export default function BreakerPage() {
                 + 負荷を追加
               </button>
             </section>
-            
-            <div className="formula-box" style={{ marginTop: '1.5rem', marginBottom: 0 }}>
-              <div className="formula">I = P / (K × V × cosθ)</div>
-              <div>K = 1（単相） / √3（三相）。負荷の合計kWから電流を算出し、内線規程に基づきブレーカーを選定します。</div>
-            </div>
         </div>
 
         {/* ========== 右パネル: 結果 ========== */}

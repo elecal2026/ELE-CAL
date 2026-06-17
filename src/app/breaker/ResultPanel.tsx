@@ -99,11 +99,6 @@ export default function ResultPanel({
           <div className="pole-value">{result.pole}</div>
           <div className="pole-desc">{result.poleDesc}</div>
         </div>
-
-        <div className="tip-box">
-          <strong>安全の不等式：</strong>
-          負荷電流 (I) ≦ ブレーカー定格 (I<sub>n</sub>) ≦ 電線の許容電流 (I<sub>z</sub>)
-        </div>
       </section>
 
       {/* 内線規程テーブル参照結果 */}
@@ -135,11 +130,6 @@ export default function ResultPanel({
               breakerRating={result.selectedBreaker}
             />
           ))}
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.75rem', lineHeight: 1.6 }}>
-            ※ 許容電流: 安全の不等式 I ≦ I<sub>n</sub> ≦ I<sub>z</sub> の判定<br />
-            ※ 電圧降下: インピーダンス法 ΔV = K×I×L×Z×0.001（力率反映）<br />
-            ※ 判定基準: 2%以下=良好 / 2〜4%=注意 / 4%超=超過
-          </div>
         </section>
       )}
 
@@ -174,36 +164,6 @@ export default function ResultPanel({
               })}
             </tbody>
           </table>
-        </div>
-      </section>
-
-      {/* 計算過程 */}
-      <section className="card vd2-result-card">
-        <p className="card-title">計算過程</p>
-        <div style={{ fontSize: '0.85rem', lineHeight: 1.9, color: 'var(--text-secondary)' }}>
-          配電方式: {result.systemInfo.name}<br />
-          定格電圧: V = {voltage} V<br />
-          合計消費電力: P = {result.totalKw.toFixed(2)} kW = {(result.totalKw * 1000).toFixed(0)} W<br />
-          力率: cosθ = {powerFactor}<br />
-          <br />
-          <strong>【STEP 1】負荷電流の算出</strong><br />
-          I = P / (K × V × cosθ)<br />
-          I = {(result.totalKw * 1000).toFixed(0)} / ({result.systemInfo.kDisplay} × {voltage} × {powerFactor})<br />
-          <strong>I = {result.loadCurrent.toFixed(2)} A</strong><br />
-          <br />
-          <strong>【STEP 2】余裕率の適用</strong><br />
-          I&apos; = {result.loadCurrent.toFixed(2)} × {margin} = <strong>{result.marginCurrent.toFixed(2)} A</strong><br />
-          <br />
-          <strong>【STEP 3】ブレーカー定格の選定</strong><br />
-          {result.motorInfo ? (
-            <>内線規程 3705-1表より → <strong>{result.selectedBreaker} A</strong>（{START_METHOD_LABELS[result.primaryStartMethod]}）</>
-          ) : result.welderInfo ? (
-            <>内線規程 3330-1表より → <strong>{result.selectedBreaker} A</strong></>
-          ) : result.selectedBreaker !== null ? (
-            <>{result.marginCurrent.toFixed(2)} A 以上の最小規格 → <strong>{result.selectedBreaker} A</strong></>
-          ) : (
-            <>{result.marginCurrent.toFixed(2)} A は最大規格を超えています。</>
-          )}
         </div>
       </section>
     </>
