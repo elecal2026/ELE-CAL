@@ -92,7 +92,6 @@ function CableRowItem({
             {WIRE_TYPES.filter(wireType => wireType.active).map(wireType => (
               <option key={wireType.id} value={wireType.id}>{wireType.displayName}</option>
             ))}
-            <option value="custom">手入力</option>
           </select>
         </div>
 
@@ -147,12 +146,6 @@ function CableRowItem({
           </div>
         </div>
 
-        {!isCustom && (
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', alignSelf: 'flex-end', paddingBottom: '4px', whiteSpace: 'nowrap' }}>
-            {cableData ? `φ${cableData.od}mm / ${cableData.mass} kg/m` : '外径・質量: 該当なし'}
-          </div>
-        )}
-
         {canRemove && (
           <button className="btn-remove" onClick={onRemove}>削除</button>
         )}
@@ -174,8 +167,6 @@ export default function CableRackPage() {
   const [outdoor, setOutdoor] = useState(false)
   const [hasCover, setHasCover] = useState(false)
   const [rackWidthUsage, setRackWidthUsage] = useState(90)
-  const [rackMassInput, setRackMassInput] = useState('')
-  const [coverMassInput, setCoverMassInput] = useState('')
 
   const addRow = useCallback(() => {
     if (!requirePaid()) return
@@ -216,16 +207,14 @@ export default function CableRackPage() {
 
     const requiredWidth = occupyWidth / (rackWidthUsage / 100)
     const recommendedWidth = RACK_WIDTHS.find(w => occupyWidth / w * 100 <= rackWidthUsage + 1e-9) ?? null
-    const rackMassVal = parseFloat(rackMassInput) || 0
-    const coverMassVal = parseFloat(coverMassInput) || 0
-    const totalMass = cableMassPerM + rackMassVal + coverMassVal
+    const totalMass = cableMassPerM
     const boltSize = recommendedWidth !== null
       ? (recommendedWidth > 600 ? 'M12以上（呼び径12mm以上）' : 'M9以上（呼び径9mm以上）')
       : '—'
     const hInterval = material === 'steel' ? '2m以下' : '1.5m以下'
 
     return { occupyWidth, requiredWidth, recommendedWidth, cableMassPerM, totalMass, boltSize, hInterval, minBendRadius: minBendRadius || null, maxBendFactor, missingDataCount }
-  }, [rows, rackWidthUsage, material, rackMassInput, coverMassInput])
+  }, [rows, rackWidthUsage, material])
 
   const hasMissingData = calc.missingDataCount > 0
 
@@ -267,7 +256,7 @@ export default function CableRackPage() {
               ))}
             </div>
             <p className="text-sm text-muted mt-1">
-              ※ 規程による指定値ではありません。施工時の並べやすさ・配線余裕を考慮して設定するELE-CAL独自設定です。数値が小さいほど余裕を大きく見込みます。
+              ※ 数値が小さいほど余裕を大きく見込みます。
             </p>
           </div>
 
@@ -319,34 +308,6 @@ export default function CableRackPage() {
               </div>
             </div>
           </div>
-
-          <details style={{ marginTop: '0.5rem' }}>
-            <summary style={{ fontSize: '0.82rem', color: 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
-              追加荷重の入力（任意）— ラック本体・カバーの質量
-            </summary>
-            <div style={{ paddingTop: '0.75rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <div className="form-group" style={{ flex: 1, minWidth: 120 }}>
-                <label className="form-label" style={{ fontSize: '0.78rem' }}>ラック本体 (kg/m)</label>
-                <input
-                  type="number" className="form-control" value={rackMassInput}
-                  placeholder="例: 5.0" min="0" step="0.1"
-                  onChange={e => setRackMassInput(e.target.value)}
-                  style={{ fontSize: '0.9rem', padding: '0.5rem 0.6rem' }}
-                />
-              </div>
-              {hasCover && (
-                <div className="form-group" style={{ flex: 1, minWidth: 120 }}>
-                  <label className="form-label" style={{ fontSize: '0.78rem' }}>カバー (kg/m)</label>
-                  <input
-                    type="number" className="form-control" value={coverMassInput}
-                    placeholder="例: 2.0" min="0" step="0.1"
-                    onChange={e => setCoverMassInput(e.target.value)}
-                    style={{ fontSize: '0.9rem', padding: '0.5rem 0.6rem' }}
-                  />
-                </div>
-              )}
-            </div>
-          </details>
         </section>
         </div>
 
@@ -357,11 +318,6 @@ export default function CableRackPage() {
             <div className="total-area-box">
               <div>
                 <div className="label" style={{ fontSize: '0.78rem' }}>推奨ラック幅</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                  {hasMissingData
-                    ? `外径・質量データがない電線仕様が${calc.missingDataCount}件あります。`
-                    : `占有幅 ${calc.occupyWidth.toFixed(0)}mm ÷ 使用率${rackWidthUsage}% = 必要幅 ${calc.requiredWidth.toFixed(0)}mm`}
-                </div>
               </div>
               <div>
                 {hasMissingData ? (
@@ -384,7 +340,7 @@ export default function CableRackPage() {
                 <p className="card-title">選定結果</p>
                 <div className="validation-warning">
                   選択した電線仕様の外径・質量データが不足しているため、ラック幅・概算荷重は該当なしです。
-                  別の電線仕様を選択するか、手入力で外径・質量を指定してください。
+                  別の電線仕様を選択してください。
                 </div>
               </section>
             ) : (
@@ -466,7 +422,7 @@ export default function CableRackPage() {
                     <span className="value">{calc.cableMassPerM.toFixed(2)} kg/m</span>
                   </div>
                   <div className="result-row" style={{ padding: '0.6rem 0.75rem' }}>
-                    <span className="label">概算荷重（追加荷重込み）</span>
+                    <span className="label">概算荷重</span>
                     <span className="value">{calc.totalMass.toFixed(2)} kg/m</span>
                   </div>
                 </div>
