@@ -1,8 +1,8 @@
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import SiteHeader from '@/components/SiteHeader'
-import { getSubscription, isDbConfigured } from '@/lib/db'
+import { getCurrentUserAccess } from '@/lib/access'
 import AccountActions from './AccountActions'
 import AccountSecurity from './AccountSecurity'
 
@@ -33,8 +33,8 @@ function statusLabel(status: string | undefined): { label: string; color: string
 }
 
 export default async function AccountPage() {
-  const { userId } = await auth()
-  if (!userId) {
+  const access = await getCurrentUserAccess()
+  if (!access.userId) {
     redirect('/sign-in')
   }
 
@@ -42,10 +42,13 @@ export default async function AccountPage() {
   const email = user?.emailAddresses?.[0]?.emailAddress ?? ''
   const name = user?.fullName || user?.firstName || ''
 
-  const subscription = isDbConfigured() ? await getSubscription(userId) : null
-  const status = statusLabel(subscription?.status)
-  const hasActiveSub = !!subscription?.stripe_subscription_id &&
-    ['active', 'trialing', 'past_due'].includes(subscription?.status ?? '')
+  const subscription = access.subscription
+  const isFreeAccess = access.accessKind === 'free_access'
+  const status = isFreeAccess
+    ? { label: '無料枠', color: '#16a34a' }
+    : statusLabel(subscription?.status)
+  const hasActiveSub = access.canManageBilling
+  const hasFullAccessWithoutBilling = isFreeAccess
 
   return (
     <div style={{ minHeight: '100vh', background: '#f0f4f8' }}>
@@ -101,9 +104,16 @@ export default async function AccountPage() {
             >
               ● {status.label}
             </span>
-            <span style={{ fontSize: '0.95rem', color: '#1a202c', fontWeight: 600 }}>プロプラン</span>
+            <span style={{ fontSize: '0.95rem', color: '#1a202c', fontWeight: 600 }}>
+              {isFreeAccess ? '無料枠' : 'プロプラン'}
+            </span>
           </div>
 
+          {isFreeAccess && (
+            <div style={{ fontSize: '0.85rem', color: '#4a5568' }}>
+              無料枠として全てのツールをご利用いただけます。お支払いは発生しません。
+            </div>
+          )}
           {subscription?.trial_end && subscription.status === 'trialing' && (
             <div style={{ fontSize: '0.85rem', color: '#4a5568', marginBottom: '0.25rem' }}>
               トライアル終了日: <strong>{formatDate(subscription.trial_end)}</strong>
@@ -114,7 +124,7 @@ export default async function AccountPage() {
               次回請求日: <strong>{formatDate(subscription.current_period_end)}</strong>
             </div>
           )}
-          {!subscription && (
+          {!subscription && !hasFullAccessWithoutBilling && (
             <div style={{ fontSize: '0.85rem', color: '#4a5568' }}>
               現在ご契約はありません。
             </div>
@@ -124,6 +134,20 @@ export default async function AccountPage() {
         {/* 操作カード */}
         {hasActiveSub ? (
           <AccountActions />
+        ) : hasFullAccessWithoutBilling ? (
+          <section
+            style={{
+              background: '#fff',
+              borderRadius: '14px',
+              border: '1px solid #e2e8f0',
+              padding: '1.25rem',
+              marginBottom: '1rem',
+            }}
+          >
+            <div style={{ fontSize: '0.9rem', color: '#4a5568', lineHeight: 1.7 }}>
+              このアカウントは無料枠のため、お支払い管理や解約手続きは不要です。
+            </div>
+          </section>
         ) : (
           <section
             style={{

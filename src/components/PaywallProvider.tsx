@@ -3,8 +3,10 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 
 interface PaywallContextValue {
-  /** プロプラン契約中（trial / active）かどうか */
+  /** 有料契約または無料枠により、全機能を使えるかどうか */
   isPaid: boolean
+  /** Stripe の支払い管理画面を開けるかどうか */
+  canManageBilling: boolean
   /** サインイン済みかどうか */
   isSignedIn: boolean
   /**
@@ -28,10 +30,12 @@ export function usePaywall(): PaywallContextValue {
 export function PaywallProvider({
   children,
   isPaid,
+  canManageBilling,
   isSignedIn,
 }: {
   children: ReactNode
   isPaid: boolean
+  canManageBilling: boolean
   isSignedIn: boolean
 }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -45,7 +49,7 @@ export function PaywallProvider({
   }, [isPaid])
 
   return (
-    <PaywallContext.Provider value={{ isPaid, isSignedIn, requirePaid, openPaywall, closePaywall }}>
+    <PaywallContext.Provider value={{ isPaid, canManageBilling, isSignedIn, requirePaid, openPaywall, closePaywall }}>
       {children}
       {isOpen && <PaywallModal isSignedIn={isSignedIn} onClose={closePaywall} />}
     </PaywallContext.Provider>

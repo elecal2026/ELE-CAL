@@ -1,10 +1,123 @@
 import { NextResponse } from 'next/server'
-import { auth, clerkClient } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
+import type Stripe from 'stripe'
 import { getStripe, isStripeConfigured } from '@/lib/stripe'
-import { getSubscription, upsertSubscription } from '@/lib/db'
+import { upsertSubscription } from '@/lib/db'
 import { isDbConfigured } from '@/lib/db'
+import { getCurrentUserAccess } from '@/lib/access'
+
+type StripeErrorLike = {
+  type?: string
+  code?: string
+  param?: string
+  message?: string
+  statusCode?: number
+}
+
+function toStripeError(error: unknown): StripeErrorLike {
+  return error && typeof error === 'object' ? (error as StripeErrorLike) : {}
+}
+
+function isMissingStripeResource(error: unknown): boolean {
+  const stripeError = toStripeError(error)
+  return (
+    stripeError.type === 'StripeInvalidRequestError' &&
+    stripeError.code === 'resource_missing'
+  )
+}
+
+async function getPrimaryEmail(userId: string): Promise<string | undefined> {
+  try {
+    const client = await clerkClient()
+    const clerkUser = await client.users.getUser(userId)
+    return clerkUser.emailAddresses.find(
+      (e) => e.id === clerkUser.primaryEmailAddressId
+    )?.emailAddress
+  } catch (error) {
+    console.warn('Failed to fetch Clerk primary email for checkout:', error)
+    return undefined
+  }
+}
+
+async function ensureStripeCustomer(params: {
+  stripe: Stripe
+  userId: string
+  existingCustomerId: string | null | undefined
+  email: string | undefined
+}): Promise<{ customerId: string; shouldPersist: boolean }> {
+  const { stripe, userId, existingCustomerId, email } = params
+
+  if (existingCustomerId) {
+    try {
+      const customer = await stripe.customers.retrieve(existingCustomerId)
+      if (!customer.deleted) {
+        if (email && !customer.email) {
+          await stripe.customers.update(existingCustomerId, { email })
+        }
+        return { customerId: existingCustomerId, shouldPersist: false }
+      }
+      console.warn('Stored Stripe customer is deleted; recreating customer')
+    } catch (error) {
+      if (!isMissingStripeResource(error)) {
+        throw error
+      }
+      console.warn('Stored Stripe customer was not found; recreating customer')
+    }
+  }
+
+  const createParams: Stripe.CustomerCreateParams = {
+    metadata: { clerk_user_id: userId },
+  }
+  if (email) {
+    createParams.email = email
+  }
+
+  const customer = await stripe.customers.create(createParams)
+  return { customerId: customer.id, shouldPersist: true }
+}
+
+function publicCheckoutError(error: unknown): {
+  error: string
+  status: number
+} {
+  const stripeError = toStripeError(error)
+
+  if (stripeError.type?.startsWith('Stripe')) {
+    if (
+      stripeError.code === 'resource_missing' &&
+      stripeError.param?.includes('price')
+    ) {
+      return {
+        error: '決済プランの設定に不整合があります。管理者にお問い合わせください。',
+        status: 503,
+      }
+    }
+
+    return {
+      error: '決済サービス側でエラーが発生しました。時間をおいて再度お試しください。',
+      status: 502,
+    }
+  }
+
+  return {
+    error: '決済画面の作成に失敗しました。時間をおいて再度お試しください。',
+    status: 500,
+  }
+}
 
 export async function POST() {
+  const access = await getCurrentUserAccess()
+  if (!access.userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  if (access.accessKind === 'paid' || access.accessKind === 'free_access') {
+    return NextResponse.json(
+      { error: 'すでに全機能をご利用いただけます', redirectTo: '/account' },
+      { status: 409 }
+    )
+  }
+
   if (!isStripeConfigured() || !isDbConfigured()) {
     return NextResponse.json(
       { error: 'Payment system is not configured yet' },
@@ -12,16 +125,11 @@ export async function POST() {
     )
   }
 
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   const stripe = getStripe()!
   const priceId = process.env.STRIPE_PRICE_ID!
 
   try {
-    const subscription = await getSubscription(userId)
+    const subscription = access.subscription
 
     if (
       subscription &&
@@ -35,28 +143,18 @@ export async function POST() {
 
     let customerId = subscription?.stripe_customer_id
 
-    if (!customerId) {
-      const client = await clerkClient()
-      const clerkUser = await client.users.getUser(userId)
-      const email = clerkUser.emailAddresses.find(
-        (e) => e.id === clerkUser.primaryEmailAddressId
-      )?.emailAddress
+    const email = await getPrimaryEmail(access.userId)
+    const ensuredCustomer = await ensureStripeCustomer({
+      stripe,
+      userId: access.userId,
+      existingCustomerId: customerId,
+      email,
+    })
+    customerId = ensuredCustomer.customerId
 
-      if (!email) {
-        return NextResponse.json(
-          { error: 'メールアドレスを取得できませんでした' },
-          { status: 400 }
-        )
-      }
-
-      const customer = await stripe.customers.create({
-        email,
-        metadata: { clerk_user_id: userId },
-      })
-      customerId = customer.id
-
+    if (ensuredCustomer.shouldPersist) {
       await upsertSubscription({
-        clerkUserId: userId,
+        clerkUserId: access.userId,
         stripeCustomerId: customerId,
         status: 'none',
       })
@@ -99,10 +197,19 @@ export async function POST() {
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
-    console.error('Checkout session creation failed:', error)
+    const stripeError = toStripeError(error)
+    console.error('Checkout session creation failed:', {
+      type: stripeError.type,
+      code: stripeError.code,
+      param: stripeError.param,
+      statusCode: stripeError.statusCode,
+      message: stripeError.message,
+      raw: stripeError.type ? undefined : error,
+    })
+    const response = publicCheckoutError(error)
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
+      { error: response.error },
+      { status: response.status }
     )
   }
 }

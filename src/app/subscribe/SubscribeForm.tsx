@@ -19,8 +19,9 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       })
+      const data = await res.json().catch(() => ({}))
       if (res.status === 503) {
-        alert('決済システムは現在準備中です。')
+        alert(data.error ?? '決済システムは現在準備中です。')
         return
       }
       if (res.status === 401) {
@@ -29,11 +30,15 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
         return
       }
       if (res.status === 409) {
-        const data = await res.json().catch(() => ({}))
         window.location.href = data.redirectTo ?? '/account'
         return
       }
-      const data = await res.json()
+      if (!res.ok) {
+        const message = data.error ?? '詳細不明'
+        console.error('Checkout failed', { status: res.status, data })
+        alert(`エラーが発生しました（${res.status}）：${message}`)
+        return
+      }
       if (data.url) {
         window.location.href = data.url
         return
@@ -149,4 +154,3 @@ export default function SubscribeForm({ hasUsedTrial }: { hasUsedTrial: boolean 
     </div>
   )
 }
-

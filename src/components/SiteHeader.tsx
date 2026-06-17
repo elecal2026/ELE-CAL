@@ -58,7 +58,7 @@ interface SiteHeaderProps {
 
 export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderProps) {
   const userButtonRef = useRef<HTMLDivElement>(null);
-  const { isPaid } = usePaywall();
+  const { canManageBilling } = usePaywall();
   const className = mode === 'sub' ? `${styles.topbar} ${styles.subMode}` : styles.topbar;
 
   const handleSettingsClick = () => {
@@ -113,7 +113,7 @@ export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderPr
                         labelIcon={<UserIcon />}
                         href="/account"
                       />
-                      {isPaid && (
+                      {canManageBilling && (
                         <UserButton.Action
                           label="お支払い管理"
                           labelIcon={<CardIcon />}
