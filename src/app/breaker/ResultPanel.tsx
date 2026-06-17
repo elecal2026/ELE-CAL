@@ -13,6 +13,12 @@ interface ResultPanelProps {
   validationIssues: ValidationIssue[]
 }
 
+function calcSelectedBreakerKva(selectedBreaker: number | null, system: System, voltage: number): number | null {
+  if (selectedBreaker === null) return null
+  const K = system === 'three' ? Math.sqrt(3) : 1
+  return (K * voltage * selectedBreaker) / 1000
+}
+
 export default function ResultPanel({
   loads,
   system,
@@ -56,6 +62,8 @@ export default function ResultPanel({
     )
   }
 
+  const selectedBreakerKva = calcSelectedBreakerKva(result.selectedBreaker, system, voltage)
+
   return (
     <>
       <section className="card vd2-result-card">
@@ -65,6 +73,11 @@ export default function ResultPanel({
             {result.selectedBreaker !== null ? result.selectedBreaker : '規格超'}
           </span>
           <span className="result-breaker-unit"> A</span>
+          {selectedBreakerKva !== null && (
+            <div style={{ marginTop: '0.15rem', fontSize: '1rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+              （{selectedBreakerKva.toFixed(2)} kVA）
+            </div>
+          )}
           <div className="result-sub">
             <div className="result-badge">
               <span className="rb-label">合計電力</span>
