@@ -33,6 +33,33 @@ function DiffBadge({ diffKva }: { diffKva: number }) {
   )
 }
 
+function pickMainSummary(summaries: SystemSummary[]): SystemSummary | null {
+  if (summaries.length === 0) return null
+  return summaries.reduce((main, summary) =>
+    summary.currentA > main.currentA ? summary : main
+  )
+}
+
+function MainCurrentDisplay({ summaries }: { summaries: SystemSummary[] }) {
+  const mainSummary = pickMainSummary(summaries)
+  if (!mainSummary) return null
+
+  const label = summaries.length === 1 ? '計算電流' : '最大計算電流'
+
+  return (
+    <>
+      <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.2rem' }}>
+        {label}
+      </div>
+      <span className="result-breaker">{mainSummary.currentA}</span>
+      <span className="result-breaker-unit"> A</span>
+      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+        {mainSummary.label} / {mainSummary.totalKva.toFixed(1)} kVA
+      </div>
+    </>
+  )
+}
+
 function SystemSummaryCards({ summaries }: { summaries: SystemSummary[] }) {
   if (summaries.length === 0) return null
 
@@ -76,29 +103,29 @@ function GeneralResultPanel({ result, warnings }: {
         <p className="card-title">入力容量からの計算値</p>
 
         <div className="result-main">
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.2rem' }}>
-            想定最大負荷
-          </div>
-          <span className="result-breaker">{result.maxLoadKva.toFixed(1)}</span>
-          <span className="result-breaker-unit"> kVA</span>
+          <MainCurrentDisplay summaries={result.systemSummaries} />
           <div className="result-sub">
             <div className="result-badge">
               <span className="rb-label">合計</span>
               <span className="rb-val">{result.totalUnits}</span> 戸
             </div>
-          <div className="result-badge">
-            <span className="rb-label">需要率</span>
-            <span className="rb-val">{result.demandRate}</span> %
+            <div className="result-badge">
+              <span className="rb-label">想定最大負荷</span>
+              <span className="rb-val">{result.maxLoadKva.toFixed(1)}</span> kVA
+            </div>
+            <div className="result-badge">
+              <span className="rb-label">需要率</span>
+              <span className="rb-val">{result.demandRate}</span> %
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="ref-table-result">
-        <RefRow label="住宅用需要負荷" value={`${result.dwellingLoadKva.toFixed(1)} kVA`} />
-        <RefRow label="共用部加算" value={`${result.commonKva.toFixed(1)} kVA`} />
-        <RefRow label="建物全体の合計容量" value={`${result.maxLoadKva.toFixed(1)} kVA`} highlight />
-      </div>
-    </section>
+        <div className="ref-table-result">
+          <RefRow label="住宅用需要負荷" value={`${result.dwellingLoadKva.toFixed(1)} kVA`} />
+          <RefRow label="共用部加算" value={`${result.commonKva.toFixed(1)} kVA`} />
+          <RefRow label="建物全体の合計容量" value={`${result.maxLoadKva.toFixed(1)} kVA`} highlight />
+        </div>
+      </section>
 
       <SystemSummaryCards summaries={result.systemSummaries} />
 
@@ -155,12 +182,12 @@ function ElectricResultPanel({ result }: {
         </p>
 
         <div className="result-main">
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '0.2rem' }}>
-            想定最大負荷
-          </div>
-          <span className="result-breaker">{electricRow.maxLoadKva.toFixed(1)}</span>
-          <span className="result-breaker-unit"> kVA</span>
+          <MainCurrentDisplay summaries={result.systemSummaries} />
           <div className="result-sub">
+            <div className="result-badge">
+              <span className="rb-label">想定最大負荷</span>
+              <span className="rb-val">{result.maxLoadKva.toFixed(1)}</span> kVA
+            </div>
             <div className="result-badge">
               <span className="rb-label">需要率</span>
               <span className="rb-val">{electricRow.demandRate}</span> %
