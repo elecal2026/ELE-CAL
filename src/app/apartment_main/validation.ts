@@ -8,13 +8,16 @@ export interface ValidationIssue {
 
 export function validateApartmentInput(input: ApartmentInput): ValidationIssue[] {
   const issues: ValidationIssue[] = []
-  const totalUnits = input.groups.reduce((sum, g) => sum + g.units, 0)
+  const totalUnits = input.groups.reduce(
+    (sum, group) => sum + group.capacities.reduce((groupSum, capacity) => groupSum + capacity.units, 0),
+    0,
+  )
 
   if (totalUnits === 0) {
     issues.push({
       id: 'AM-1',
       level: 'error',
-      message: '住戸契約容量を1戸以上入力してください。',
+      message: '各戸容量（A）を1戸以上入力してください。',
     })
   }
 
@@ -34,7 +37,7 @@ export function validateApartmentInput(input: ApartmentInput): ValidationIssue[]
     issues.push({
       id: 'AM-3',
       level: 'warning',
-      message: '全電化集合住宅は内線規程資料3-6-2の標準表値を参考表示します。住戸契約容量からの積み上げ計算は行いません。',
+      message: '全電化集合住宅は内線規程資料3-6-2の標準表値を参考表示します。各戸容量（A）からの積み上げ計算は行いません。',
     })
   }
 

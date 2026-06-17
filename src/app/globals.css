@@ -1731,6 +1731,48 @@ select.form-control option {
   min-width: 0;
   margin-bottom: 0;
 }
+.apartment-capacity-row {
+  --apartment-capacity-actions-width: clamp(16rem, 24%, 18.5rem);
+  grid-template-columns: minmax(11rem, 1fr) minmax(10rem, 0.55fr) var(--apartment-capacity-actions-width);
+  align-items: end;
+  margin-top: 0.75rem;
+}
+.apartment-capacity-actions {
+  align-self: end;
+}
+.apartment-capacity-action-buttons {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+.apartment-capacity-action-buttons .btn-remove {
+  grid-column: 1;
+}
+.apartment-capacity-action-buttons .btn-add {
+  grid-column: 2;
+  width: 100%;
+}
+.apartment-icon-button {
+  width: auto;
+  min-height: 38px;
+  margin-bottom: 0;
+  padding: 0.5rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+.apartment-action-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.apartment-action-label {
+  line-height: 1;
+}
 .apartment-entry-card > .form-group {
   margin-bottom: 0.75rem;
 }
@@ -1782,6 +1824,64 @@ select.form-control option {
   .apartment-result-grid,
   .apartment-card-fields {
     grid-template-columns: 1fr;
+  }
+  .apartment-card-fields.apartment-capacity-row {
+    --apartment-capacity-actions-width: calc((2.35rem * 2) + 0.35rem);
+    grid-template-columns: minmax(76px, 1fr) minmax(112px, 1.15fr) var(--apartment-capacity-actions-width);
+    gap: 0.45rem;
+  }
+  .apartment-capacity-action-buttons {
+    grid-template-columns: repeat(2, 2.35rem);
+    gap: 0.35rem;
+  }
+  .apartment-icon-button {
+    width: 2.35rem;
+    min-width: 2.35rem;
+    height: 2.35rem;
+    min-height: 2.35rem;
+    padding: 0;
+  }
+  .apartment-icon-button .paywall-lock {
+    display: none;
+  }
+  .apartment-action-label {
+    display: none;
+  }
+  .apartment-quantity-row .qty-control {
+    max-width: 124px;
+  }
+}
+
+@media (max-width: 420px) {
+  .apartment-card-fields.apartment-capacity-row {
+    --apartment-capacity-actions-width: calc((2.25rem * 2) + 0.3rem);
+    grid-template-columns: minmax(70px, 1fr) minmax(112px, 1.15fr) var(--apartment-capacity-actions-width);
+    gap: 0.35rem;
+  }
+  .apartment-capacity-action-buttons {
+    grid-template-columns: repeat(2, 2.25rem);
+    gap: 0.3rem;
+  }
+  .apartment-icon-button {
+    width: 2.25rem;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    min-height: 2.25rem;
+  }
+  .apartment-capacity-row .form-label {
+    font-size: 0.72rem;
+  }
+  .apartment-capacity-row .form-control {
+    padding: 0.5rem 0.45rem;
+  }
+  .apartment-capacity-row .apartment-quantity-row {
+    gap: 0.25rem;
+  }
+  .apartment-capacity-row .qty-control button {
+    width: 30px;
+  }
+  .apartment-capacity-row .qty-control input {
+    width: 38px;
   }
 }
 

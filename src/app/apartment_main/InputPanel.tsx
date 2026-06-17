@@ -1,8 +1,10 @@
 import {
   COMMON_AMPS,
+  COMMON_THREE_PHASE_AMPS,
   CONTRACT_AMPS,
   type ApartmentInput,
   type CapacityGroup,
+  type CommonAmp,
   type CommonItem,
   type ContractAmp,
   type DistributionSystem,
@@ -104,16 +106,31 @@ function normalizeVoltage(system: DistributionSystem, voltage: RatedVoltage): Ra
     : voltageOptions(system)[0].value
 }
 
+function systemLabel(system: DistributionSystem, voltage: RatedVoltage): string {
+  const normalizedVoltage = normalizeVoltage(system, voltage)
+  if (system === 'singlePhase2Wire') return `単相2線・${normalizedVoltage}V`
+  if (system === 'singlePhase3Wire') return '単相3線・100/200V'
+  return '三相3線・200V'
+}
+
+function commonAmpOptions(system: DistributionSystem): readonly CommonAmp[] {
+  return system === 'threePhase3Wire' ? COMMON_THREE_PHASE_AMPS : COMMON_AMPS
+}
+
 function HousingCard({
   group,
   disabled,
+  isPaid,
   onChange,
   onDelete,
+  onRequirePaid,
 }: {
   group: CapacityGroup
   disabled: boolean
+  isPaid: boolean
   onChange: (group: CapacityGroup) => void
   onDelete: () => void
+  onRequirePaid: () => boolean
 }) {
   const updateSystem = (distributionSystem: DistributionSystem) => {
     onChange({
@@ -123,10 +140,41 @@ function HousingCard({
     })
   }
 
+  const updateCapacity = (
+    capacityId: string,
+    patch: Partial<CapacityGroup['capacities'][number]>,
+  ) => {
+    onChange({
+      ...group,
+      capacities: group.capacities.map(capacity => (
+        capacity.id === capacityId ? { ...capacity, ...patch } : capacity
+      )),
+    })
+  }
+
+  const addCapacity = () => {
+    if (!onRequirePaid()) return
+    onChange({
+      ...group,
+      capacities: [...group.capacities, {
+        id: `housing-capacity-${Date.now()}-${group.capacities.length}`,
+        contractAmp: 40,
+        units: 1,
+      }],
+    })
+  }
+
+  const deleteCapacity = (capacityId: string) => {
+    onChange({
+      ...group,
+      capacities: group.capacities.filter(capacity => capacity.id !== capacityId),
+    })
+  }
+
   return (
     <article className="apartment-entry-card">
       <div className="apartment-entry-card-header">
-        <strong>住戸条件</strong>
+        <strong>{systemLabel(group.distributionSystem, group.voltage)}</strong>
         <button type="button" className="btn-remove" onClick={onDelete}>削除</button>
       </div>
 
@@ -157,28 +205,66 @@ function HousingCard({
             ))}
           </select>
         </div>
-
-        <div className="form-group">
-          <label className="form-label">住戸契約容量</label>
-          <select
-            className="form-control"
-            value={group.contractAmp}
-            disabled={disabled}
-            onChange={(e) => onChange({ ...group, contractAmp: Number(e.target.value) as ContractAmp })}
-          >
-            {CONTRACT_AMPS.map(amp => <option key={amp} value={amp}>{amp}A</option>)}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">戸数</label>
-          <QuantityControl value={group.units} unit="戸" onChange={(units) => onChange({ ...group, units })} />
-        </div>
       </div>
+
+      {group.capacities.map((capacity, index) => (
+        <div className="apartment-card-fields apartment-capacity-row" key={capacity.id}>
+          <div className="form-group">
+            <label className="form-label">各戸容量（A）</label>
+            <select
+              className="form-control"
+              value={capacity.contractAmp}
+              disabled={disabled}
+              onChange={(e) => updateCapacity(capacity.id, { contractAmp: Number(e.target.value) as ContractAmp })}
+            >
+              {CONTRACT_AMPS.map(amp => <option key={amp} value={amp}>{amp}A</option>)}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">戸数</label>
+            <QuantityControl
+              value={capacity.units}
+              unit="戸"
+              onChange={(units) => updateCapacity(capacity.id, { units })}
+            />
+          </div>
+
+          <div className="form-group apartment-capacity-actions">
+            <label className="form-label">&nbsp;</label>
+            <div className="apartment-capacity-action-buttons">
+              {group.capacities.length > 1 && (
+                <button
+                  type="button"
+                  className="btn-remove apartment-icon-button"
+                  aria-label={`${index + 1}行目の容量を削除`}
+                  disabled={disabled}
+                  onClick={() => deleteCapacity(capacity.id)}
+                >
+                  <span className="apartment-action-icon" aria-hidden="true">🗑</span>
+                  <span className="apartment-action-label">削除</span>
+                </button>
+              )}
+              {index === group.capacities.length - 1 && (
+                <button
+                  className="btn-add apartment-icon-button"
+                  type="button"
+                  disabled={disabled}
+                  onClick={addCapacity}
+                >
+                  {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
+                  <span className="apartment-action-icon" aria-hidden="true">＋</span>
+                  <span className="apartment-action-label">別の容量を追加</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
 
       {disabled && (
         <p className="apartment-card-note">
-          全電化は戸数のみを使用し、配電方式・契約容量は標準表の前提で計算します。
+          全電化は戸数のみを使用し、配電方式・各戸容量は標準表の前提で計算します。
         </p>
       )}
     </article>
@@ -187,37 +273,67 @@ function HousingCard({
 
 function CommonCard({
   item,
+  isPaid,
   onChange,
   onDelete,
+  onRequirePaid,
 }: {
   item: CommonItem
+  isPaid: boolean
   onChange: (item: CommonItem) => void
   onDelete: () => void
+  onRequirePaid: () => boolean
 }) {
   const updateSystem = (distributionSystem: DistributionSystem) => {
+    const options = commonAmpOptions(distributionSystem)
     onChange({
       ...item,
       distributionSystem,
       voltage: normalizeVoltage(distributionSystem, item.voltage),
+      capacities: item.capacities.map(capacity => (
+        options.some(amp => amp === capacity.amps)
+          ? capacity
+          : { ...capacity, amps: options[0] }
+      )),
+    })
+  }
+
+  const updateCapacity = (
+    capacityId: string,
+    patch: Partial<CommonItem['capacities'][number]>,
+  ) => {
+    onChange({
+      ...item,
+      capacities: item.capacities.map(capacity => (
+        capacity.id === capacityId ? { ...capacity, ...patch } : capacity
+      )),
+    })
+  }
+
+  const addCapacity = () => {
+    if (!onRequirePaid()) return
+    onChange({
+      ...item,
+      capacities: [...item.capacities, {
+        id: `common-capacity-${Date.now()}-${item.capacities.length}`,
+        amps: commonAmpOptions(item.distributionSystem)[0],
+        quantity: 1,
+      }],
+    })
+  }
+
+  const deleteCapacity = (capacityId: string) => {
+    onChange({
+      ...item,
+      capacities: item.capacities.filter(capacity => capacity.id !== capacityId),
     })
   }
 
   return (
     <article className="apartment-entry-card">
       <div className="apartment-entry-card-header">
-        <strong>{item.name.trim() || '共用部負荷'}</strong>
+        <strong>{systemLabel(item.distributionSystem, item.voltage)}</strong>
         <button type="button" className="btn-remove" onClick={onDelete}>削除</button>
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">名称（任意）</label>
-        <input
-          className="form-control"
-          type="text"
-          value={item.name}
-          placeholder="例：給水ポンプ"
-          onChange={(e) => onChange({ ...item, name: e.target.value })}
-        />
       </div>
 
       <div className="apartment-card-fields">
@@ -247,27 +363,60 @@ function CommonCard({
             ))}
           </select>
         </div>
-
-        <div className="form-group">
-          <label className="form-label">負荷電流</label>
-          <select
-            className="form-control"
-            value={item.amps}
-            onChange={(e) => onChange({ ...item, amps: Number(e.target.value) })}
-          >
-            {COMMON_AMPS.map(amp => <option key={amp} value={amp}>{amp}A</option>)}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">数量</label>
-          <QuantityControl value={item.quantity} unit="台" onChange={(quantity) => onChange({ ...item, quantity })} />
-        </div>
       </div>
+
+      {item.capacities.map((capacity, index) => (
+        <div className="apartment-card-fields apartment-capacity-row" key={capacity.id}>
+          <div className="form-group">
+            <label className="form-label">容量（A）</label>
+            <select
+              className="form-control"
+              value={capacity.amps}
+              onChange={(e) => updateCapacity(capacity.id, { amps: Number(e.target.value) as CommonAmp })}
+            >
+              {commonAmpOptions(item.distributionSystem).map(amp => (
+                <option key={amp} value={amp}>{amp}A</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">数量</label>
+            <QuantityControl
+              value={capacity.quantity}
+              unit="個"
+              onChange={(quantity) => updateCapacity(capacity.id, { quantity })}
+            />
+          </div>
+
+          <div className="form-group apartment-capacity-actions">
+            <label className="form-label">&nbsp;</label>
+            <div className="apartment-capacity-action-buttons">
+              {item.capacities.length > 1 && (
+                <button
+                  type="button"
+                  className="btn-remove apartment-icon-button"
+                  aria-label={`${index + 1}行目の容量を削除`}
+                  onClick={() => deleteCapacity(capacity.id)}
+                >
+                  <span className="apartment-action-icon" aria-hidden="true">🗑</span>
+                  <span className="apartment-action-label">削除</span>
+                </button>
+              )}
+              {index === item.capacities.length - 1 && (
+                <button className="btn-add apartment-icon-button" type="button" onClick={addCapacity}>
+                  {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
+                  <span className="apartment-action-icon" aria-hidden="true">＋</span>
+                  <span className="apartment-action-label">別の容量を追加</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
     </article>
   )
 }
-
 export default function InputPanel({
   input,
   issues,
@@ -282,7 +431,10 @@ export default function InputPanel({
   onRequirePaid: () => boolean
 }) {
   const isElectric = input.housingType !== 'general'
-  const totalUnits = input.groups.reduce((sum, group) => sum + group.units, 0)
+  const totalUnits = input.groups.reduce(
+    (sum, group) => sum + group.capacities.reduce((groupSum, capacity) => groupSum + capacity.units, 0),
+    0,
+  )
   const errors = issues.filter(issue => issue.level === 'error')
 
   const updateGroup = (updated: CapacityGroup) => {
@@ -297,8 +449,11 @@ export default function InputPanel({
         id: `housing-${Date.now()}`,
         distributionSystem: 'singlePhase3Wire',
         voltage: 200,
-        contractAmp: 40,
-        units: 1,
+        capacities: [{
+          id: `housing-capacity-${Date.now()}`,
+          contractAmp: 40,
+          units: 1,
+        }],
       }],
     })
   }
@@ -316,11 +471,13 @@ export default function InputPanel({
       ...input,
       commonItems: [...input.commonItems, {
         id: `common-${Date.now()}`,
-        name: '',
         distributionSystem: 'singlePhase2Wire',
         voltage: 100,
-        amps: 10,
-        quantity: 1,
+        capacities: [{
+          id: `common-capacity-${Date.now()}`,
+          amps: 10,
+          quantity: 1,
+        }],
       }],
     })
   }
@@ -353,7 +510,7 @@ export default function InputPanel({
           <div>
             <p className="card-title">住宅用</p>
             <p className="apartment-section-description">
-              配電方式・電圧・住戸契約容量が同じ住戸を、戸数ごとにまとめて入力します。
+              配電方式・電圧ごとに、各戸容量（A）と戸数をまとめて入力します。
             </p>
           </div>
           <span className="apartment-count-badge">合計 {totalUnits} 戸</span>
@@ -365,7 +522,9 @@ export default function InputPanel({
               key={group.id}
               group={group}
               disabled={isElectric}
+              isPaid={isPaid}
               onChange={updateGroup}
+              onRequirePaid={onRequirePaid}
               onDelete={() => onChange({
                 ...input,
                 groups: input.groups.filter(item => item.id !== group.id),
@@ -376,7 +535,7 @@ export default function InputPanel({
 
         <button className="btn-add" type="button" onClick={addGroup}>
           {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
-          ＋ 住宅用条件を追加
+          ＋ 別の配電方式を追加
         </button>
       </section>
 
@@ -385,10 +544,10 @@ export default function InputPanel({
           <div>
             <p className="card-title">共用部</p>
             <p className="apartment-section-description">
-              共用灯・ポンプ・エレベーターなど、別途確認した負荷電流を入力します。
+              共用灯・ポンプ・エレベーターなど、別途確認した容量を配電方式ごとに入力します。
             </p>
           </div>
-          <span className="apartment-count-badge">登録 {input.commonItems.length} 件</span>
+          <span className="apartment-count-badge">配電方式 {input.commonItems.length} 件</span>
         </div>
 
         {input.commonItems.length > 0 ? (
@@ -397,7 +556,9 @@ export default function InputPanel({
               <CommonCard
                 key={item.id}
                 item={item}
+                isPaid={isPaid}
                 onChange={updateCommonItem}
+                onRequirePaid={onRequirePaid}
                 onDelete={() => onChange({
                   ...input,
                   commonItems: input.commonItems.filter(current => current.id !== item.id),
@@ -411,7 +572,7 @@ export default function InputPanel({
 
         <button className="btn-add" type="button" onClick={addCommonItem}>
           {!isPaid && <span className="paywall-lock" aria-hidden="true">🔒</span>}
-          ＋ 共用部負荷を追加
+          ＋ 共用部の配電方式を追加
         </button>
 
         <div className="validation-warning">

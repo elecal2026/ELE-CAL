@@ -2,26 +2,37 @@ export type HousingType = 'general' | 'electric23h' | 'electricMicom'
 export type DistributionSystem = 'singlePhase2Wire' | 'singlePhase3Wire' | 'threePhase3Wire'
 export type RatedVoltage = 100 | 200
 
-export const CONTRACT_AMPS = [30, 40, 50, 60] as const
+export const CONTRACT_AMPS = [10, 15, 20, 30, 40, 50, 60] as const
 export type ContractAmp = typeof CONTRACT_AMPS[number]
+
+export interface CapacityEntry {
+  id: string
+  contractAmp: ContractAmp
+  units: number
+}
 
 export interface CapacityGroup {
   id: string
   distributionSystem: DistributionSystem
   voltage: RatedVoltage
-  contractAmp: ContractAmp
-  units: number
+  capacities: CapacityEntry[]
 }
 
-export const COMMON_AMPS = [10, 15, 20, 30, 40, 50, 60, 75, 100, 125, 150, 200] as const
+export const COMMON_AMPS = [10, 15, 20, 30, 40, 50, 60] as const
+export const COMMON_THREE_PHASE_AMPS = [20, 30, 40, 50] as const
+export type CommonAmp = typeof COMMON_AMPS[number] | typeof COMMON_THREE_PHASE_AMPS[number]
+
+export interface CommonCapacityEntry {
+  id: string
+  amps: CommonAmp
+  quantity: number
+}
 
 export interface CommonItem {
   id: string
-  name: string
   distributionSystem: DistributionSystem
   voltage: RatedVoltage
-  amps: number
-  quantity: number
+  capacities: CommonCapacityEntry[]
 }
 
 export interface ApartmentInput {

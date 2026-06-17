@@ -207,7 +207,7 @@ export default function ResultPanel({
   if (!result) {
     return (
       <div className="result-panel-empty">
-        <p>左パネルで住戸契約容量を入力すると結果が表示されます。</p>
+        <p>左パネルで各戸容量（A）を入力すると結果が表示されます。</p>
       </div>
     )
   }

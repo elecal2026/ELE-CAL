@@ -16,8 +16,11 @@ const DEFAULT_INPUT: ApartmentInput = {
     id: 'housing-1',
     distributionSystem: 'singlePhase3Wire',
     voltage: 200,
-    contractAmp: 40,
-    units: 10,
+    capacities: [{
+      id: 'housing-1-capacity-1',
+      contractAmp: 40,
+      units: 10,
+    }],
   }],
   commonItems: [],
 }

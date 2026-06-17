@@ -34,7 +34,21 @@ function ampToKva(amp: ContractAmp): number {
 function commonItemToKva(item: CommonItem): number {
   const voltage = normalizeVoltage(item.distributionSystem, item.voltage)
   const factor = item.distributionSystem === 'threePhase3Wire' ? Math.sqrt(3) : 1
-  return factor * voltage * item.amps * item.quantity / 1000
+  return item.capacities.reduce(
+    (sum, capacity) => sum + factor * voltage * capacity.amps * capacity.quantity / 1000,
+    0,
+  )
+}
+
+function groupUnits(group: CapacityGroup): number {
+  return group.capacities.reduce((sum, capacity) => sum + capacity.units, 0)
+}
+
+function groupRawKva(group: CapacityGroup): number {
+  return group.capacities.reduce(
+    (sum, capacity) => sum + ampToKva(capacity.contractAmp) * capacity.units,
+    0,
+  )
 }
 
 function kvaToCurrent(
@@ -95,7 +109,7 @@ function buildSystemSummaries({
     add('singlePhase3Wire', 200, electricDwellingKva, 0)
   } else {
     groups.forEach((group) => {
-      const rawKva = ampToKva(group.contractAmp) * group.units
+      const rawKva = groupRawKva(group)
       add(group.distributionSystem, group.voltage, rawKva * demandRate / 100, 0)
     })
   }
@@ -119,7 +133,7 @@ function buildSystemSummaries({
 }
 
 export function calculateApartment(input: ApartmentInput): ApartmentResult | null {
-  const totalUnits = input.groups.reduce((sum, g) => sum + g.units, 0)
+  const totalUnits = input.groups.reduce((sum, g) => sum + groupUnits(g), 0)
   if (totalUnits === 0) return null
 
   const commonKva = input.commonItems.reduce((sum, item) => sum + commonItemToKva(item), 0)
@@ -149,7 +163,7 @@ export function calculateApartment(input: ApartmentInput): ApartmentResult | nul
   }
 
   // 一般集合住宅：積み上げ計算
-  const totalRawKva = input.groups.reduce((sum, g) => sum + ampToKva(g.contractAmp) * g.units, 0)
+  const totalRawKva = input.groups.reduce((sum, g) => sum + groupRawKva(g), 0)
 
   if (totalUnits > 40) {
     return { mode: 'out_of_range', totalUnits, totalRawKva, isGeneral: true }
