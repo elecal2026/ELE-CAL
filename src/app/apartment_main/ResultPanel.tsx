@@ -122,22 +122,6 @@ function GeneralResultPanel({ result, warnings }: {
         </div>
       </section>
 
-      <details className="review-notes" style={{ marginTop: '0.75rem' }}>
-        <summary>計算根拠を表示</summary>
-        <div className="review-notes-body">
-          <ul>
-            <li>住戸合計容量（需要率前）: {result.totalRawKva.toFixed(1)} kVA</li>
-            <li>換算方式: 契約A ÷ 10 = kVA（例: 40A = 4.0kVA）</li>
-            <li>需要率 {result.demandRate}% 適用後: {result.dwellingLoadKva.toFixed(1)} kVA</li>
-            <li>共用部加算: {result.commonKva.toFixed(1)} kVA（需要率は適用しない）</li>
-            <li>想定最大負荷: {result.maxLoadKva.toFixed(1)} kVA</li>
-            <li>電流と主開閉器候補は、異なる配電方式を合算せず系統別に算出</li>
-          </ul>
-          <p style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-            需要率は内線規程資料3-6-1の表値を使用。換算方式（A÷10=kVA）は同表が住戸面積100m²・4kVA/戸を前提とすることに基づく目安値です。主開閉器候補はCVT・電圧降下・許容電流等の確認前の候補値です。
-          </p>
-        </div>
-      </details>
     </>
   )
 }
