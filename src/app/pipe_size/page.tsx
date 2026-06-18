@@ -173,8 +173,8 @@ function WireTypeAndSpecSelect({
 
   return (
     <div className="wire-row-grid">
-      <div className="form-group" style={{ marginBottom: 0 }}>
-        <label className="form-label" style={{ fontSize: '0.78rem' }}>電線種類</label>
+      <div className="tool-form-field">
+        <label className="tool-form-label">電線種類</label>
         <select
           className="form-control"
           value={wireTypeId}
@@ -188,8 +188,8 @@ function WireTypeAndSpecSelect({
           ))}
         </select>
       </div>
-      <div className="form-group" style={{ marginBottom: 0 }}>
-        <label className="form-label" style={{ fontSize: '0.78rem' }}>電線仕様</label>
+      <div className="tool-form-field">
+        <label className="tool-form-label">電線仕様</label>
         <select
           className="form-control"
           value={specId}
@@ -301,8 +301,8 @@ export default function PipeSizePage() {
                 />
                 {!isCableMode && (
                     <div className="wire-row-bottom">
-                      <div className="form-group">
-                        <label className="form-label" style={{ fontSize: '0.78rem' }}>本数</label>
+                      <div className="tool-form-field">
+                        <label className="tool-form-label">本数</label>
                         <QuantityControl
                           qty={row.qty}
                           onChange={(qty) => setRows((current) =>

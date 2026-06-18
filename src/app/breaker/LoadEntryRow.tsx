@@ -49,86 +49,101 @@ export default function LoadEntryRow({
 
   const errorIssues = warnings.filter(w => w.level === 'error')
   const warningIssues = warnings.filter(w => w.level === 'warning')
+  const loadTypeId = `${entry.id}-type`
+  const powerId = `${entry.id}-power`
+  const startMethodId = `${entry.id}-start-method`
+  const usageRateId = `${entry.id}-usage-rate`
+  const wireTypeId = `${entry.id}-wire-type`
+  const specId = `${entry.id}-wire-spec`
+  const installationMethodId = `${entry.id}-installation-method`
+  const wireCountId = `${entry.id}-wire-count`
+  const wireLengthId = `${entry.id}-wire-length`
 
   return (
     <div className="load-entry-row">
       {/* メイン行: 負荷種類・kW・始動方式・削除 */}
-      <div className="load-entry-main" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '12px 12px 8px' }}>
-        <span className="load-entry-number">{index + 1}</span>
+      <div className="load-entry-main breaker-load-main">
+        <span className="load-entry-number breaker-load-number">{index + 1}</span>
 
-        <select
-          className="load-type-select"
-          style={{ width: 'auto', flex: 1 }}
-          value={entry.type}
-          onChange={(e) => update({ type: e.target.value as LoadType })}
-        >
-          {(Object.entries(LOAD_TYPE_LABELS) as [LoadType, string][]).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
-
-        <div className="load-field-input" style={{ width: '120px' }}>
-          <input
-            type="number"
-            className="form-control form-control-sm"
-            placeholder="0.0"
-            min="0"
-            step="0.1"
-            value={entry.powerKw}
-            onChange={(e) => update({ powerKw: e.target.value })}
-          />
-          <span className="load-field-unit">kW</span>
-        </div>
-
-        {entry.type === 'motor' && (
+        <div className="tool-form-field breaker-load-type-field">
+          <label className="tool-form-label" htmlFor={loadTypeId}>負荷種類</label>
           <select
-            className="form-control form-control-sm"
-            style={{ width: '120px' }}
-            value={entry.startMethod}
-            onChange={(e) => update({ startMethod: e.target.value as StartMethod })}
+            id={loadTypeId}
+            className="load-type-select"
+            value={entry.type}
+            onChange={(e) => update({ type: e.target.value as LoadType })}
           >
-            {(Object.entries(START_METHOD_LABELS) as [StartMethod, string][]).map(([value, label]) => (
+            {(Object.entries(LOAD_TYPE_LABELS) as [LoadType, string][]).map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
             ))}
           </select>
-        )}
+        </div>
 
-        {entry.type === 'welder' && (
-          <div className="load-field-input" style={{ width: '100px' }}>
+        <div className="tool-form-field breaker-load-power-field">
+          <label className="tool-form-label" htmlFor={powerId}>消費電力</label>
+          <div className="tool-control-with-unit">
             <input
+              id={powerId}
               type="number"
               className="form-control form-control-sm"
-              placeholder="50"
+              placeholder="例: 5.5"
               min="0"
-              max="100"
-              step="5"
-              value={entry.usageRate}
-              onChange={(e) => update({ usageRate: e.target.value })}
+              step="0.1"
+              value={entry.powerKw}
+              onChange={(e) => update({ powerKw: e.target.value })}
             />
-            <span className="load-field-unit">%</span>
+            <span className="tool-control-unit">kW</span>
+          </div>
+        </div>
+
+        {entry.type === 'motor' && (
+          <div className="tool-form-field breaker-load-extra-field">
+            <label className="tool-form-label" htmlFor={startMethodId}>始動方式</label>
+            <select
+              id={startMethodId}
+              className="form-control form-control-sm"
+              value={entry.startMethod}
+              onChange={(e) => update({ startMethod: e.target.value as StartMethod })}
+            >
+              {(Object.entries(START_METHOD_LABELS) as [StartMethod, string][]).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
           </div>
         )}
 
-        <button className="load-remove-btn" onClick={onRemove} title="削除">
+        {entry.type === 'welder' && (
+          <div className="tool-form-field breaker-load-extra-field">
+            <label className="tool-form-label" htmlFor={usageRateId}>使用率</label>
+            <div className="tool-control-with-unit">
+              <input
+                id={usageRateId}
+                type="number"
+                className="form-control form-control-sm"
+                placeholder="例: 50"
+                min="0"
+                max="100"
+                step="5"
+                value={entry.usageRate}
+                onChange={(e) => update({ usageRate: e.target.value })}
+              />
+              <span className="tool-control-unit">%</span>
+            </div>
+          </div>
+        )}
+
+        <button className="load-remove-btn breaker-load-remove" onClick={onRemove} title="削除">
           ×
         </button>
       </div>
 
       {/* 配線設定（常時表示） */}
-      <div style={{
-        display: 'flex',
-        gap: '0.75rem',
-        margin: '0 12px 12px 48px',
-        padding: '10px 12px',
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--border)',
-        borderRadius: '8px',
-        flexWrap: 'wrap',
-      }}>
+      <div className="breaker-load-wiring-grid">
         {/* 電線種類 */}
-        <div className="load-field-row" style={{ marginBottom: 0, minWidth: '120px', flex: 1 }}>
-          <label className="load-field-label">電線種類</label>
+        <div className="tool-form-field">
+          <label className="tool-form-label" htmlFor={wireTypeId}>電線種類</label>
           <select
+            id={wireTypeId}
             className="form-control form-control-sm"
             value={entry.wiring.wireTypeId}
             onChange={(e) => handleWireTypeChange(e.target.value as WireTypeId | '')}
@@ -141,9 +156,10 @@ export default function LoadEntryRow({
         </div>
 
         {/* 電線仕様 */}
-        <div className="load-field-row" style={{ marginBottom: 0, minWidth: '150px', flex: 1.4 }}>
-          <label className="load-field-label">電線仕様</label>
+        <div className="tool-form-field">
+          <label className="tool-form-label" htmlFor={specId}>電線仕様</label>
           <select
+            id={specId}
             className="form-control form-control-sm"
             value={entry.wiring.specId}
             onChange={(e) => updateWiring({ specId: e.target.value })}
@@ -157,9 +173,10 @@ export default function LoadEntryRow({
         </div>
 
         {/* 敷設方法 */}
-        <div className="load-field-row" style={{ marginBottom: 0, minWidth: '110px', flex: 1 }}>
-          <label className="load-field-label">敷設方法</label>
+        <div className="tool-form-field">
+          <label className="tool-form-label" htmlFor={installationMethodId}>敷設方法</label>
           <select
+            id={installationMethodId}
             className="form-control form-control-sm"
             value={entry.wiring.installationMethod}
             onChange={(e) => updateWiring({ installationMethod: e.target.value as InstallationMethod })}
@@ -171,9 +188,10 @@ export default function LoadEntryRow({
         </div>
 
         {showWireCount && (
-          <div className="load-field-row" style={{ marginBottom: 0, minWidth: '150px', flex: 1 }}>
-            <label className="load-field-label">電流が流れる電線数</label>
+          <div className="tool-form-field">
+            <label className="tool-form-label" htmlFor={wireCountId}>電流が流れる電線数</label>
             <select
+              id={wireCountId}
               className="form-control form-control-sm"
               value={entry.wiring.wireCount}
               onChange={(e) => updateWiring({ wireCount: e.target.value as WireCount })}
@@ -186,32 +204,34 @@ export default function LoadEntryRow({
         )}
 
         {/* 長さ */}
-        <div className="load-field-row" style={{ marginBottom: 0, minWidth: '100px', flex: 1 }}>
-          <label className="load-field-label">長さ（m）</label>
-          <div className="load-field-input">
+        <div className="tool-form-field">
+          <label className="tool-form-label" htmlFor={wireLengthId}>長さ</label>
+          <div className="tool-control-with-unit">
             <input
+              id={wireLengthId}
               type="number"
               className="form-control form-control-sm"
-              placeholder="0"
+              placeholder="例: 20"
               min="0"
               step="1"
               value={entry.wiring.wireLength}
               onChange={(e) => updateWiring({ wireLength: e.target.value })}
             />
+            <span className="tool-control-unit">m</span>
           </div>
         </div>
       </div>
 
       {/* バリデーションメッセージ */}
       {errorIssues.length > 0 && (
-        <div style={{ margin: '0 12px 8px 48px' }}>
+        <div className="breaker-load-messages">
           {errorIssues.map((issue) => (
             <div key={issue.id} className="validation-error">{issue.message}</div>
           ))}
         </div>
       )}
       {warningIssues.length > 0 && (
-        <div style={{ margin: '0 12px 8px 48px' }}>
+        <div className="breaker-load-messages">
           {warningIssues.map((issue) => (
             <div key={issue.id} className="validation-warning">{issue.message}</div>
           ))}

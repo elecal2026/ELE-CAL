@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ELE-CAL
 
-## Getting Started
+電気設備計算ツール集です。Next.js App Router で構成されています。
 
-First, run the development server:
+## 主要ページ
+
+- `/` - TOP
+- `/allowable_current` - 許容電流
+- `/breaker` - ブレーカー選定
+- `/apartment_main` - 集合住宅幹線設計
+- `/pipe_size` - 配管サイズ選定
+- `/cable_rack` - ラックサイズ選定
+- `/voltage_drop_v2` - 電圧降下計算
+- `/questions` - Q&A
+- `/feedback` - 要望BOX
+
+## 開発コマンド
+
+PowerShell では `npm` が `npm.ps1` に解決されて ExecutionPolicy で止まる場合があるため、基本は `npm.cmd` を使います。
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm.cmd run dev -- -p 3000
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run start -- -p 3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ローカル確認だけを安定させたい場合は、`npm.cmd run build` 後に `npm.cmd run start -- -p 3000` でビルド済みの本番サーバーを起動します。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## レスポンシブ入力UIの基本ルール
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+入力行は `flex` ではなく `grid` を基本にします。特に「番号 / セレクト / 数値 / 単位 / 削除」のような行は、`grid-template-columns` と `minmax()` で各セルの最低幅を守り、狭い画面では潰すより折り返す方針です。
 
-## Learn More
+共通フォームクラスは [src/app/globals.css](src/app/globals.css) にまとめています。
 
-To learn more about Next.js, take a look at the following resources:
+- `tool-form-field` - ラベルと入力を縦にまとめる基本単位
+- `tool-form-label` - 入力ラベル
+- `tool-control-with-unit` - 入力欄と単位を横並びにする
+- `tool-control-unit` - `kW`、`m`、`%` などの単位表示
+- `tool-responsive-grid` - 入力群を画面幅に応じて折り返す共通グリッド
+- `tool-form-block` - 入力ブロックのまとまり
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+スマホではラベル横並びを避け、原則として「ラベル上 / 入力下」にします。単位は入力欄の外に出し、placeholder は説明文ではなく入力例だけに使います。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 3000番ポート確認メモ
 
-## Deploy on Vercel
+ポートが固まった場合は、まず PID を確認します。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```powershell
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next dev の表示が古い、CSSが反映されない、または応答が詰まる場合は、Next を停止して `.next/dev` または `.next` を削除してから再起動します。Windows + 日本語パスでは Turbopack のキャッシュやロックが残ることがあります。
+
+Codex のサンドボックス内で `Start-Process` したサーバーは、コマンド終了時に片付けられることがあります。ユーザーに見せ続ける確認サーバーは、必要に応じて外側で `npm.cmd run start -- -p 3000` を起動します。
+
+## 確認手順
+
+変更後は最低限以下を確認します。
+
+```bash
+npm.cmd run lint
+npm.cmd run build
+```
+
+画面確認時は主要ページが `HTTP 200` で返ることも確認します。

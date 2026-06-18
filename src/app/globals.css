@@ -187,6 +187,7 @@ body {
    ========================================== */
 .form-group {
   margin-bottom: 1rem;
+  min-width: 0;
 }
 
 .form-label {
@@ -199,6 +200,7 @@ body {
 
 .form-control {
   width: 100%;
+  min-width: 0;
   background: var(--bg-white);
   border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-sm);
@@ -228,6 +230,58 @@ select.form-control {
 select.form-control option {
   background: var(--bg-white);
   color: var(--text-primary);
+}
+
+/* ==========================================
+   ツール入力UI 共通レスポンシブルール
+   - 入力欄は潰さず、最低幅を守って折り返す
+   - ラベルは常時表示、placeholderは入力例に限定する
+   - 単位は入力欄の外へ出して確認しやすくする
+   ========================================== */
+.tool-form-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tool-form-label {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.tool-control-with-unit {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tool-control-unit {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tool-responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: 0.75rem;
+}
+
+.tool-form-block {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 420px) {
+  .tool-responsive-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ==========================================
@@ -554,9 +608,26 @@ select.form-control option {
    pipe_size 固有スタイル
    ========================================== */
 .wire-row { background: var(--bg-secondary); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 0.75rem; position: relative; }
-.wire-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-.wire-row-bottom { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
-.wire-row-bottom .form-group { margin-bottom: 0; flex: 1; }
+.wire-row-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: 0.5rem;
+}
+.wire-row-grid .form-group {
+  min-width: 0;
+}
+.wire-row-bottom {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+  align-items: end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.wire-row-bottom .form-group { margin-bottom: 0; min-width: 0; }
+.wire-row-bottom .btn-remove {
+  align-self: end;
+  justify-self: start;
+}
 .btn-remove { background: var(--accent-bg); border: 1px solid var(--danger-border); color: var(--danger); border-radius: var(--radius-sm); padding: 0.45rem 0.7rem; font-size: 0.85rem; cursor: pointer; font-weight: 700; align-self: flex-end; white-space: nowrap; }
 .btn-remove:hover { background: var(--danger-border); }
 .qty-control { display: flex; align-items: center; gap: 0; border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; height: 44px; }
@@ -970,6 +1041,30 @@ select.form-control option {
   }
 }
 
+@media (max-width: 1024px) {
+  .breaker-main,
+  .vd2-main {
+    flex-direction: column;
+  }
+
+  .breaker-input-col,
+  .breaker-result-col,
+  .vd2-input-col,
+  .vd2-result-col {
+    flex: none;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .breaker-result-col,
+  .vd2-result-col {
+    position: static;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+}
+
 /* セクションカード */
 .vd2-section-card {
   background: #fff;
@@ -1095,6 +1190,18 @@ select.form-control option {
 .vd2-drop-display .pct {
   color: var(--text-muted);
   margin-left: 2px;
+}
+
+@media (max-width: 540px) {
+  .vd2-table-header,
+  .vd2-section-row {
+    grid-template-columns: 28px minmax(4.5rem, 1fr) minmax(6.8rem, 1.35fr) 32px;
+    gap: 0.4rem;
+  }
+
+  .vd2-drop-display {
+    font-size: 0.72rem;
+  }
 }
 .vd2-btn-delete-row {
   width: 28px;
@@ -1430,6 +1537,111 @@ select.form-control option {
   border-radius: 8px;
   overflow: hidden;
 }
+
+.breaker-load-main {
+  display: grid;
+  grid-template-columns: auto minmax(13rem, 1fr) minmax(7.2rem, 9rem) minmax(8rem, 10rem) auto;
+  gap: 0.75rem;
+  align-items: end;
+  padding: 12px 12px 8px;
+}
+
+.breaker-load-number {
+  grid-column: 1;
+  align-self: end;
+  margin-bottom: 0.32rem;
+}
+
+.breaker-load-type-field {
+  grid-column: 2;
+}
+
+.breaker-load-power-field {
+  grid-column: 3;
+}
+
+.breaker-load-extra-field {
+  grid-column: 4;
+}
+
+.breaker-load-remove {
+  grid-column: 5;
+  align-self: end;
+  margin-bottom: 0.18rem;
+}
+
+.breaker-load-wiring-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(11.5rem, 100%), 1fr));
+  gap: 0.75rem;
+  margin: 0 12px 12px 48px;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.breaker-load-messages {
+  margin: 0 12px 8px 48px;
+}
+
+@media (max-width: 720px) {
+  .breaker-load-main {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .breaker-load-number {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .breaker-load-type-field {
+    grid-column: 2 / 4;
+  }
+
+  .breaker-load-power-field {
+    grid-column: 2 / 3;
+  }
+
+  .breaker-load-extra-field {
+    grid-column: 3 / 4;
+  }
+
+  .breaker-load-remove {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  .breaker-load-wiring-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-left: 12px;
+  }
+
+  .breaker-load-messages {
+    margin-left: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .breaker-load-main {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .breaker-load-type-field,
+  .breaker-load-power-field,
+  .breaker-load-extra-field {
+    grid-column: 2 / 3;
+  }
+
+  .breaker-load-remove {
+    grid-column: 3;
+  }
+
+  .breaker-load-wiring-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .load-entry-header {
   display: flex;
   align-items: center;
@@ -1453,6 +1665,8 @@ select.form-control option {
 }
 .load-type-select {
   flex: 1;
+  width: 100%;
+  min-width: 0;
   padding: 5px 8px;
   font-size: 13px;
   border: 1px solid var(--border-strong);
@@ -1517,6 +1731,7 @@ select.form-control option {
   background: #fff;
   color: var(--text-primary);
   width: 100%;
+  min-width: 0;
   outline: none;
   transition: border-color 0.15s;
 }

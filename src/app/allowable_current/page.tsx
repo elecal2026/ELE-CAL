@@ -45,32 +45,34 @@ export default function AllowableCurrentPage() {
           <section className="card vd2-section-card">
             <p className="card-title">入力条件</p>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="sel-wire">電線種類</label>
-              <select
-                className="form-control"
-                id="sel-wire"
-                value={wire}
-                onChange={(e) => setWire(e.target.value as WireTypeId)}
-              >
-                {WIRE_TYPES.filter((wireType) => wireType.active).map((wireType) => (
-                  <option key={wireType.id} value={wireType.id}>{wireType.displayName}</option>
-                ))}
-              </select>
-            </div>
+            <div className="tool-responsive-grid tool-form-block">
+              <div className="tool-form-field">
+                <label className="tool-form-label" htmlFor="sel-wire">電線種類</label>
+                <select
+                  className="form-control"
+                  id="sel-wire"
+                  value={wire}
+                  onChange={(e) => setWire(e.target.value as WireTypeId)}
+                >
+                  {WIRE_TYPES.filter((wireType) => wireType.active).map((wireType) => (
+                    <option key={wireType.id} value={wireType.id}>{wireType.displayName}</option>
+                  ))}
+                </select>
+              </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="sel-spec">電線仕様</label>
-              <select
-                className="form-control"
-                id="sel-spec"
-                value={activeSpec?.id ?? ''}
-                onChange={(e) => setSpecId(e.target.value)}
-              >
-                {specs.map((spec) => (
-                  <option key={spec.id} value={spec.id}>{spec.specDisplay}</option>
-                ))}
-              </select>
+              <div className="tool-form-field">
+                <label className="tool-form-label" htmlFor="sel-spec">電線仕様</label>
+                <select
+                  className="form-control"
+                  id="sel-spec"
+                  value={activeSpec?.id ?? ''}
+                  onChange={(e) => setSpecId(e.target.value)}
+                >
+                  {specs.map((spec) => (
+                    <option key={spec.id} value={spec.id}>{spec.specDisplay}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="form-group">

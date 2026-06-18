@@ -68,7 +68,6 @@ function CableRowItem({
   const isCustom = row.wireTypeId === 'custom'
   const specs = row.wireTypeId === 'custom' ? [] : getWireSpecsByType(row.wireTypeId)
   const activeSpec = getSelectedSpec(row)
-  const cableData = getCableData(row)
 
   const handleTypeChange = (wireTypeId: CableRow['wireTypeId']) => {
     if (wireTypeId === 'custom') {
@@ -82,12 +81,11 @@ function CableRowItem({
   return (
     <div className="wire-row">
       <div className="wire-row-grid">
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label" style={{ fontSize: '0.78rem' }}>電線種類</label>
+        <div className="tool-form-field">
+          <label className="tool-form-label">電線種類</label>
           <select
             className="form-control" value={row.wireTypeId}
             onChange={e => handleTypeChange(e.target.value as CableRow['wireTypeId'])}
-            style={{ fontSize: '0.9rem', padding: '0.5rem 2rem 0.5rem 0.6rem' }}
           >
             {WIRE_TYPES.filter(wireType => wireType.active).map(wireType => (
               <option key={wireType.id} value={wireType.id}>{wireType.displayName}</option>
@@ -96,12 +94,11 @@ function CableRowItem({
         </div>
 
         {!isCustom ? (
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label" style={{ fontSize: '0.78rem' }}>電線仕様</label>
+          <div className="tool-form-field">
+            <label className="tool-form-label">電線仕様</label>
             <select
               className="form-control" value={activeSpec?.id ?? ''}
               onChange={e => onChange({ ...row, specId: e.target.value })}
-              style={{ fontSize: '0.9rem', padding: '0.5rem 2rem 0.5rem 0.6rem' }}
             >
               {specs.map(spec => (
                 <option key={spec.id} value={spec.id}>{spec.specDisplay}</option>
@@ -109,33 +106,37 @@ function CableRowItem({
             </select>
           </div>
         ) : (
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label" style={{ fontSize: '0.78rem' }}>外径 (mm)</label>
-            <input
-              type="number" className="form-control" value={row.customOd}
-              placeholder="例: 25" min="1" step="0.5"
-              onChange={e => onChange({ ...row, customOd: e.target.value })}
-              style={{ fontSize: '0.9rem', padding: '0.5rem 0.6rem' }}
-            />
+          <div className="tool-form-field">
+            <label className="tool-form-label">外径</label>
+            <div className="tool-control-with-unit">
+              <input
+                type="number" className="form-control" value={row.customOd}
+                placeholder="例: 25" min="1" step="0.5"
+                onChange={e => onChange({ ...row, customOd: e.target.value })}
+              />
+              <span className="tool-control-unit">mm</span>
+            </div>
           </div>
         )}
       </div>
 
       <div className="wire-row-bottom">
         {isCustom && (
-          <div className="form-group">
-            <label className="form-label" style={{ fontSize: '0.78rem' }}>質量 (kg/m)</label>
-            <input
-              type="number" className="form-control" value={row.customMass}
-              placeholder="例: 1.5" min="0.01" step="0.01"
-              onChange={e => onChange({ ...row, customMass: e.target.value })}
-              style={{ fontSize: '0.9rem', padding: '0.5rem 0.6rem' }}
-            />
+          <div className="tool-form-field">
+            <label className="tool-form-label">質量</label>
+            <div className="tool-control-with-unit">
+              <input
+                type="number" className="form-control" value={row.customMass}
+                placeholder="例: 1.5" min="0.01" step="0.01"
+                onChange={e => onChange({ ...row, customMass: e.target.value })}
+              />
+              <span className="tool-control-unit">kg/m</span>
+            </div>
           </div>
         )}
 
-        <div className="form-group">
-          <label className="form-label" style={{ fontSize: '0.78rem' }}>本数</label>
+        <div className="tool-form-field">
+          <label className="tool-form-label">本数</label>
           <div className="qty-control">
             <button type="button" onClick={() => { if (row.qty > 1) onChange({ ...row, qty: row.qty - 1 }) }}>−</button>
             <input
@@ -284,8 +285,8 @@ export default function CableRackPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <div className="form-group" style={{ flex: 1, minWidth: 120 }}>
+          <div className="tool-responsive-grid">
+            <div className="form-group">
               <label className="form-label">設置場所</label>
               <div className="chips-group">
                 {[{ val: false, label: '屋内' }, { val: true, label: '屋外' }].map(o => (
@@ -296,7 +297,7 @@ export default function CableRackPage() {
                 ))}
               </div>
             </div>
-            <div className="form-group" style={{ flex: 1, minWidth: 120 }}>
+            <div className="form-group">
               <label className="form-label">カバー</label>
               <div className="chips-group">
                 {[{ val: false, label: 'なし' }, { val: true, label: 'あり' }].map(c => (

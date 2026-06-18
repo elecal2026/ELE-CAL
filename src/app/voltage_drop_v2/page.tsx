@@ -233,9 +233,9 @@ function SectionCard({
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-        <div className="vd2-param-row" style={{ flex: '1 1 140px' }}>
-          <div className="vd2-param-label">電線種類</div>
+      <div className="tool-responsive-grid tool-form-block">
+        <div className="tool-form-field">
+          <label className="tool-form-label">電線種類</label>
           <select
             className="form-control form-control-sm"
             value={data.wireTypeId}
@@ -247,8 +247,8 @@ function SectionCard({
             ))}
           </select>
         </div>
-        <div className="vd2-param-row" style={{ flex: '2 1 200px' }}>
-          <div className="vd2-param-label">電線仕様</div>
+        <div className="tool-form-field">
+          <label className="tool-form-label">電線仕様</label>
           <select
             className="form-control form-control-sm"
             value={data.specId}
