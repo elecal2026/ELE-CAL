@@ -33,13 +33,22 @@ const STATUS_LABEL: Record<Status, string> = {
   open: '新着',
   done: '完了済',
 }
-const STATUS_COLOR: Record<Status, string> = {
-  open: '#d97706',
-  done: '#16a34a',
-}
 const STATUS_ORDER: Status[] = ['open', 'done']
 
 function formatDateTime(iso: string): string {
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return iso
+  const p = (n: number) => String(n).padStart(2, '0')
+  const now = new Date()
+  const isToday =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  if (isToday) return `${p(d.getHours())}:${p(d.getMinutes())}`
+  return `${p(d.getMonth() + 1)}/${p(d.getDate())}`
+}
+
+function formatDateTimeFull(iso: string): string {
   const d = new Date(iso)
   if (isNaN(d.getTime())) return iso
   const p = (n: number) => String(n).padStart(2, '0')
@@ -49,8 +58,9 @@ function formatDateTime(iso: string): string {
 export default function FeedbackAdminClient({ items: initial }: { items: FeedbackItem[] }) {
   const [items, setItems] = useState<FeedbackItem[]>(initial)
   const [categoryFilter, setCategoryFilter] = useState<'all' | Category>('all')
-  const [statusFilter, setStatusFilter] = useState<'all' | Status>('all')
+  const [statusFilter, setStatusFilter] = useState<'all' | Status>('open')
   const [updatingId, setUpdatingId] = useState<number | null>(null)
+  const [selected, setSelected] = useState<FeedbackItem | null>(null)
 
   const counts: Record<Status, number> = {
     open: items.filter((i) => i.status === 'open').length,
@@ -67,6 +77,7 @@ export default function FeedbackAdminClient({ items: initial }: { items: Feedbac
     const prev = items
     setUpdatingId(id)
     setItems((cur) => cur.map((i) => (i.id === id ? { ...i, status } : i)))
+    if (selected?.id === id) setSelected((s) => s ? { ...s, status } : s)
     try {
       const res = await fetch(`/api/admin/feedback/${id}`, {
         method: 'PATCH',
@@ -76,28 +87,48 @@ export default function FeedbackAdminClient({ items: initial }: { items: Feedbac
       if (!res.ok) throw new Error('更新失敗')
     } catch {
       setItems(prev)
+      if (selected?.id === id) setSelected((s) => s ? { ...s, status: prev.find(i => i.id === id)?.status ?? s.status } : s)
       alert('対応状況の更新に失敗しました')
     } finally {
       setUpdatingId(null)
     }
   }
 
+  const openModal = (item: FeedbackItem) => {
+    const current = items.find((i) => i.id === item.id) ?? item
+    setSelected(current)
+  }
+
+  const closeModal = () => setSelected(null)
+
   return (
     <>
-      <div className={styles.summary}>
-        <span className={styles.summaryTotal}>全 {items.length} 件</span>
-        <span style={{ color: STATUS_COLOR.open }}>新着 {counts.open}</span>
-        <span style={{ color: STATUS_COLOR.done }}>完了済 {counts.done}</span>
-      </div>
-
+      {/* サマリ＋フィルタ */}
       <div className={styles.toolbar}>
         <div className={styles.filterGroup}>
-          <span className={styles.filterLabel}>種別</span>
+          <button
+            className={statusFilter === 'all' ? styles.filterBtnActive : styles.filterBtn}
+            onClick={() => setStatusFilter('all')}
+          >
+            すべて <span className={styles.filterCount}>{items.length}</span>
+          </button>
+          {STATUS_ORDER.map((s) => (
+            <button
+              key={s}
+              className={statusFilter === s ? styles.filterBtnActive : styles.filterBtn}
+              onClick={() => setStatusFilter(s)}
+            >
+              {STATUS_LABEL[s]} <span className={styles.filterCount}>{counts[s]}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className={styles.filterGroup}>
           <button
             className={categoryFilter === 'all' ? styles.filterBtnActive : styles.filterBtn}
             onClick={() => setCategoryFilter('all')}
           >
-            すべて
+            種別: すべて
           </button>
           {(Object.keys(CATEGORY_LABEL) as Category[]).map((c) => (
             <button
@@ -109,27 +140,9 @@ export default function FeedbackAdminClient({ items: initial }: { items: Feedbac
             </button>
           ))}
         </div>
-
-        <div className={styles.filterGroup}>
-          <span className={styles.filterLabel}>状況</span>
-          <button
-            className={statusFilter === 'all' ? styles.filterBtnActive : styles.filterBtn}
-            onClick={() => setStatusFilter('all')}
-          >
-            すべて
-          </button>
-          {STATUS_ORDER.map((s) => (
-            <button
-              key={s}
-              className={statusFilter === s ? styles.filterBtnActive : styles.filterBtn}
-              onClick={() => setStatusFilter(s)}
-            >
-              {STATUS_LABEL[s]}
-            </button>
-          ))}
-        </div>
       </div>
 
+      {/* 一覧 */}
       {filtered.length === 0 ? (
         <p className={styles.empty}>該当する投稿はありません。</p>
       ) : (
@@ -137,67 +150,96 @@ export default function FeedbackAdminClient({ items: initial }: { items: Feedbac
           {filtered.map((item) => (
             <li
               key={item.id}
-              className={item.status === 'done' ? `${styles.card} ${styles.cardDone}` : styles.card}
+              className={`${styles.row} ${item.status === 'done' ? styles.rowDone : ''}`}
+              onClick={() => openModal(item)}
             >
-              <div className={styles.cardHead}>
-                <span
-                  className={styles.badge}
-                  style={{
-                    background: `${CATEGORY_COLOR[item.category]}15`,
-                    color: CATEGORY_COLOR[item.category],
-                  }}
-                >
-                  {CATEGORY_LABEL[item.category]}
-                </span>
-                <span className={styles.date}>{formatDateTime(item.createdAt)}</span>
-              </div>
+              <span
+                className={styles.statusDot}
+                style={{ color: item.status === 'open' ? '#d97706' : '#a0aec0' }}
+                title={STATUS_LABEL[item.status]}
+              >
+                {item.status === 'open' ? '●' : '✓'}
+              </span>
 
-              <p className={styles.body}>{item.body}</p>
+              <span
+                className={styles.catBadge}
+                style={{
+                  background: `${CATEGORY_COLOR[item.category]}15`,
+                  color: CATEGORY_COLOR[item.category],
+                }}
+              >
+                {CATEGORY_LABEL[item.category]}
+              </span>
 
-              {item.imageUrl && (
-                <a href={item.imageUrl} target="_blank" rel="noopener noreferrer">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.imageUrl} alt="添付画像" className={styles.image} />
-                </a>
-              )}
+              <span className={styles.preview}>{item.body}</span>
 
-              <div className={styles.poster}>
-                {item.anonymous || !item.posterEmail ? (
-                  <span className={styles.anon}>匿名（未ログイン）</span>
-                ) : (
-                  <span>
-                    {item.posterName && <strong>{item.posterName}</strong>}{' '}
-                    <span className={styles.posterEmail}>{item.posterEmail}</span>
-                  </span>
-                )}
-              </div>
+              {item.imageUrl && <span className={styles.imageIcon} title="画像あり">🖼</span>}
 
-              <div className={styles.cardFoot}>
-                <span
-                  className={styles.statusBadge}
-                  style={{
-                    background: `${STATUS_COLOR[item.status]}15`,
-                    color: STATUS_COLOR[item.status],
-                  }}
-                >
-                  ● {STATUS_LABEL[item.status]}
-                </span>
-                <label className={styles.statusControl}>
-                  <input
-                    type="checkbox"
-                    className={styles.statusCheckbox}
-                    checked={item.status === 'done'}
-                    disabled={updatingId === item.id}
-                    onChange={(e) =>
-                      handleStatusChange(item.id, e.target.checked ? 'done' : 'open')
-                    }
-                  />
-                  完了済にする
-                </label>
-              </div>
+              <span className={styles.rowDate}>{formatDateTime(item.createdAt)}</span>
             </li>
           ))}
         </ul>
+      )}
+
+      {/* モーダル */}
+      {selected && (
+        <div className={styles.overlay} onClick={closeModal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHead}>
+              <span
+                className={styles.catBadge}
+                style={{
+                  background: `${CATEGORY_COLOR[selected.category]}15`,
+                  color: CATEGORY_COLOR[selected.category],
+                }}
+              >
+                {CATEGORY_LABEL[selected.category]}
+              </span>
+              <span className={styles.modalDate}>{formatDateTimeFull(selected.createdAt)}</span>
+              <button className={styles.closeBtn} onClick={closeModal} aria-label="閉じる">✕</button>
+            </div>
+
+            <p className={styles.modalBody}>{selected.body}</p>
+
+            {selected.imageUrl && (
+              <a href={selected.imageUrl} target="_blank" rel="noopener noreferrer">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={selected.imageUrl} alt="添付画像" className={styles.modalImage} />
+              </a>
+            )}
+
+            <div className={styles.modalPoster}>
+              {selected.anonymous || !selected.posterEmail ? (
+                <span className={styles.anon}>匿名（未ログイン）</span>
+              ) : (
+                <span className={styles.posterEmail}>{selected.posterEmail}</span>
+              )}
+            </div>
+
+            <div className={styles.modalFoot}>
+              <span className={styles.currentStatus}>
+                現在: {STATUS_LABEL[selected.status]}
+              </span>
+              {selected.status === 'open' ? (
+                <button
+                  className={styles.doneBtn}
+                  disabled={updatingId === selected.id}
+                  onClick={() => handleStatusChange(selected.id, 'done')}
+                >
+                  {updatingId === selected.id ? '更新中…' : '✓ 完了済にする'}
+                </button>
+              ) : (
+                <button
+                  className={styles.reopenBtn}
+                  disabled={updatingId === selected.id}
+                  onClick={() => handleStatusChange(selected.id, 'open')}
+                >
+                  {updatingId === selected.id ? '更新中…' : '↩ 新着に戻す'}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </>
   )
