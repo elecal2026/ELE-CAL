@@ -2167,54 +2167,63 @@ select.form-control option {
   padding: 1.75rem 1.5rem 1.5rem;
   text-align: center;
 }
-.paywall-icon {
-  font-size: 2.4rem;
-  margin-bottom: 0.5rem;
+.paywall-badge {
+  font-size: 0.78rem;
+  color: #555;
+  margin: 0 0 0.5rem;
 }
 .paywall-title {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 900;
   color: var(--text-primary);
-  margin: 0 0 0.75rem;
+  line-height: 1.5;
+  margin: 0 0 1.1rem;
 }
-.paywall-body {
-  font-size: 0.92rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 0 0 1.4rem;
-}
-.paywall-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+.paywall-title-highlight {
+  font-size: 1.45rem;
 }
 .paywall-btn-primary {
-  display: inline-block;
-  padding: 0.75rem 1rem;
-  background: var(--accent);
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  background: #E8A020;
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 0.95rem;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: 700;
-  text-decoration: none;
+  font-family: 'Noto Sans JP', sans-serif;
   cursor: pointer;
   transition: background 0.2s;
+  margin-bottom: 1rem;
 }
-.paywall-btn-primary:hover {
-  background: var(--accent-dark);
+.paywall-btn-primary:hover:not(:disabled) {
+  background: #c9891a;
 }
-.paywall-btn-secondary {
-  padding: 0.65rem 1rem;
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-strong);
-  border-radius: 10px;
-  font-size: 0.9rem;
+.paywall-btn-primary:disabled {
+  background: #c9891a;
+  cursor: not-allowed;
+}
+.paywall-list {
+  list-style: none;
+  text-align: left;
+  font-size: 0.78rem;
+  color: #555;
+  line-height: 1.85;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+.paywall-list li::before {
+  content: '・';
+}
+.paywall-skip {
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  color: #1d6fcf;
   cursor: pointer;
-}
-.paywall-btn-secondary:hover {
-  background: var(--bg-secondary);
+  text-decoration: none;
+  padding: 0;
 }
 
 /* 課金導線が必要なボタンに付ける鍵アイコン */

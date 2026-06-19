@@ -86,7 +86,7 @@ export default function LoadEntryRow({
               id={powerId}
               type="number"
               className="form-control form-control-sm"
-              placeholder="例: 5.5"
+              placeholder=""
               min="0"
               step="0.1"
               value={entry.powerKw}

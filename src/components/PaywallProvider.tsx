@@ -57,22 +57,69 @@ export function PaywallProvider({
 }
 
 function PaywallModal({ isSignedIn, onClose }: { isSignedIn: boolean; onClose: () => void }) {
-  // 未ログイン → サインインへ。ログイン済み未契約 → 課金ページへ
-  const primaryHref = isSignedIn ? '/subscribe' : '/sign-in?redirect_url=/subscribe'
-  const primaryLabel = isSignedIn ? 'プランを見る' : 'ログイン / 新規登録'
-  const heading = '全ての機能を使うには登録が必要です'
-  const body = '全ての機能を使う為には、「無料トライアル」の登録又は、「サブスクリプション」の更新が必要です。下記のボタンからご確認下さい。'
+  const [loading, setLoading] = useState(false)
+
+  const handleCheckout = async () => {
+    if (!isSignedIn) {
+      window.location.href = '/sign-in?redirect_url=/subscribe'
+      return
+    }
+    setLoading(true)
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.status === 409) {
+        window.location.href = data.redirectTo ?? '/account'
+        return
+      }
+      if (res.status === 401) {
+        window.location.href = '/sign-in?redirect_url=/subscribe'
+        return
+      }
+      if (!res.ok) {
+        alert(`エラーが発生しました（${res.status}）：${data.error ?? '詳細不明'}`)
+        return
+      }
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+      alert('エラーが発生しました。再度お試しください。')
+    } catch {
+      alert('通信エラーが発生しました。ネットワークをご確認ください。')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="paywall-overlay" role="dialog" aria-modal="true" aria-labelledby="paywall-title" onClick={onClose}>
       <div className="paywall-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="paywall-icon" aria-hidden="true">🔒</div>
-        <h2 id="paywall-title" className="paywall-title">{heading}</h2>
-        <p className="paywall-body">{body}</p>
-        <div className="paywall-actions">
-          <a className="paywall-btn-primary" href={primaryHref}>{primaryLabel}</a>
-          <button type="button" className="paywall-btn-secondary" onClick={onClose}>閉じる</button>
-        </div>
+        <p className="paywall-badge">新規登録の方限定！</p>
+        <h2 id="paywall-title" className="paywall-title">
+          全てのツールが<br />
+          <span className="paywall-title-highlight">30日間 無料</span><br />
+          で使い放題
+        </h2>
+        <button
+          onClick={handleCheckout}
+          disabled={loading}
+          className="paywall-btn-primary"
+        >
+          {loading ? '処理中...' : '無料で全てのツールを使う'}
+        </button>
+        <ul className="paywall-list">
+          <li>上のボタンから申込完了するだけ。</li>
+          <li>無料トライアル終了まで課金は発生せず、いつでもキャンセル可能です。キャンセル料などの料金は一切発生しません。</li>
+          <li>無料トライアル終了後は有料プランに移行して課金が発生します。</li>
+        </ul>
+        <button type="button" className="paywall-skip" onClick={onClose}>
+          いいえ、通常の無料会員として使用する →
+        </button>
       </div>
     </div>
   )
