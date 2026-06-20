@@ -15,7 +15,7 @@ function createLoad(): LoadEntry {
     id: `load-${nextId++}`,
     name: '',
     type: 'general',
-    powerKw: '',
+    powerKw: '0',
     startMethod: 'direct',
     usageRate: '50',
     wiring: {
