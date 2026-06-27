@@ -85,6 +85,12 @@
   margin-top: 0.2rem;
 }
 
+.link {
+  color: var(--seg-active);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
 /* 任意の埋め込み動画 */
 .videoWrap {
   position: relative;

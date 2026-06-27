@@ -1,10 +1,11 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { UserButton, SignInButton, SignUpButton, Show } from '@clerk/nextjs';
 import styles from './SiteHeader.module.css';
 import { usePaywall } from './PaywallProvider';
+import { NEWS_ITEMS } from '@/data/news-data';
 
 async function openCustomerPortal() {
   try {
@@ -43,6 +44,13 @@ const UserIcon = () => (
   </svg>
 );
 
+const BellIcon = () => (
+  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+  </svg>
+);
+
 const GearIcon = () => (
   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="3" />
@@ -59,6 +67,7 @@ interface SiteHeaderProps {
 export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderProps) {
   const userButtonRef = useRef<HTMLDivElement>(null);
   const { canManageBilling } = usePaywall();
+  const [newsOpen, setNewsOpen] = useState(false);
   const className = mode === 'sub' ? `${styles.topbar} ${styles.subMode}` : styles.topbar;
 
   const handleSettingsClick = () => {
@@ -67,6 +76,7 @@ export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderPr
   };
 
   return (
+    <>
     <header className={className}>
       <div className={styles.left}>
         <Link className={styles.logo} href="/" aria-label="ELE-CAL ホーム">
@@ -83,6 +93,15 @@ export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderPr
       <div className={styles.right}>
         {mode === 'top' && (
           <>
+            <button
+              className={`${styles.loginBtn} ${styles.newsBtn}`}
+              type="button"
+              onClick={() => setNewsOpen(true)}
+              aria-label="新着情報"
+            >
+              <BellIcon />
+              <span className={styles.newsLabel}>新着</span>
+            </button>
             <Show when="signed-out">
               <SignUpButton mode="modal" forceRedirectUrl="/subscribe">
                 <button className={styles.signupBtn} type="button">
@@ -137,5 +156,49 @@ export default function SiteHeader({ mode, title, backHref = '/' }: SiteHeaderPr
         )}
       </div>
     </header>
+
+    {newsOpen && (
+      <div
+        className={styles.newsOverlay}
+        onClick={() => setNewsOpen(false)}
+        role="presentation"
+      >
+        <div
+          className={styles.newsModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label="新着情報"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles.newsModalHeader}>
+            <h2 className={styles.newsModalTitle}>
+              <BellIcon />
+              新着情報
+            </h2>
+            <button
+              className={styles.newsCloseBtn}
+              type="button"
+              onClick={() => setNewsOpen(false)}
+              aria-label="閉じる"
+            >
+              ×
+            </button>
+          </div>
+          <div className={styles.newsModalBody}>
+            {NEWS_ITEMS.length === 0 ? (
+              <p className={styles.newsEmpty}>現在お知らせはありません。</p>
+            ) : (
+              NEWS_ITEMS.map((item, i) => (
+                <div key={i} className={styles.newsItem}>
+                  <p className={styles.newsDate}>{item.date}</p>
+                  <p className={styles.newsBody}>{item.body}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

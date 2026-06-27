@@ -1,6 +1,21 @@
+import { Fragment } from 'react';
 import SiteHeader from '@/components/SiteHeader';
 import { FAQ_ITEMS } from '@/data/faq-data';
 import styles from './page.module.css';
+
+/** 段落内のURLを検出してクリック可能なリンクに変換する */
+function renderWithLinks(text: string) {
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlPattern).map((part, i) =>
+    /^https?:\/\//.test(part) ? (
+      <a key={i} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+        {part}
+      </a>
+    ) : (
+      <Fragment key={i}>{part}</Fragment>
+    )
+  );
+}
 
 export default function QuestionsPage() {
   return (
@@ -24,7 +39,7 @@ export default function QuestionsPage() {
                 <span className={styles.aMark}>A</span>
                 <div className={styles.answer}>
                   {item.answer.map((para, i) => (
-                    <p key={i} className={styles.paragraph}>{para}</p>
+                    <p key={i} className={styles.paragraph}>{renderWithLinks(para)}</p>
                   ))}
 
                   {item.youtubeId && (

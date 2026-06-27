@@ -9,6 +9,14 @@ export interface FaqItem {
 
 export const FAQ_ITEMS: FaqItem[] = [
   {
+    id: 'what-is-elecal',
+    question: 'エレカルとは？',
+    answer: [
+      '内線規程 第14版 JEAC8001-2022 を参考に、許容電流量・ブレーカー選定・集合住宅幹線設計・電圧降下・配管選定・ラックサイズ選定を、条件入力だけで必要な計算結果をすばやく算出するツールです。',
+      '詳しくは下記をご覧ください。\nhttps://bring-x.com/ele-cal',
+    ],
+  },
+  {
     id: 'cancel',
     question: 'キャンセルするには？',
     answer: [
