@@ -150,6 +150,9 @@
   font-size: 0.62rem;
   color: #a0aec0;
   white-space: nowrap;
+  /* 空ラベル列と数字ラベル列で高さを揃え、棒の底辺(0)のズレを防ぐ */
+  height: 0.9rem;
+  line-height: 0.9rem;
 }
 
 .chartEmpty {
