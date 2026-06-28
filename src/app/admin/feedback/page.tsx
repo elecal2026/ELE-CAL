@@ -1,4 +1,3 @@
-import SiteHeader from '@/components/SiteHeader'
 import { clerkClient } from '@clerk/nextjs/server'
 import { isDbConfigured, listFeedbackRequests } from '@/lib/db'
 import FeedbackAdminClient, { type FeedbackItem } from './FeedbackAdminClient'
@@ -9,12 +8,9 @@ export const dynamic = 'force-dynamic'
 export default async function AdminFeedbackPage() {
   if (!isDbConfigured()) {
     return (
-      <div className={styles.page}>
-        <SiteHeader mode="sub" title="問い合わせ管理" />
-        <main className={styles.main}>
-          <p className={styles.empty}>DB が設定されていません。</p>
-        </main>
-      </div>
+      <main className={styles.main}>
+        <p className={styles.empty}>DB が設定されていません。</p>
+      </main>
     )
   }
 
@@ -64,11 +60,8 @@ export default async function AdminFeedbackPage() {
   })
 
   return (
-    <div className={styles.page}>
-      <SiteHeader mode="sub" title="問い合わせ管理" />
-      <main className={styles.main}>
-        <FeedbackAdminClient items={items} />
-      </main>
-    </div>
+    <main className={styles.main}>
+      <FeedbackAdminClient items={items} />
+    </main>
   )
 }

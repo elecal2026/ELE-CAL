@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { currentUser } from '@clerk/nextjs/server'
 import { getAdminEmails } from '@/lib/admin'
+import AdminShell from './AdminShell'
 
 // 管理者メアド（ADMIN_EMAILS）でログインしている時のみ /admin 配下を表示。
 // 未ログイン → /sign-in にリダイレクト。非管理者 → 404（存在を隠す）。
@@ -22,5 +23,5 @@ export default async function AdminLayout({
   )
   if (!isAdmin) notFound()
 
-  return <>{children}</>
+  return <AdminShell>{children}</AdminShell>
 }
