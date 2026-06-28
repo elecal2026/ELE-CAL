@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Barlow, Noto_Sans_JP } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { jaJP } from '@clerk/localizations'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { PaywallProvider } from '@/components/PaywallProvider'
 import { getCurrentUserAccess } from '@/lib/access'
 import './globals.css'
@@ -94,6 +95,10 @@ export const metadata: Metadata = {
     icon: '/ELE-CAL.png',
     apple: '/ELE-CAL.png',
   },
+  // Search Console（URLプレフィックス型）のメタタグ確認。env未設定なら出力されない
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   openGraph: {
     type: 'website',
     siteName: 'ELE-CAL',
@@ -126,6 +131,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const access = await getCurrentUserAccess()
+  const gaId = process.env.NEXT_PUBLIC_GA_ID
 
   return (
     <ClerkProvider localization={customJaJP}>
@@ -139,6 +145,8 @@ export default async function RootLayout({
             {children}
           </PaywallProvider>
         </body>
+        {/* GA4。NEXT_PUBLIC_GA_ID 未設定なら何も読み込まない */}
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </html>
     </ClerkProvider>
   )
