@@ -38,6 +38,34 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {/* ダッシュボード（最上部） */}
+      <div style={{ maxWidth: '700px', margin: '0 auto', padding: '1rem 1rem 0' }}>
+        <Link
+          href="/admin/dashboard"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.7rem',
+            padding: '1rem 1.2rem',
+            background: 'var(--accent)',
+            color: '#fff',
+            borderRadius: '12px',
+            textDecoration: 'none',
+            fontWeight: 700,
+            fontSize: '1rem',
+          }}
+        >
+          <span style={{ fontSize: '1.4rem' }} aria-hidden>📊</span>
+          <span style={{ flex: 1 }}>
+            ダッシュボード
+            <span style={{ display: 'block', fontSize: '0.78rem', fontWeight: 500, opacity: 0.85, marginTop: '0.15rem' }}>
+              ユーザー数・Proユーザー・新規登録の集計
+            </span>
+          </span>
+          <span aria-hidden>→</span>
+        </Link>
+      </div>
+
       {/* 問い合わせ管理（最重要・最上部） */}
       <div style={{ maxWidth: '700px', margin: '0 auto', padding: '1rem 1rem 0' }}>
         <Link

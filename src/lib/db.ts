@@ -85,6 +85,35 @@ export async function updateSubscriptionByCustomerId(data: {
   `
 }
 
+/** ダッシュボード用サブスク集計 */
+export interface SubscriptionStats {
+  /** 課金中（active / trialing）の clerk_user_id 一覧 */
+  proUserIds: string[]
+  /** status 別の件数 */
+  statusCounts: Record<string, number>
+}
+
+/** サブスク状況をダッシュボード向けに集計して返す */
+export async function getSubscriptionStats(): Promise<SubscriptionStats> {
+  const query = sql()
+  const proRows = await query`
+    SELECT clerk_user_id FROM subscriptions
+    WHERE status IN ('active', 'trialing')
+  `
+  const countRows = await query`
+    SELECT status, COUNT(*)::int AS n FROM subscriptions
+    GROUP BY status
+  `
+  const statusCounts: Record<string, number> = {}
+  for (const r of countRows as { status: string; n: number }[]) {
+    statusCounts[r.status] = r.n
+  }
+  return {
+    proUserIds: (proRows as { clerk_user_id: string }[]).map((r) => r.clerk_user_id),
+    statusCounts,
+  }
+}
+
 // ============================================================
 // 要望投稿フォーム（feedback_requests / feedback_replies）
 // ============================================================

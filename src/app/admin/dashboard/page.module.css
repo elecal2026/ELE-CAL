@@ -1,0 +1,169 @@
+.page {
+  min-height: 100vh;
+  background: #f0f4f8;
+}
+
+.main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 4rem;
+}
+
+.periodNote {
+  font-size: 0.8rem;
+  color: #718096;
+  margin: 0 0 1rem;
+}
+
+/* 指標カードグリッド */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cardAccent {
+  background: #1C2B4A;
+  border-color: #1C2B4A;
+}
+
+.cardLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.cardAccent .cardLabel {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.cardValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1C2B4A;
+  line-height: 1.1;
+}
+
+.cardAccent .cardValue {
+  color: #fff;
+}
+
+.cardSub {
+  font-size: 0.78rem;
+  color: #a0aec0;
+}
+
+.cardAccent .cardSub {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* セクション見出し */
+.sectionTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 1.5rem 0 0.6rem;
+}
+
+/* status 内訳 */
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  font-size: 0.8rem;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+.statusChip b {
+  color: #1C2B4A;
+}
+
+/* 最近の登録ユーザー */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1.1rem;
+  border-bottom: 1px solid #f0f4f8;
+  min-width: 0;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.email {
+  flex: 1;
+  font-size: 0.88rem;
+  color: #2d3748;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.proBadge {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+
+.rowDate {
+  font-size: 0.78rem;
+  color: #a0aec0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.empty {
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.9rem;
+  padding: 3rem 1rem;
+}
+
+@media (max-width: 420px) {
+  .cardValue {
+    font-size: 1.7rem;
+  }
+}
