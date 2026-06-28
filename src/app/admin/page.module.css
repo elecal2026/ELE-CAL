@@ -74,6 +74,96 @@
   margin: 1.5rem 0 0.6rem;
 }
 
+/* チャート説明文 */
+.chartNote {
+  font-size: 0.78rem;
+  color: #718096;
+  margin: -0.3rem 0 0.6rem;
+}
+
+/* 棒グラフ */
+.chartWrap {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem 0.7rem;
+  margin-bottom: 0.75rem;
+}
+
+.chartHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.chartTitle {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4a5568;
+}
+
+.chartPeak {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #dc2626;
+  white-space: nowrap;
+}
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 130px;
+}
+
+.barCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  height: 100%;
+}
+
+.barTrack {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar {
+  width: 100%;
+  background: #1c2b4a;
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+}
+
+.barPeak {
+  background: #dc2626;
+}
+
+.barLabel {
+  font-size: 0.62rem;
+  color: #a0aec0;
+  white-space: nowrap;
+}
+
+.chartEmpty {
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.82rem;
+  padding: 1.5rem 0;
+  margin: 0;
+}
+
+.chipPro b {
+  color: #16a34a;
+}
+
 /* status 内訳 */
 .statusRow {
   display: flex;
