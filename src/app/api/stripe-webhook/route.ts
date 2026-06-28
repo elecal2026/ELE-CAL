@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getStripe, isStripeConfigured } from '@/lib/stripe'
 import { updateSubscriptionByCustomerId, isDbConfigured } from '@/lib/db'
-import { sendToUser } from '@/lib/mail'
+import { sendToUser, notifyAdmins } from '@/lib/mail'
 
 export async function POST(request: NextRequest) {
   if (!isStripeConfigured() || !isDbConfigured()) {
@@ -49,9 +49,27 @@ export async function POST(request: NextRequest) {
 
         if (event.type === 'customer.subscription.created') {
           const customer = await stripe.customers.retrieve(subscription.customer as string)
-          const email = !customer.deleted && (customer as Stripe.Customer).email
+          const email = (!customer.deleted && (customer as Stripe.Customer).email) || null
+          const isTrial = subscription.status === 'trialing'
+
+          // 管理者へ新規契約を通知（メール失敗してもwebhookは成功させる）
+          await notifyAdmins({
+            subject: isTrial
+              ? '【ELE-CAL】新規トライアル開始'
+              : '【ELE-CAL】新規契約（即課金）',
+            text: `新しい契約が発生しました。
+
+メール: ${email ?? '(取得できず)'}
+種別: ${isTrial ? 'トライアル開始' : '即課金'}
+ステータス: ${subscription.status}
+Stripe顧客ID: ${subscription.customer}
+日時: ${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}
+
+▼ 管理ダッシュボード
+https://ele-cal.com/admin`,
+          })
+
           if (email) {
-            const isTrial = subscription.status === 'trialing'
             await sendToUser({
               to: email,
               subject: isTrial
