@@ -95,6 +95,9 @@ export default async function AdminDashboardPage() {
   }
 
   const monthStart = jstMonthStart().getTime()
+  // マーケ指標（時間帯・曜日グラフ／今月の新規）の集計起点。
+  // これ以前（テスト期間）の登録・契約は除外する。JST 2026-06-30 00:00。
+  const STATS_CUTOFF = Date.UTC(2026, 5, 30, 0, 0, 0) - 9 * 3600 * 1000
 
   // サブスク集計（Neon）
   let proUserIds: string[] = []
@@ -127,6 +130,9 @@ export default async function AdminDashboardPage() {
     console.error('clerk getUserList failed:', e)
   }
 
+  // 集計起点以降の登録のみを指標対象にする（テスト期間のアカウントを除外）
+  const statsUsers = users.filter((u) => u.createdAt >= STATS_CUTOFF)
+
   // Stripe から全サブスクの「契約開始時刻」を取得（DBは触らない・過去分も取れる）
   let stripeSubs: { created: number; status: string }[] = []
   if (isStripeConfigured()) {
@@ -136,7 +142,9 @@ export default async function AdminDashboardPage() {
         status: 'all',
         limit: 100,
       })) {
-        stripeSubs.push({ created: sub.created * 1000, status: sub.status })
+        const created = sub.created * 1000
+        if (created < STATS_CUTOFF) continue // テスト期間の契約は除外
+        stripeSubs.push({ created, status: sub.status })
       }
     } catch (e) {
       console.error('stripe subscriptions.list failed:', e)
@@ -144,7 +152,7 @@ export default async function AdminDashboardPage() {
   }
 
   // 指標計算
-  const newUsersThisMonth = users.filter((u) => u.createdAt >= monthStart).length
+  const newUsersThisMonth = statsUsers.filter((u) => u.createdAt >= monthStart).length
   const proCount = proUserIds.length
   const newSubsThisMonth = stripeSubs.filter((s) => s.created >= monthStart).length
   const proRate = totalUsers > 0 ? Math.round((proCount / totalUsers) * 1000) / 10 : 0
@@ -159,7 +167,7 @@ export default async function AdminDashboardPage() {
   // 時間帯・曜日ヒストグラム（JST）
   const signupHours = new Array(24).fill(0)
   const signupDows = new Array(7).fill(0)
-  for (const u of users) {
+  for (const u of statsUsers) {
     signupHours[jstHour(u.createdAt)]++
     signupDows[jstDow(u.createdAt)]++
   }
