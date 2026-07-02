@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react'
 import SiteHeader from '@/components/SiteHeader'
-import { usePaywall } from '@/components/PaywallProvider'
 import {
   INSTALLATION_METHODS,
   WIRE_COUNTS,
@@ -19,8 +18,6 @@ import {
 } from '@/data/wire-master'
 
 export default function AllowableCurrentPage() {
-  const { isPaid, openPaywall } = usePaywall()
-
   const [wire, setWire] = useState<WireTypeId>('IV')
   const [specId, setSpecId] = useState('')
   const [method, setMethod] = useState<InstallationMethod>('ころがし')
@@ -80,7 +77,6 @@ export default function AllowableCurrentPage() {
               <div className="chips-group">
                 {INSTALLATION_METHODS.map((installationMethod) => {
                   const isActive = method === installationMethod
-                  const showLock = !isActive && !isPaid
                   return (
                     <label className="chip-label" key={installationMethod}>
                       <input
@@ -88,13 +84,9 @@ export default function AllowableCurrentPage() {
                         name="installation-method"
                         value={installationMethod}
                         checked={isActive}
-                        onChange={() => { if (isPaid) setMethod(installationMethod) }}
-                        onClick={(e) => {
-                          if (!isPaid && !isActive) { e.preventDefault(); openPaywall() }
-                        }}
+                        onChange={() => setMethod(installationMethod)}
                       />
                       <span className="chip-text">
-                        {showLock && <span aria-hidden="true" style={{ marginRight: '0.25em' }}>🔒</span>}
                         {installationMethod}
                       </span>
                     </label>
@@ -109,7 +101,6 @@ export default function AllowableCurrentPage() {
                 <div className="chips-group">
                   {WIRE_COUNTS.map((count) => {
                     const isActive = wireCount === count
-                    const showLock = !isActive && !isPaid
                     return (
                       <label className="chip-label" key={count}>
                         <input
@@ -117,13 +108,9 @@ export default function AllowableCurrentPage() {
                           name="wire-count"
                           value={count}
                           checked={isActive}
-                          onChange={() => { if (isPaid) setWireCount(count) }}
-                          onClick={(e) => {
-                            if (!isPaid && !isActive) { e.preventDefault(); openPaywall() }
-                          }}
+                          onChange={() => setWireCount(count)}
                         />
                         <span className="chip-text">
-                          {showLock && <span aria-hidden="true" style={{ marginRight: '0.25em' }}>🔒</span>}
                           {count}
                         </span>
                       </label>
